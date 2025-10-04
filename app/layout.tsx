@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import CookieBanner from "./components/CookieBanner";
+import { Analytics } from '@vercel/analytics/react';
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {children}
         <CookieBanner />
+        <Analytics />
       </body>
     </html>
   );
