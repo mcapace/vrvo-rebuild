@@ -4,8 +4,8 @@ export default function StructuredData() {
     '@type': 'ProfessionalService',
     name: 'Vrvo',
     description: 'Enterprise-grade programmatic advertising and business transformation consulting for ambitious SMBs',
-    url: 'https://vrvo.com',
-    logo: 'https://vrvo.com/logo/vrvo_logo.png',
+    url: 'https://vrvo.co',
+    logo: 'https://vrvo.co/logo/vrvo_logo.png',
     areaServed: {
       '@type': 'Country',
       name: 'United States'

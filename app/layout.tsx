@@ -1,22 +1,12 @@
-import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
-import "./globals.css";
-import Script from "next/script";
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import Analytics from './components/Analytics'
+import StructuredData from './components/StructuredData'
 import CookieBanner from "./components/CookieBanner";
-import { Analytics } from '@vercel/analytics/react';
-import StructuredData from "./components/StructuredData";
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Vrvo | Enterprise Programmatic Advertising for SMBs',
@@ -36,14 +26,14 @@ export const metadata: Metadata = {
   authors: [{ name: 'Vrvo' }],
   creator: 'Vrvo',
   publisher: 'Vrvo',
-  metadataBase: new URL('https://vrvo.com'),
+  metadataBase: new URL('https://vrvo.co'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'Vrvo | Enterprise Marketing for Ambitious SMBs',
     description: 'Programmatic advertising and business transformation normally reserved for Fortune 500s, made accessible for growing businesses.',
-    url: 'https://vrvo.com',
+    url: 'https://vrvo.co',
     siteName: 'Vrvo',
     locale: 'en_US',
     type: 'website',
@@ -85,7 +75,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
@@ -93,23 +83,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <link rel="manifest" href="/manifest.json" />
         <StructuredData />
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=G-8ZK93TZL47`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-8ZK93TZL47');
-          `}
-        </Script>
       </head>
-      <body className="font-sans antialiased">
+      <body className={inter.className}>
         {children}
         <CookieBanner />
         <Analytics />
+        <VercelAnalytics />
       </body>
     </html>
   );
