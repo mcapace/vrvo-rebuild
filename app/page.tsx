@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { 
   Target, 
   Eye, 
@@ -51,8 +52,14 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="text-2xl font-serif font-bold text-deep-charcoal tracking-tight">
-              Vrvo
+            <div className="flex items-center">
+              <Image
+                src="/logos/vrvo_wordmark_black.svg"
+                alt="Vrvo"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
+              />
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#services" className="text-deep-charcoal hover:text-burnished-gold transition-colors">Services</a>
@@ -364,7 +371,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
-              <div className="text-3xl font-serif font-bold mb-4">Vrvo</div>
+              <div className="mb-4">
+                <Image
+                  src="/logos/vrvo_wordmark_white.svg"
+                  alt="Vrvo"
+                  width={120}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+              </div>
               <p className="text-warm-cream/80 mb-6 max-w-md">
                 Digital marketing and business transformation company helping businesses grow through innovative strategies.
               </p>
