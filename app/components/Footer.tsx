@@ -55,7 +55,7 @@ export default function Footer() {
           <p>&copy; 2025 Vrvo. All rights reserved.</p>
           <p className="mt-2">Enterprise marketing for ambitious businesses.</p>
           <div className="mt-4 flex justify-center gap-6">
-            <Link href="/privacy" className="hover:text-burnt-orange transition-colors">Privacy Policy</Link>
+            <Link href="/policy" className="hover:text-burnt-orange transition-colors">Privacy Policy</Link>
             <Link href="/policy" className="hover:text-burnt-orange transition-colors">Terms of Service</Link>
           </div>
         </div>
