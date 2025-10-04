@@ -5,6 +5,7 @@ import Analytics from './components/Analytics'
 import StructuredData from './components/StructuredData'
 import CookieBanner from "./components/CookieBanner";
 import ConsentManager from "./components/ConsentManager";
+import FacebookPixel from "./components/FacebookPixel";
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -90,6 +91,7 @@ export default function RootLayout({
         {children}
         <CookieBanner />
         <Analytics />
+        <FacebookPixel />
         <VercelAnalytics />
       </body>
     </html>

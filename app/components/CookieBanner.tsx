@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, X, Settings, Check } from 'lucide-react';
 import Link from 'next/link';
 
-// Extend Window interface for gtag
+// Extend Window interface for gtag and fbq
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+    fbq?: (...args: any[]) => void;
   }
 }
 
@@ -51,6 +52,11 @@ export default function CookieBanner() {
         'security_storage': 'granted'
       });
     }
+    
+    // Update Facebook Pixel consent
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('consent', 'grant');
+    }
   };
 
   const acceptSelected = () => {
@@ -68,6 +74,15 @@ export default function CookieBanner() {
         'personalization_storage': preferences.functional ? 'granted' : 'denied',
         'security_storage': 'granted'
       });
+    }
+    
+    // Update Facebook Pixel consent based on marketing preference
+    if (typeof window !== 'undefined' && window.fbq) {
+      if (preferences.marketing) {
+        window.fbq('consent', 'grant');
+      } else {
+        window.fbq('consent', 'revoke');
+      }
     }
   };
 
@@ -91,6 +106,11 @@ export default function CookieBanner() {
         'personalization_storage': 'denied',
         'security_storage': 'granted'
       });
+    }
+    
+    // Deny Facebook Pixel consent
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('consent', 'revoke');
     }
   };
 

@@ -2,10 +2,11 @@
 
 import { useEffect } from 'react'
 
-// Extend Window interface for gtag
+// Extend Window interface for gtag and fbq
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+    fbq?: (...args: any[]) => void;
   }
 }
 
@@ -26,6 +27,15 @@ export default function ConsentManager() {
         'personalization_storage': preferences.functional ? 'granted' : 'denied',
         'security_storage': 'granted'
       });
+      
+      // Apply Facebook Pixel consent
+      if (window.fbq) {
+        if (preferences.marketing) {
+          window.fbq('consent', 'grant');
+        } else {
+          window.fbq('consent', 'revoke');
+        }
+      }
     }
   }, []);
 
