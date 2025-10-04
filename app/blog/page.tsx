@@ -349,18 +349,19 @@ export default function Blog() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="py-20 bg-rich-navy text-white">
+      <section className="py-16 bg-rich-navy">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ amount: 0.2 }}
+            className="space-y-8"
           >
-            <h2 className="text-5xl font-display text-warm-linen mb-6">
+            <h2 className="text-h2 font-display text-warm-linen">
               Stay Ahead of the Curve
             </h2>
-            <p className="text-xl text-warm-linen/90 mb-12 max-w-2xl mx-auto">
+            <p className="text-xl text-warm-linen/90 max-w-2xl mx-auto">
               Get our latest insights on marketing infrastructure, delivered weekly to your inbox.
             </p>
             

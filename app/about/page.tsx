@@ -199,28 +199,30 @@ export default function About() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-rich-navy text-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
+      <section className="py-16 bg-rich-navy">
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ amount: 0.2 }}
+            className="space-y-8"
           >
-            <h2 className="text-5xl font-display text-warm-linen mb-6">
+            <h2 className="text-h2 font-display text-warm-linen">
               Ready to Compete on Strategy?
             </h2>
-            <p className="text-xl text-warm-linen/90 mb-12 max-w-3xl mx-auto">
+            <p className="text-xl text-warm-linen/90 max-w-2xl mx-auto">
               Stop competing on budget. Let's build the marketing infrastructure that transforms your business.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/contact">
-                <MagneticButton className="bg-warm-linen text-rich-navy px-6 md:px-8 py-3 md:py-4 rounded-sm font-medium hover:bg-burnt-orange hover:text-warm-linen transition-all duration-300 uppercase text-xs tracking-[0.1em] w-full sm:w-auto">
+                <MagneticButton className="bg-warm-linen text-rich-navy px-8 py-4 rounded-sm hover:bg-burnt-orange hover:text-warm-linen transition-all duration-300 font-medium">
                   Schedule Strategy Call
+                  <ArrowRight className="inline-block ml-2 w-5 h-5" />
                 </MagneticButton>
               </Link>
               <Link href="/services">
-                <MagneticButton className="border border-warm-linen text-warm-linen px-6 md:px-8 py-3 md:py-4 rounded-sm font-medium hover:bg-warm-linen hover:text-rich-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] w-full sm:w-auto">
+                <MagneticButton className="border border-warm-linen text-warm-linen px-8 py-4 rounded-sm hover:bg-warm-linen hover:text-rich-navy transition-all duration-300 font-medium">
                   Download Our Approach
                 </MagneticButton>
               </Link>

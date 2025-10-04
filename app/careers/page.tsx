@@ -349,25 +349,26 @@ export default function Careers() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-rich-navy text-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
+      <section className="py-16 bg-rich-navy">
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ amount: 0.2 }}
+            className="space-y-8"
           >
-            <h2 className="text-5xl font-display text-warm-linen mb-6">
+            <h2 className="text-h2 font-display text-warm-linen">
               Ready to Transform Marketing?
             </h2>
-            <p className="text-xl text-warm-linen/90 mb-12 max-w-3xl mx-auto">
+            <p className="text-xl text-warm-linen/90 max-w-2xl mx-auto">
               Join us in building the marketing infrastructure that levels the playing field for ambitious SMBs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <MagneticButton className="bg-warm-linen text-rich-navy px-8 py-4 rounded-lg font-medium hover:bg-burnt-orange hover:text-warm-linen transition-colors flex items-center gap-2">
-                View All Positions <ArrowRight className="w-4 h-4" />
+              <MagneticButton className="bg-warm-linen text-rich-navy px-8 py-4 rounded-sm hover:bg-burnt-orange hover:text-warm-linen transition-all duration-300 font-medium">
+                View All Positions <ArrowRight className="inline-block ml-2 w-5 h-5" />
               </MagneticButton>
-              <MagneticButton className="border-2 border-warm-linen text-warm-linen px-8 py-4 rounded-lg font-medium hover:bg-warm-linen hover:text-rich-navy transition-colors">
+              <MagneticButton className="border border-warm-linen text-warm-linen px-8 py-4 rounded-sm hover:bg-warm-linen hover:text-rich-navy transition-all duration-300 font-medium">
                 Learn About Our Culture
               </MagneticButton>
             </div>
