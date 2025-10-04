@@ -18,9 +18,13 @@ export default function Footer() {
                 className="h-8 w-auto"
               />
             </div>
-            <p className="text-warm-linen/80 text-sm">
+            <p className="text-warm-linen/80 text-sm mb-4">
               Enterprise marketing for ambitious businesses.
             </p>
+            <div className="flex items-center gap-4">
+              <div className="w-2 h-2 bg-burnt-orange rounded-full"></div>
+              <span className="text-sm text-warm-linen/60">Denver, CO</span>
+            </div>
           </div>
           
           <div>

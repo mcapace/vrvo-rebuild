@@ -366,9 +366,9 @@ export default function Privacy() {
               <div className="space-y-4">
                 <p>If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
                 <div className="space-y-2">
-                  <p><strong>Email:</strong> privacy@vrvo.com</p>
+                  <p><strong>Email:</strong> privacy@vrvo.co</p>
                   <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-                  <p><strong>Address:</strong> 123 Business Street, Suite 100, San Francisco, CA 94105</p>
+                  <p><strong>Address:</strong> 1580 N Logan St Ste 660, Denver, CO 80203-1994</p>
                 </div>
                 <p className="text-white/80">We will respond to your inquiry within 30 days.</p>
               </div>

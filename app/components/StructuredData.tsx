@@ -6,6 +6,14 @@ export default function StructuredData() {
     description: 'Enterprise-grade programmatic advertising and business transformation consulting for ambitious SMBs',
     url: 'https://vrvo.co',
     logo: 'https://vrvo.co/logo/vrvo_logo.png',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '1580 N Logan St Ste 660',
+      addressLocality: 'Denver',
+      addressRegion: 'Colorado',
+      postalCode: '80203-1994',
+      addressCountry: 'US'
+    },
     areaServed: {
       '@type': 'Country',
       name: 'United States'

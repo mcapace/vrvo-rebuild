@@ -261,7 +261,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-deep-charcoal mb-1">Office</h3>
-                    <p className="text-deep-charcoal/80">123 Marketing Ave<br />New York, NY 10001</p>
+                    <p className="text-deep-charcoal/80">1580 N Logan St Ste 660<br />Denver, CO 80203-1994</p>
                     <p className="text-sm text-deep-charcoal/60">By appointment only</p>
                   </div>
                 </div>
