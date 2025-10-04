@@ -5,6 +5,8 @@ import Analytics from './components/Analytics'
 import StructuredData from './components/StructuredData'
 import CookieBanner from "./components/CookieBanner";
 import ConsentManager from "./components/ConsentManager";
+import ConsentInitializer from "./components/ConsentInitializer";
+import ConsentTester from "./components/ConsentTester";
 import FacebookPixel from "./components/FacebookPixel";
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
@@ -87,7 +89,9 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body className={inter.className}>
+        <ConsentInitializer />
         <ConsentManager />
+        <ConsentTester />
         {children}
         <CookieBanner />
         <Analytics />

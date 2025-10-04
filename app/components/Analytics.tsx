@@ -23,10 +23,23 @@ export default function Analytics() {
             'functionality_storage': 'denied',
             'personalization_storage': 'denied',
             'security_storage': 'granted',
-            'wait_for_update': 2000,
-            // Advertising consent signals
-            'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE']
+            'wait_for_update': 2000
           });
+          
+          // Check for existing consent and apply it immediately
+          const cookieConsent = localStorage.getItem('cookieConsent');
+          if (cookieConsent) {
+            const preferences = JSON.parse(cookieConsent);
+            gtag('consent', 'update', {
+              'ad_storage': preferences.marketing ? 'granted' : 'denied',
+              'ad_user_data': preferences.marketing ? 'granted' : 'denied',
+              'ad_personalization': preferences.marketing ? 'granted' : 'denied',
+              'analytics_storage': preferences.analytics ? 'granted' : 'denied',
+              'functionality_storage': preferences.functional ? 'granted' : 'denied',
+              'personalization_storage': preferences.functional ? 'granted' : 'denied',
+              'security_storage': 'granted'
+            });
+          }
           
           gtag('js', new Date());
           gtag('config', 'G-8ZK93TZL47', {
