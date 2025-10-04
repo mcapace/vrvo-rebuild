@@ -6,10 +6,10 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @layer base {
-  :root {
-    --background: #F7F4EF;
-    --foreground: #1C1C1E;
-  }
+        :root {
+          --background: #FAF8F5;
+          --foreground: #1A1A1A;
+        }
 }
 
 @layer base {
@@ -44,7 +44,39 @@
   }
   
   .magnetic-hover:hover {
-    transform: translateY(-2px);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Advanced glass morphism effects */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Advanced gradient animations */
+  .gradient-animate {
+    background: linear-gradient(-45deg, #1E3A5F, #D2691E, #1E3A5F, #B8860B);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating animation */
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
   }
 }
 
@@ -54,14 +86,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F7F4EF;
+  background: #FAF8F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2D5F4F;
+  background: #1E3A5F;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B87A5C;
+  background: #D2691E;
 }

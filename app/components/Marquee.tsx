@@ -12,7 +12,7 @@ export const Marquee = ({ items, speed = 20, className = '' }: MarqueeProps) => 
   return (
     <div className={`overflow-hidden ${className}`}>
       <motion.div
-        className="flex gap-8 whitespace-nowrap"
+        className="flex gap-3 whitespace-nowrap"
         animate={{
           x: [0, -1000]
         }}
@@ -28,7 +28,7 @@ export const Marquee = ({ items, speed = 20, className = '' }: MarqueeProps) => 
         {[...items, ...items].map((item, i) => (
           <span 
             key={i} 
-            className="text-2xl px-4 py-2 border border-forest-green/20 rounded-full text-forest-green hover:border-forest-green hover:bg-forest-green hover:text-warm-linen transition-all duration-300 cursor-pointer"
+            className="text-sm px-3 py-1.5 bg-white/60 backdrop-blur-sm border border-deep-charcoal/10 rounded-full text-deep-charcoal/90 font-medium shadow-sm hover:shadow-md hover:bg-white/80 transition-all duration-300 cursor-pointer"
           >
             {item}
           </span>

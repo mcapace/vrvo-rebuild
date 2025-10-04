@@ -8,12 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Premium color palette
-        'deep-charcoal': '#1C1C1E',
-        'warm-linen': '#F7F4EF',
-        'forest-green': '#2D5F4F',
-        'copper': '#B87A5C',
-        'rich-charcoal': '#1C1C1E',
+        // Sophisticated premium color palette
+        'deep-charcoal': '#1A1A1A',
+        'warm-linen': '#FAF8F5',
+        'rich-navy': '#1E3A5F',
+        'burnt-orange': '#D2691E',
+        'warm-gold': '#B8860B',
+        'soft-sage': '#8FBC8F',
+        'platinum': '#E5E4E2',
+        'rich-charcoal': '#1A1A1A',
         'black': '#0A0A0A',
       },
       fontFamily: {

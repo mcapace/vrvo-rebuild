@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
+import CookieBanner from "./components/CookieBanner";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -26,7 +28,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+      <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-8ZK93TZL47`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-8ZK93TZL47');
+          `}
+        </Script>
+      </head>
+      <body className="font-sans antialiased">
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }

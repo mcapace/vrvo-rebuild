@@ -8,6 +8,10 @@ export const MagneticCursor = () => {
   const cursorDotRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    // Don't show cursor on mobile devices
+    if (window.innerWidth < 768) {
+      return;
+    }
     const moveCursor = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       
@@ -54,12 +58,12 @@ export const MagneticCursor = () => {
     <>
       <div 
         ref={cursorRef} 
-        className="fixed w-8 h-8 border-2 border-forest-green rounded-full pointer-events-none z-50 mix-blend-difference"
+        className="hidden md:block fixed w-8 h-8 border-2 border-forest-green rounded-full pointer-events-none z-50 mix-blend-difference"
         style={{ transform: 'translate(-50%, -50%)' }}
       />
       <div 
         ref={cursorDotRef} 
-        className="fixed w-2 h-2 bg-forest-green rounded-full pointer-events-none z-50"
+        className="hidden md:block fixed w-2 h-2 bg-forest-green rounded-full pointer-events-none z-50"
         style={{ transform: 'translate(-50%, -50%)' }}
       />
     </>
