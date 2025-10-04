@@ -11,7 +11,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-deep-charcoal/10;
   }
   
   body {
