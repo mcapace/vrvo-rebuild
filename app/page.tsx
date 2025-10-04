@@ -25,7 +25,6 @@ import { MagneticCursor } from './components/MagneticCursor';
 import { AnimatedNumber } from './components/AnimatedNumber';
 import { ImageReveal } from './components/ImageReveal';
 import { Marquee } from './components/Marquee';
-import { ThreeScene } from './components/ThreeScene';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -209,48 +208,71 @@ export default function Home() {
         </div>
       </motion.nav>
 
-      {/* Hero Section with 3D Scene */}
+      {/* Hero Section with Advanced Interactions */}
       <section className="h-screen flex items-center relative">
         <div className="max-w-7xl mx-auto px-6 w-full">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column - 3D Scene */}
+            {/* Left Column - 60% */}
             <div className="lg:col-span-7">
-              <div className="h-96 lg:h-[500px] relative">
-                <ThreeScene className="w-full h-full" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      className="text-copper text-sm uppercase tracking-widest"
-                    >
-                      Enterprise Marketing. SMB Accessibility.
-                    </motion.div>
-                    
-                    <div className="space-y-2">
-                      <ScrambleText 
-                        text="Don't Compete" 
-                        className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
-                        speed={50}
-                      />
-                      <ScrambleText 
-                        text="On Budget." 
-                        className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
-                        speed={50}
-                      />
-                      <ScrambleText 
-                        text="Compete On Strategy." 
-                        className="text-6xl lg:text-8xl font-display text-forest-green block"
-                        speed={50}
-                      />
-                    </div>
-                  </div>
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="space-y-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="text-copper text-sm uppercase tracking-widest"
+                >
+                  Enterprise Marketing. SMB Accessibility.
+                </motion.div>
+                
+                <div className="space-y-4">
+                  <ScrambleText 
+                    text="Don't Compete" 
+                    className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
+                    speed={50}
+                  />
+                  <ScrambleText 
+                    text="On Budget." 
+                    className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
+                    speed={50}
+                  />
+                  <ScrambleText 
+                    text="Compete On Strategy." 
+                    className="text-6xl lg:text-8xl font-display text-forest-green block"
+                    speed={50}
+                  />
                 </div>
-              </div>
+                
+                <motion.p 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                  className="text-body text-deep-charcoal/80 max-w-2xl leading-relaxed"
+                >
+                  Vrvo brings programmatic advertising, integrated marketing, and business transformation consulting—normally reserved for enterprise—to ambitious small and mid-sized businesses.
+                </motion.p>
+                
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.0 }}
+                  className="flex flex-col sm:flex-row gap-4"
+                >
+                  <MagneticButton className="bg-forest-green text-warm-linen px-8 py-4 rounded-sm hover:bg-copper transition-all duration-300 font-medium">
+                    See What's Possible
+                  </MagneticButton>
+                  <MagneticButton className="border border-deep-charcoal text-deep-charcoal px-8 py-4 rounded-sm hover:bg-deep-charcoal hover:text-warm-linen transition-all duration-300 font-medium">
+                    View Our Approach
+                  </MagneticButton>
+                </motion.div>
+              </motion.div>
             </div>
             
-            {/* Right Column - Floating Metric Card */}
+            {/* Right Column - 40% - Floating Metric Card */}
             <div className="lg:col-span-5">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
