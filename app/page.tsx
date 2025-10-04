@@ -1,39 +1,36 @@
 "use client";
 
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
-import Image from "next/image";
+import { useRef, useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+import Image from 'next/image';
+import { 
+  Target, 
+  TrendingUp, 
+  Lightbulb, 
+  ChartLine,
+  ArrowRight,
+  CheckCircle,
+  Users,
+  Globe,
+  Shield,
+  Award
+} from '@phosphor-icons/react';
 
-// Custom Cursor Component
-const CustomCursor = () => {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-  
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorX = useSpring(mousePosition.x, springConfig);
-  const cursorY = useSpring(mousePosition.y, springConfig);
-  
-  return (
-    <motion.div
-      ref={cursorRef}
-      className="fixed w-10 h-10 rounded-full pointer-events-none z-50 mix-blend-difference"
-      style={{
-        x: useTransform(cursorX, (x) => x - 20),
-        y: useTransform(cursorY, (y) => y - 20),
-        backgroundColor: 'white',
-      }}
-    />
-  );
-};
+// Import custom components
+import { ScrambleText } from './components/ScrambleText';
+import { MagneticCursor } from './components/MagneticCursor';
+import { AnimatedNumber } from './components/AnimatedNumber';
+import { ImageReveal } from './components/ImageReveal';
+import { Marquee } from './components/Marquee';
+import { ThreeScene } from './components/ThreeScene';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 // Magnetic Button Component
 const MagneticButton = ({ children, className, ...props }: any) => {
@@ -99,51 +96,81 @@ const WordReveal = ({ text, className }: { text: string; className?: string }) =
   );
 };
 
-// Animated Counter Component
-const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?: number }) => {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-          let start = 0;
-          const increment = value / (duration / 16);
-          const timer = setInterval(() => {
-            start += increment;
-            if (start >= value) {
-              setCount(value);
-              clearInterval(timer);
-            } else {
-              setCount(Math.floor(start));
-            }
-          }, 16);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-    
-    return () => observer.disconnect();
-  }, [value, duration, isVisible]);
-  
-  return <span ref={ref} className="font-mono text-6xl font-bold">{count.toLocaleString()}</span>;
-};
-
 export default function Home() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
   
+  // Lenis smooth scroll setup
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
+  // GSAP ScrollTrigger setup
+  useEffect(() => {
+    // Horizontal scroll section
+    const cards = gsap.utils.toArray('.scroll-card');
+    
+    gsap.to(cards, {
+      xPercent: -100 * (cards.length - 1),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.scroll-container',
+        pin: true,
+        scrub: 1,
+        snap: 1 / (cards.length - 1),
+        end: () => '+=' + (document.querySelector('.scroll-container')?.offsetWidth || 0)
+      }
+    });
+
+    // Text scramble on scroll
+    gsap.utils.toArray('.scramble-trigger').forEach((trigger: any) => {
+      gsap.fromTo(trigger, 
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: trigger,
+            start: 'top 80%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-warm-linen relative overflow-hidden">
       {/* Custom Cursor */}
-      <CustomCursor />
+      <MagneticCursor />
       
       {/* Scroll Progress Bar */}
       <motion.div 
@@ -182,68 +209,48 @@ export default function Home() {
         </div>
       </motion.nav>
 
-      {/* Hero Section */}
+      {/* Hero Section with 3D Scene */}
       <section className="h-screen flex items-center relative">
         <div className="max-w-7xl mx-auto px-6 w-full">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column - 60% */}
+            {/* Left Column - 3D Scene */}
             <div className="lg:col-span-7">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="space-y-8"
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-copper text-sm uppercase tracking-widest"
-                >
-                  Enterprise Marketing. SMB Accessibility.
-                </motion.div>
-                
-                <div className="space-y-4">
-                  <WordReveal 
-                    text="Don't Compete" 
-                    className="text-hero font-display text-deep-charcoal"
-                  />
-                  <WordReveal 
-                    text="On Budget." 
-                    className="text-hero font-display text-deep-charcoal"
-                  />
-                  <WordReveal 
-                    text="Compete On Strategy." 
-                    className="text-hero font-display text-forest-green"
-                  />
+              <div className="h-96 lg:h-[500px] relative">
+                <ThreeScene className="w-full h-full" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      className="text-copper text-sm uppercase tracking-widest"
+                    >
+                      Enterprise Marketing. SMB Accessibility.
+                    </motion.div>
+                    
+                    <div className="space-y-2">
+                      <ScrambleText 
+                        text="Don't Compete" 
+                        className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
+                        speed={50}
+                      />
+                      <ScrambleText 
+                        text="On Budget." 
+                        className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
+                        speed={50}
+                      />
+                      <ScrambleText 
+                        text="Compete On Strategy." 
+                        className="text-6xl lg:text-8xl font-display text-forest-green block"
+                        speed={50}
+                      />
+                    </div>
+                  </div>
                 </div>
-                
-                <motion.p 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.8 }}
-                  className="text-body text-deep-charcoal/80 max-w-2xl leading-relaxed"
-                >
-                  Vrvo brings programmatic advertising, integrated marketing, and business transformation consulting—normally reserved for enterprise—to ambitious small and mid-sized businesses.
-                </motion.p>
-                
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 1.0 }}
-                  className="flex flex-col sm:flex-row gap-4"
-                >
-                  <MagneticButton className="bg-forest-green text-warm-linen px-8 py-4 rounded-sm hover:bg-copper transition-all duration-300 font-medium">
-                    See What's Possible
-                  </MagneticButton>
-                  <MagneticButton className="border border-deep-charcoal text-deep-charcoal px-8 py-4 rounded-sm hover:bg-deep-charcoal hover:text-warm-linen transition-all duration-300 font-medium">
-                    View Our Approach
-                  </MagneticButton>
-                </motion.div>
-              </motion.div>
+              </div>
             </div>
             
-            {/* Right Column - 40% - Floating Metric Card */}
+            {/* Right Column - Floating Metric Card */}
             <div className="lg:col-span-5">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
@@ -261,7 +268,7 @@ export default function Home() {
                       Real Client Growth
                     </div>
                     <div className="font-mono text-8xl font-bold text-forest-green">
-                      3.4x
+                      <AnimatedNumber value={3.4} suffix="x" />
                     </div>
                     <div className="text-deep-charcoal/80">
                       Average revenue increase, Year 1
@@ -277,7 +284,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* Services Section with Interactive Elements */}
       <section id="services" className="py-40 bg-white relative">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
@@ -305,14 +312,14 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ amount: 0.2 }}
-              className="bg-white rounded-lg p-8 border-l-4 border-forest-green hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+              className="bg-white rounded-lg p-8 border-l-4 border-forest-green hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 text-copper text-9xl font-bold opacity-10 -mr-4 -mt-4">
                 01
               </div>
               <div className="space-y-6">
-                <div className="w-12 h-12 bg-forest-green/10 rounded-lg flex items-center justify-center">
-                  <div className="w-6 h-6 bg-forest-green rounded-sm"></div>
+                <div className="w-12 h-12 bg-forest-green/10 rounded-lg flex items-center justify-center group-hover:bg-forest-green/20 transition-colors">
+                  <Target className="w-6 h-6 text-forest-green" />
                 </div>
                 <div>
                   <h3 className="text-h3 font-display text-deep-charcoal mb-2">
@@ -339,14 +346,14 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ amount: 0.2 }}
-              className="bg-warm-linen rounded-lg p-8 border border-deep-charcoal/10 hover:shadow-xl transition-all duration-300 relative overflow-hidden mt-8"
+              className="bg-warm-linen rounded-lg p-8 border border-deep-charcoal/10 hover:shadow-xl transition-all duration-300 relative overflow-hidden group mt-8"
             >
               <div className="absolute top-0 right-0 text-copper text-9xl font-bold opacity-10 -mr-4 -mt-4">
                 02
               </div>
               <div className="space-y-6">
-                <div className="w-12 h-12 bg-forest-green/10 rounded-lg flex items-center justify-center">
-                  <div className="w-6 h-6 bg-forest-green rounded-sm"></div>
+                <div className="w-12 h-12 bg-forest-green/10 rounded-lg flex items-center justify-center group-hover:bg-forest-green/20 transition-colors">
+                  <TrendingUp className="w-6 h-6 text-forest-green" />
                 </div>
                 <div>
                   <h3 className="text-h3 font-display text-deep-charcoal mb-2">
@@ -373,14 +380,14 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ amount: 0.2 }}
-              className="bg-deep-charcoal text-warm-linen rounded-lg p-8 hover:shadow-xl transition-all duration-300 relative overflow-hidden -mt-4"
+              className="bg-deep-charcoal text-warm-linen rounded-lg p-8 hover:shadow-xl transition-all duration-300 relative overflow-hidden group -mt-4"
             >
               <div className="absolute top-0 right-0 text-copper text-9xl font-bold opacity-10 -mr-4 -mt-4">
                 03
               </div>
               <div className="space-y-6">
-                <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center">
-                  <div className="w-6 h-6 bg-copper rounded-sm"></div>
+                <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center group-hover:bg-copper/30 transition-colors">
+                  <Lightbulb className="w-6 h-6 text-copper" />
                 </div>
                 <div>
                   <h3 className="text-h3 font-display text-warm-linen mb-2">
@@ -404,7 +411,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Methodology Section */}
+      {/* Methodology Section with Timeline */}
       <section id="methodology" className="py-40 bg-warm-linen">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
@@ -458,7 +465,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Proof Section */}
+      {/* Proof Section with Animated Counters */}
       <section id="proof" className="py-40 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
@@ -491,8 +498,7 @@ export default function Home() {
                 className="text-center p-8 bg-warm-linen/50 rounded-lg"
               >
                 <div className="font-mono text-6xl font-bold text-forest-green mb-4">
-                  <AnimatedCounter value={stat.value} />
-                  {stat.suffix}
+                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </div>
                 <div className="text-deep-charcoal/80">
                   {stat.label}
@@ -501,6 +507,43 @@ export default function Home() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Horizontal Scroll Section */}
+      <section className="scroll-container h-screen bg-gradient-to-r from-forest-green to-copper">
+        <div className="flex h-full">
+          {[
+            { title: "Programmatic Excellence", description: "Enterprise DSP relationships" },
+            { title: "Strategic Integration", description: "Cross-channel orchestration" },
+            { title: "Business Transformation", description: "Infrastructure that scales" },
+            { title: "Continuous Optimization", description: "Data-driven improvements" }
+          ].map((capability, index) => (
+            <div key={index} className="scroll-card w-screen h-screen flex-shrink-0 flex items-center justify-center text-warm-linen">
+              <div className="text-center max-w-2xl mx-auto px-6">
+                <h3 className="text-6xl font-display mb-6">{capability.title}</h3>
+                <p className="text-xl">{capability.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Infinite Marquee */}
+      <section className="py-20 bg-warm-linen">
+        <Marquee 
+          items={[
+            "Programmatic Advertising",
+            "Strategic Marketing", 
+            "Business Transformation",
+            "Data Analytics",
+            "Marketing Automation",
+            "Performance Optimization",
+            "Cross-Channel Integration",
+            "ROI Maximization"
+          ]}
+          speed={25}
+          className="py-8"
+        />
       </section>
 
       {/* Differentiation Section */}
@@ -546,7 +589,7 @@ export default function Home() {
                 className="space-y-4"
               >
                 <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center mb-4">
-                  <div className="w-6 h-6 bg-copper rounded-sm"></div>
+                  <CheckCircle className="w-6 h-6 text-copper" />
                 </div>
                 <h3 className="text-2xl font-display text-warm-linen">
                   {principle.title}
@@ -642,6 +685,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <MagneticButton className="bg-warm-linen text-forest-green px-8 py-4 rounded-sm hover:bg-copper hover:text-warm-linen transition-all duration-300 font-medium">
                 Schedule Strategy Call
+                <ArrowRight className="inline-block ml-2 w-5 h-5" />
               </MagneticButton>
               <MagneticButton className="border border-warm-linen text-warm-linen px-8 py-4 rounded-sm hover:bg-warm-linen hover:text-forest-green transition-all duration-300 font-medium">
                 See Our Case Studies
