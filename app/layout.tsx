@@ -4,6 +4,7 @@ import './globals.css'
 import Analytics from './components/Analytics'
 import StructuredData from './components/StructuredData'
 import CookieBanner from "./components/CookieBanner";
+import ConsentManager from "./components/ConsentManager";
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -85,6 +86,7 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body className={inter.className}>
+        <ConsentManager />
         {children}
         <CookieBanner />
         <Analytics />

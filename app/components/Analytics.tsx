@@ -13,8 +13,24 @@ export default function Analytics() {
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
+          
+          // Set default consent state
+          gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied',
+            'functionality_storage': 'denied',
+            'personalization_storage': 'denied',
+            'security_storage': 'granted',
+            'wait_for_update': 2000
+          });
+          
           gtag('js', new Date());
-          gtag('config', 'G-8ZK93TZL47');
+          gtag('config', 'G-8ZK93TZL47', {
+            'anonymize_ip': true,
+            'cookie_flags': 'SameSite=None;Secure'
+          });
         `}
       </Script>
     </>

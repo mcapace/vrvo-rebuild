@@ -39,11 +39,16 @@ export default function CookieBanner() {
     };
     localStorage.setItem('cookieConsent', JSON.stringify(allPreferences));
     setShowBanner(false);
-    // Initialize analytics if accepted
+    // Update Google Consent Mode v2
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
-        analytics_storage: 'granted',
-        ad_storage: 'granted'
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'granted',
+        'security_storage': 'granted'
       });
     }
   };
@@ -52,11 +57,16 @@ export default function CookieBanner() {
     localStorage.setItem('cookieConsent', JSON.stringify(preferences));
     setShowBanner(false);
     setShowSettings(false);
-    // Update analytics consent based on preferences
+    // Update Google Consent Mode v2 based on preferences
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
-        analytics_storage: preferences.analytics ? 'granted' : 'denied',
-        ad_storage: preferences.marketing ? 'granted' : 'denied'
+        'ad_storage': preferences.marketing ? 'granted' : 'denied',
+        'ad_user_data': preferences.marketing ? 'granted' : 'denied',
+        'ad_personalization': preferences.marketing ? 'granted' : 'denied',
+        'analytics_storage': preferences.analytics ? 'granted' : 'denied',
+        'functionality_storage': preferences.functional ? 'granted' : 'denied',
+        'personalization_storage': preferences.functional ? 'granted' : 'denied',
+        'security_storage': 'granted'
       });
     }
   };
@@ -70,11 +80,16 @@ export default function CookieBanner() {
     };
     localStorage.setItem('cookieConsent', JSON.stringify(minimalPreferences));
     setShowBanner(false);
-    // Deny all non-essential cookies
+    // Deny all non-essential cookies in Google Consent Mode v2
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
-        analytics_storage: 'denied',
-        ad_storage: 'denied'
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'functionality_storage': 'denied',
+        'personalization_storage': 'denied',
+        'security_storage': 'granted'
       });
     }
   };
