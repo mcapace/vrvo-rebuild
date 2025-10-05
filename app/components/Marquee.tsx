@@ -28,7 +28,7 @@ export const Marquee = ({ items, speed = 20, className = '' }: MarqueeProps) => 
         {[...items, ...items].map((item, i) => (
           <span 
             key={i} 
-            className="text-sm px-3 py-1.5 bg-white/60 backdrop-blur-sm border border-deep-charcoal/10 rounded-full text-deep-charcoal/90 font-medium shadow-sm hover:shadow-md hover:bg-white/80 transition-all duration-300 cursor-pointer"
+            className="text-sm px-3 py-1.5 bg-white/80 border border-gray-200 rounded-full text-gray-700 font-medium shadow-sm hover:shadow-md hover:bg-white transition-all duration-300 cursor-pointer"
           >
             {item}
           </span>

@@ -157,7 +157,7 @@ export default function Home() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="fixed top-0 left-0 right-0 z-40 h-20 bg-white/90 backdrop-blur-2xl border-b border-gray-200 hover:bg-white transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-40 h-20 bg-white/95 border-b border-gray-200 hover:bg-white transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center">
