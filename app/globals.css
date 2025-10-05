@@ -74,10 +74,9 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   }
 
-  /* Advanced glass morphism effects */
+  /* Advanced glass morphism effects - removed backdrop filter */
   .glass-card {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }

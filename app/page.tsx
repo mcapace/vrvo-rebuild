@@ -149,8 +149,6 @@ export default function Home() {
         style={{ scaleX }}
       />
       
-      {/* Grain Texture Overlay */}
-      <div className="fixed inset-0 grain-texture pointer-events-none z-0" />
       
       {/* Navigation */}
       <motion.nav 
