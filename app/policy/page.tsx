@@ -224,9 +224,9 @@ export default function Policy() {
               <div className="space-y-4">
                 <p>If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
                 <div className="space-y-2">
-                  <p><strong>Email:</strong> privacy@vrvo.com</p>
+                  <p><strong>Email:</strong> privacy@vrvo.co</p>
                   <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-                  <p><strong>Address:</strong> 123 Business Street, Suite 100, San Francisco, CA 94105</p>
+                  <p><strong>Address:</strong> 1580 N Logan St Ste 660, Denver, CO 80203-1994</p>
                 </div>
                 <p className="text-white/80">We will respond to your inquiry within 30 days.</p>
               </div>
@@ -241,7 +241,7 @@ export default function Policy() {
             >
               <h2 className="text-2xl font-display text-deep-charcoal mb-4">Policy Updates</h2>
               <p className="mb-4">We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date below.</p>
-              <p className="text-deep-charcoal/60"><strong>Last Updated:</strong> January 15, 2024</p>
+              <p className="text-deep-charcoal/60"><strong>Last Updated:</strong> January 1, 2025</p>
             </motion.section>
           </div>
         </div>
