@@ -169,19 +169,19 @@ export default function Home() {
             />
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/services" className="text-deep-charcoal hover:text-rich-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group">
+            <Link href="/services" className="text-deep-charcoal hover:text-forest-green transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
               Services
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-rich-navy transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-forest-green transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/about" className="text-deep-charcoal hover:text-rich-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group">
+            <Link href="/about" className="text-deep-charcoal hover:text-forest-green transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
               About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-rich-navy transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-forest-green transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/case-studies" className="text-deep-charcoal hover:text-rich-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group">
+            <Link href="/case-studies" className="text-deep-charcoal hover:text-forest-green transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
               Case Studies
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-rich-navy transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-forest-green transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/contact" className="bg-rich-navy text-warm-linen px-6 py-3 rounded-sm hover:bg-burnt-orange transition-all duration-300 uppercase text-xs tracking-[0.1em]">
+            <Link href="/contact" className="bg-rich-navy text-warm-linen px-6 py-3 rounded-sm hover:bg-forest-green hover:shadow-lg hover:shadow-forest-green/25 hover:scale-105 transition-all duration-300 uppercase text-xs tracking-[0.1em] font-medium">
               Partner With Us
             </Link>
           </div>
@@ -209,20 +209,20 @@ export default function Home() {
                   Enterprise Marketing. SMB Accessibility.
                 </motion.div>
                 
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <ScrambleText 
                     text="Don't Compete" 
-                    className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
+                    className="text-5xl md:text-7xl font-display text-deep-charcoal block font-bold leading-[0.95] tracking-[-0.03em]"
                     speed={50}
                   />
                   <ScrambleText 
                     text="On Budget." 
-                    className="text-6xl lg:text-8xl font-display text-deep-charcoal block"
+                    className="text-5xl md:text-7xl font-display text-deep-charcoal block font-bold leading-[0.95] tracking-[-0.03em]"
                     speed={50}
                   />
                   <ScrambleText 
                     text="Compete On Strategy." 
-                    className="text-6xl lg:text-8xl font-display text-rich-navy block"
+                    className="text-5xl md:text-7xl font-display text-forest-green block font-bold leading-[0.95] tracking-[-0.03em]"
                     speed={50}
                   />
                 </div>
@@ -231,7 +231,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
-                  className="text-body text-deep-charcoal/80 max-w-2xl leading-relaxed"
+                  className="text-body text-[#2C2C2C] max-w-2xl leading-relaxed"
                 >
                   Vrvo brings programmatic advertising, integrated marketing, and business transformation consulting—normally reserved for enterprise—to ambitious small and mid-sized businesses.
                 </motion.p>
@@ -243,12 +243,12 @@ export default function Home() {
                   className="flex flex-col sm:flex-row gap-4"
                 >
                   <Link href="/contact">
-                    <MagneticButton className="bg-rich-navy text-warm-linen px-8 py-4 rounded-sm hover:bg-burnt-orange transition-all duration-300 font-medium">
+                    <MagneticButton className="bg-rich-navy text-warm-linen px-8 py-4 rounded-sm hover:bg-forest-green hover:shadow-xl hover:shadow-forest-green/25 transition-all duration-300 font-medium shadow-lg">
                       See What's Possible
                     </MagneticButton>
                   </Link>
                   <Link href="/services">
-                    <MagneticButton className="border border-deep-charcoal text-deep-charcoal px-8 py-4 rounded-sm hover:bg-deep-charcoal hover:text-warm-linen transition-all duration-300 font-medium">
+                    <MagneticButton className="border-2 border-deep-charcoal text-deep-charcoal px-8 py-4 rounded-sm hover:bg-deep-charcoal hover:text-warm-linen hover:shadow-xl hover:shadow-deep-charcoal/25 transition-all duration-300 font-medium shadow-md">
                       View Our Approach
                     </MagneticButton>
                   </Link>
@@ -265,22 +265,41 @@ export default function Home() {
                 className="relative"
               >
                 <motion.div
-                  animate={{ y: [0, -10, 0] }}
+                  animate={{ 
+                    y: [0, -10, 0],
+                    boxShadow: [
+                      "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                      "0 35px 60px -12px rgba(0, 0, 0, 0.35)",
+                      "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                    ]
+                  }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="bg-white/90 backdrop-blur-xl rounded-lg p-8 shadow-2xl border border-deep-charcoal/10 hover:shadow-3xl transition-all duration-300"
+                  className="bg-white/95 backdrop-blur-xl rounded-lg p-8 shadow-2xl border-2 border-forest-green/20 hover:border-forest-green/40 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="space-y-6">
-                    <div className="text-sm uppercase tracking-widest text-deep-charcoal/60">
+                  {/* Subtle glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-forest-green/5 to-transparent pointer-events-none"></div>
+                  
+                  <div className="space-y-6 relative z-10">
+                    <div className="text-sm uppercase tracking-widest text-deep-charcoal/70 font-medium">
                       Real Client Growth
                     </div>
-                    <div className="font-mono text-8xl font-bold text-rich-navy">
+                    <motion.div 
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      className="font-mono text-8xl font-bold text-forest-green"
+                    >
                       <AnimatedNumber value={3.4} suffix="x" />
-                    </div>
-                    <div className="text-deep-charcoal/80">
+                    </motion.div>
+                    <div className="text-[#2C2C2C] font-medium">
                       Average revenue increase, Year 1
                     </div>
-                    <div className="h-16 bg-gradient-to-r from-rich-navy to-burnt-orange rounded opacity-20">
-                      {/* Mini sparkline chart placeholder */}
+                    <div className="h-16 bg-gradient-to-r from-forest-green to-burnt-orange rounded opacity-30 relative overflow-hidden">
+                      {/* Animated sparkline effect */}
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        animate={{ x: ['-100%', '100%'] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      />
                     </div>
                   </div>
                 </motion.div>
@@ -318,20 +337,20 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ amount: 0.2 }}
-              className="bg-white/80 backdrop-blur-xl rounded-lg p-8 border-l-4 border-rich-navy hover:shadow-xl hover:bg-white/90 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
+              className="bg-white/80 backdrop-blur-xl rounded-lg p-8 border-l-4 border-rich-navy hover:shadow-2xl hover:shadow-rich-navy/20 hover:bg-white/95 hover:scale-[1.03] hover:-translate-y-3 transition-all duration-500 relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 text-burnt-orange text-9xl font-bold opacity-10 -mr-4 -mt-4">
+              <div className="absolute top-0 right-0 text-burnt-orange text-[120px] font-bold opacity-10 -mr-4 -mt-4">
                 01
               </div>
               <div className="space-y-6">
-                <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
-                  <Target className="w-6 h-6 text-rich-navy" />
+                <div className="w-16 h-16 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
+                  <Target className="w-8 h-8 text-rich-navy" />
                 </div>
                 <div>
-                  <h3 className="text-h3 font-display text-deep-charcoal mb-2">
+                  <h3 className="text-3xl font-display text-deep-charcoal mb-2 font-bold">
                     Programmatic Advertising
                   </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest">
+                  <p className="text-burnt-orange text-sm uppercase tracking-widest font-medium">
                     Precision at scale
                   </p>
                 </div>
@@ -352,20 +371,20 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ amount: 0.2 }}
-              className="bg-warm-linen/80 backdrop-blur-xl rounded-lg p-8 border border-deep-charcoal/10 hover:shadow-xl hover:bg-warm-linen/90 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
+              className="bg-warm-linen/80 backdrop-blur-xl rounded-lg p-8 border border-deep-charcoal/10 hover:shadow-2xl hover:shadow-deep-charcoal/20 hover:bg-warm-linen/95 hover:scale-[1.03] hover:-translate-y-3 transition-all duration-500 relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 text-burnt-orange text-9xl font-bold opacity-10 -mr-4 -mt-4">
+              <div className="absolute top-0 right-0 text-burnt-orange text-[120px] font-bold opacity-10 -mr-4 -mt-4">
                 02
               </div>
               <div className="space-y-6">
-                <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
-                  <TrendUp className="w-6 h-6 text-rich-navy" />
+                <div className="w-16 h-16 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
+                  <TrendUp className="w-8 h-8 text-rich-navy" />
                 </div>
                 <div>
-                  <h3 className="text-h3 font-display text-deep-charcoal mb-2">
+                  <h3 className="text-3xl font-display text-deep-charcoal mb-2 font-bold">
                     Strategic Marketing
                   </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest">
+                  <p className="text-burnt-orange text-sm uppercase tracking-widest font-medium">
                     Integrated execution
                   </p>
                 </div>
@@ -386,20 +405,20 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ amount: 0.2 }}
-              className="bg-deep-charcoal/90 backdrop-blur-xl text-warm-linen rounded-lg p-8 hover:shadow-xl hover:bg-deep-charcoal hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
+              className="bg-deep-charcoal/90 backdrop-blur-xl text-warm-linen rounded-lg p-8 hover:shadow-2xl hover:shadow-burnt-orange/20 hover:bg-deep-charcoal hover:scale-[1.03] hover:-translate-y-3 transition-all duration-500 relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 text-burnt-orange text-9xl font-bold opacity-10 -mr-4 -mt-4">
+              <div className="absolute top-0 right-0 text-burnt-orange text-[120px] font-bold opacity-10 -mr-4 -mt-4">
                 03
               </div>
               <div className="space-y-6">
-                <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center group-hover:bg-burnt-orange/30 transition-colors">
-                  <Lightbulb className="w-6 h-6 text-burnt-orange" />
+                <div className="w-16 h-16 bg-copper/20 rounded-lg flex items-center justify-center group-hover:bg-burnt-orange/30 transition-colors">
+                  <Lightbulb className="w-8 h-8 text-burnt-orange" />
                 </div>
                 <div>
-                  <h3 className="text-h3 font-display text-warm-linen mb-2">
+                  <h3 className="text-3xl font-display text-warm-linen mb-2 font-bold">
                     Business Transformation
                   </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest">
+                  <p className="text-burnt-orange text-sm uppercase tracking-widest font-medium">
                     Infrastructure that scales
                   </p>
                 </div>
@@ -492,12 +511,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ amount: 0.2 }}
-                className="text-center p-8 bg-warm-linen/50 rounded-lg"
+                className="text-center p-8 bg-warm-linen/50 rounded-lg hover:bg-warm-linen/70 hover:shadow-lg transition-all duration-300 group"
               >
-                <div className="font-mono text-6xl font-bold text-rich-navy mb-4">
+                <div className="font-mono text-7xl font-bold text-rich-navy mb-4 group-hover:text-forest-green transition-colors duration-300">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-deep-charcoal/80">
+                <div className="text-[#2C2C2C] font-medium text-sm uppercase tracking-wider">
                   {stat.label}
                 </div>
               </motion.div>
