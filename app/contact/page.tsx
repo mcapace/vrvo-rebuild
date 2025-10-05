@@ -1,341 +1,238 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
-import Navigation from '../components/Navigation';
-import { MagneticCursor } from '../components/MagneticCursor';
-import Footer from '../components/Footer';
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     company: '',
-    phone: '',
-    message: '',
     budget: '',
-    timeline: ''
-  });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+    message: ''
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+    e.preventDefault()
+    // Add your form submission logic here
+    console.log('Form submitted:', formData)
+  }
 
   return (
-    <div className="min-h-screen bg-warm-linen">
-      {/* Magnetic Cursor */}
-      <MagneticCursor />
+    <main className="min-h-screen bg-white">
       
       {/* Navigation */}
-      <Navigation />
-      
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-b from-warm-linen to-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-6">
-              GET STARTED
-            </div>
-            <h1 className="text-6xl md:text-7xl font-display text-deep-charcoal mb-8 leading-tight">
-              Ready to Compete on Strategy?
-            </h1>
-            <p className="text-xl text-deep-charcoal/80 leading-relaxed mb-12">
-              Let's discuss how our marketing infrastructure approach can transform your business growth.
-            </p>
-          </motion.div>
+      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/">
+            <Image 
+              src="/logos/vrvo_wordmark_black.svg" 
+              alt="Vrvo" 
+              width={140} 
+              height={48}
+              className="h-10 w-auto"
+            />
+          </Link>
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/services" className="text-sm font-medium text-gray-600 hover:text-navy">Services</Link>
+            <Link href="/about" className="text-sm font-medium text-gray-600 hover:text-navy">About</Link>
+            <Link href="/contact" className="text-sm font-medium text-navy">Contact</Link>
+          </div>
         </div>
-      </section>
+      </nav>
 
-      {/* Contact Form & Info */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16">
-            {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ amount: 0.2 }}
-            >
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-3xl font-display text-deep-charcoal mb-6">
-                  Schedule Your Strategy Call
-                </h2>
-                <p className="text-deep-charcoal/80 mb-8">
-                  Tell us about your business and we'll prepare a custom growth strategy for our call.
-                </p>
-
-                {isSubmitted ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-12"
-                  >
-                    <CheckCircle className="w-16 h-16 text-burnt-orange mx-auto mb-4" />
-                    <h3 className="text-2xl font-display text-deep-charcoal mb-2">Thank You!</h3>
-                    <p className="text-deep-charcoal/80">We'll be in touch within 24 hours to schedule your strategy call.</p>
-                  </motion.div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                          Company
-                        </label>
-                        <input
-                          type="text"
-                          name="company"
-                          value={formData.company}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                          Phone
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                          Monthly Marketing Budget
-                        </label>
-                        <select
-                          name="budget"
-                          value={formData.budget}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        >
-                          <option value="">Select Budget Range</option>
-                          <option value="10k-25k">$10K - $25K</option>
-                          <option value="25k-50k">$25K - $50K</option>
-                          <option value="50k-100k">$50K - $100K</option>
-                          <option value="100k+">$100K+</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                          Timeline
-                        </label>
-                        <select
-                          name="timeline"
-                          value={formData.timeline}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        >
-                          <option value="">Select Timeline</option>
-                          <option value="immediate">Immediate (1-2 weeks)</option>
-                          <option value="1-3months">1-3 months</option>
-                          <option value="3-6months">3-6 months</option>
-                          <option value="6months+">6+ months</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-deep-charcoal mb-2">
-                        Tell us about your current marketing challenges *
-                      </label>
-                      <textarea
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        required
-                        rows={4}
-                        className="w-full px-4 py-3 border border-deep-charcoal/20 rounded-lg focus:ring-2 focus:ring-rich-navy focus:border-transparent transition-colors"
-                        placeholder="What's your biggest marketing challenge right now?"
-                      />
-                    </div>
-
-                    <motion.button
-                      type="submit"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full bg-rich-navy text-white px-8 py-4 rounded-lg font-medium hover:bg-rich-navy/90 transition-colors flex items-center justify-center gap-2"
-                    >
-                      Schedule Strategy Call <Send className="w-4 h-4" />
-                    </motion.button>
-                  </form>
-                )}
-              </div>
-            </motion.div>
-
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ amount: 0.2 }}
-              className="space-y-8"
-            >
-              <div>
-                <h2 className="text-3xl font-display text-deep-charcoal mb-6">
-                  Get in Touch
-                </h2>
-                <p className="text-lg text-deep-charcoal/80 mb-8">
-                  Ready to transform your marketing? Let's discuss how our infrastructure approach can accelerate your growth.
-                </p>
-              </div>
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16">
+            
+            {/* Left: Info */}
+            <div>
+              <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+                Let's Talk Growth
+              </h1>
+              <p className="text-xl text-gray-600 leading-relaxed mb-10">
+                Schedule a 30-minute consultation to discuss your marketing goals, current challenges, and how Vrvo can help you scale.
+              </p>
 
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center">
-                    <Mail className="w-6 h-6 text-rich-navy" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-deep-charcoal mb-1">Email</h3>
-                    <p className="text-deep-charcoal/80">hello@vrvo.co</p>
-                    <p className="text-sm text-deep-charcoal/60">We respond within 24 hours</p>
-                  </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">What to Expect</h3>
+                  <ul className="space-y-2 text-gray-600">
+                    <li className="flex items-start">
+                      <span className="text-navy mr-3">•</span>
+                      <span>No-pressure discussion of your goals</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-navy mr-3">•</span>
+                      <span>Honest assessment of fit</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-navy mr-3">•</span>
+                      <span>Custom strategy recommendations</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-navy mr-3">•</span>
+                      <span>Transparent pricing discussion</span>
+                    </li>
+                  </ul>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center">
-                    <Phone className="w-6 h-6 text-rich-navy" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-deep-charcoal mb-1">Phone</h3>
-                    <p className="text-deep-charcoal/80">+1 (555) 123-4567</p>
-                    <p className="text-sm text-deep-charcoal/60">Mon-Fri, 9AM-6PM EST</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-rich-navy" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-deep-charcoal mb-1">Office</h3>
-                    <p className="text-deep-charcoal/80">1580 N Logan St Ste 660<br />Denver, CO 80203-1994</p>
-                    <p className="text-sm text-deep-charcoal/60">By appointment only</p>
-                  </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <h3 className="font-semibold text-gray-900 mb-2">Best Fit For:</h3>
+                  <p className="text-gray-600">
+                    Businesses investing $10K-$100K monthly in marketing and looking for strategic partnership, not just execution.
+                  </p>
                 </div>
               </div>
-
-              <div className="bg-warm-linen rounded-lg p-6">
-                <h3 className="font-semibold text-deep-charcoal mb-3">What to Expect</h3>
-                <ul className="space-y-2 text-sm text-deep-charcoal/80">
-                  <li>• 30-minute strategy assessment</li>
-                  <li>• Custom growth recommendations</li>
-                  <li>• No sales pitch, just value</li>
-                  <li>• Follow-up with detailed proposal</li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 bg-warm-linen">
-        <div className="max-w-4xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ amount: 0.2 }}
-            className="text-center mb-16"
-          >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-4">
-              FREQUENTLY ASKED
             </div>
-            <h2 className="text-5xl font-display text-deep-charcoal mb-6">
-              Common Questions
-            </h2>
-          </motion.div>
 
-          <div className="space-y-8">
-            {[
-              {
-                question: "What makes Vrvo different from other marketing agencies?",
-                answer: "Most agencies start with campaigns. We start with infrastructure. We build the complete marketing systems, processes, and team structures that Fortune 500s use—made accessible for SMBs."
-              },
-              {
-                question: "What's your minimum engagement?",
-                answer: "We work with businesses spending $10K-100K+ monthly on marketing. Our minimum engagement is typically 6 months to ensure proper infrastructure implementation."
-              },
-              {
-                question: "How long does it take to see results?",
-                answer: "Infrastructure improvements show results in 30-60 days. Full transformation typically takes 6-12 months. We provide detailed timelines during our strategy call."
-              },
-              {
-                question: "Do you work with businesses outside the US?",
-                answer: "Yes, we work with businesses globally. Our infrastructure approach works across markets, though we may recommend local partners for certain regions."
-              }
-            ].map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ amount: 0.2 }}
-                className="bg-white rounded-lg p-6"
-              >
-                <h3 className="text-lg font-semibold text-deep-charcoal mb-3">{faq.question}</h3>
-                <p className="text-deep-charcoal/80">{faq.answer}</p>
-              </motion.div>
-            ))}
+            {/* Right: Form */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get In Touch</h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.company}
+                    onChange={(e) => setFormData({...formData, company: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    Monthly Marketing Budget
+                  </label>
+                  <select
+                    value={formData.budget}
+                    onChange={(e) => setFormData({...formData, budget: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy"
+                  >
+                    <option value="">Select range</option>
+                    <option value="10k-25k">$10K - $25K</option>
+                    <option value="25k-50k">$25K - $50K</option>
+                    <option value="50k-100k">$50K - $100K</option>
+                    <option value="100k+">$100K+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    Tell us about your goals
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full px-8 py-4 bg-navy hover:bg-navy-hover text-white font-semibold rounded-lg transition-colors"
+                >
+                  Send Message
+                </button>
+              </form>
+            </div>
+
           </div>
         </div>
       </section>
-      
+
       {/* Footer */}
-      <Footer />
-    </div>
-  );
+      <footer className="bg-gray-900 text-gray-400 py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="md:col-span-1">
+              <div className="mb-4">
+                <Image
+                  src="/logos/vrvo_wordmark_white.svg"
+                  alt="Vrvo"
+                  width={120}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+              </div>
+              <p className="text-gray-400 text-sm mb-4">
+                Enterprise marketing for ambitious businesses.
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-2 h-2 bg-navy rounded-full"></div>
+                <span className="text-sm text-gray-400">Denver, CO</span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-4 text-white">Services</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/services" className="hover:text-white transition-colors">Programmatic Advertising</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Strategic Marketing</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Business Transformation</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-4 text-white">Company</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Approach</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-4 text-white">Resources</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
+                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2025 Vrvo. All rights reserved.</p>
+            <p className="mt-2">Enterprise marketing for ambitious businesses.</p>
+            <div className="mt-4 flex justify-center gap-6">
+              <Link href="/policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/policy" className="hover:text-white transition-colors">Terms of Service</Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </main>
+  )
 }

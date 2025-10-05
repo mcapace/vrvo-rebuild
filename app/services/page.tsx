@@ -1,334 +1,310 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import { Target, TrendingUp, Lightbulb, ArrowRight, CheckCircle, BarChart3, Users, Zap } from 'lucide-react';
-import Link from 'next/link';
-import Navigation from '../components/Navigation';
-import { MagneticCursor } from '../components/MagneticCursor';
-import { MagneticButton } from '../components/MagneticButton';
-import Footer from '../components/Footer';
+import Image from 'next/image'
+import Link from 'next/link'
+import { Target, TrendingUp, Lightbulb, ArrowRight } from 'lucide-react'
 
 export default function Services() {
   return (
-    <div className="min-h-screen bg-warm-linen">
-      {/* Magnetic Cursor */}
-      <MagneticCursor />
+    <main className="min-h-screen bg-white">
       
-      {/* Navigation */}
-      <Navigation />
-      
-      {/* Hero Section */}
-      <section className="pt-24 md:pt-32 pb-16 md:pb-20 bg-gradient-to-b from-warm-linen to-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-4 md:mb-6">
-              FULL-STACK CAPABILITIES
-            </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display text-deep-charcoal mb-6 md:mb-8 leading-tight">
-              Three Pillars. One Unified Strategy.
+      {/* Navigation - Same as homepage */}
+      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/">
+            <Image 
+              src="/logos/vrvo_wordmark_black.svg" 
+              alt="Vrvo" 
+              width={140} 
+              height={48}
+              className="h-10 w-auto"
+            />
+          </Link>
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/services" className="text-sm font-medium text-navy">Services</Link>
+            <Link href="/about" className="text-sm font-medium text-gray-600 hover:text-navy">About</Link>
+            <Link href="/contact" className="text-sm font-medium text-gray-600 hover:text-navy">Contact</Link>
+            <button className="px-5 py-2 bg-navy hover:bg-navy-hover text-white text-sm font-semibold rounded-lg transition-colors">
+              Get Started
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl">
+            <p className="text-sm font-semibold text-navy uppercase tracking-wide mb-4">
+              OUR SERVICES
+            </p>
+            <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+              Full-Stack Digital Growth Solutions
             </h1>
-            <p className="text-lg md:text-xl text-deep-charcoal/80 leading-relaxed mb-8 md:mb-12">
-              Most agencies do one thing. We architect complete growth systems that transform your business infrastructure.
+            <p className="text-xl text-gray-600 leading-relaxed">
+              Three integrated capabilities designed to transform your marketing from cost center to growth engine. No long-term contracts. Complete transparency.
             </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Main Services */}
-      <section className="py-12 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
-            {/* Programmatic Advertising */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ amount: 0.2 }}
-              className="bg-white/80 backdrop-blur-xl rounded-lg p-8 border-l-4 border-rich-navy hover:shadow-xl hover:bg-white/90 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 text-burnt-orange text-9xl font-bold opacity-10 -mr-4 -mt-4">
-                01
-              </div>
-              <div className="space-y-6">
-                <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
-                  <Target className="w-6 h-6 text-rich-navy" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-display text-deep-charcoal mb-2">
-                    Programmatic Advertising
-                  </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest">
-                    Precision at scale
-                  </p>
-                </div>
-                <p className="text-deep-charcoal/80 leading-relaxed">
-                  Enterprise DSP relationships and AI-powered bidding strategies that Fortune 500s use. Real-time optimization across display, video, native, and CTV.
-                </p>
-                <div className="space-y-2 text-sm">
-                  <div className="font-mono text-rich-navy">$50M+ annual spend managed</div>
-                  <div className="font-mono text-rich-navy">2.8x average ROAS improvement</div>
-                  <div className="font-mono text-rich-navy">94% campaign success rate</div>
-                </div>
-                <div className="pt-4">
-                  <button className="text-rich-navy font-medium hover:text-rich-navy/80 transition-colors flex items-center gap-2">
-                    Learn More <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Strategic Marketing */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ amount: 0.2 }}
-              className="bg-warm-linen/80 backdrop-blur-xl rounded-lg p-8 border border-deep-charcoal/10 hover:shadow-xl hover:bg-warm-linen/90 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 text-burnt-orange text-9xl font-bold opacity-10 -mr-4 -mt-4">
-                02
-              </div>
-              <div className="space-y-6">
-                <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
-                  <TrendingUp className="w-6 h-6 text-rich-navy" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-display text-deep-charcoal mb-2">
-                    Strategic Marketing
-                  </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest">
-                    Integrated execution
-                  </p>
-                </div>
-                <p className="text-deep-charcoal/80 leading-relaxed">
-                  Cross-channel orchestration that connects every touchpoint. From awareness to conversion, we build systems that work together.
-                </p>
-                <div className="space-y-2 text-sm">
-                  <div className="font-mono text-rich-navy">360° campaign integration</div>
-                  <div className="font-mono text-rich-navy">Multi-touch attribution</div>
-                  <div className="font-mono text-rich-navy">Unified customer journey</div>
-                </div>
-                <div className="pt-4">
-                  <button className="text-rich-navy font-medium hover:text-rich-navy/80 transition-colors flex items-center gap-2">
-                    Learn More <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Business Transformation */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ amount: 0.2 }}
-              className="bg-deep-charcoal/90 backdrop-blur-xl text-warm-linen rounded-lg p-8 hover:shadow-xl hover:bg-deep-charcoal hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 text-burnt-orange text-9xl font-bold opacity-10 -mr-4 -mt-4">
-                03
-              </div>
-              <div className="space-y-6">
-                <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center group-hover:bg-burnt-orange/30 transition-colors">
-                  <Lightbulb className="w-6 h-6 text-burnt-orange" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-display text-warm-linen mb-2">
-                    Business Transformation
-                  </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest">
-                    Infrastructure that scales
-                  </p>
-                </div>
-                <p className="text-warm-linen/80 leading-relaxed">
-                  Beyond campaigns. We architect the marketing infrastructure, processes, and team structure that supports sustainable growth.
-                </p>
-                <div className="space-y-2 text-sm">
-                  <div className="font-mono text-burnt-orange">Marketing automation setup</div>
-                  <div className="font-mono text-burnt-orange">Team structure optimization</div>
-                  <div className="font-mono text-burnt-orange">Process standardization</div>
-                </div>
-                <div className="pt-4">
-                  <button className="text-burnt-orange font-medium hover:text-burnt-orange/80 transition-colors flex items-center gap-2">
-                    Learn More <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Additional Services */}
-      <section className="py-20 bg-warm-linen">
+      {/* Service 1: Programmatic */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="w-16 h-16 bg-navy rounded-2xl flex items-center justify-center mb-6">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-5xl font-bold text-gray-900 mb-4">
+                Programmatic Advertising
+              </h2>
+              <p className="text-xl text-gray-600 mb-6">
+                Enterprise DSP relationships and AI-powered bidding strategies that Fortune 500s use.
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Direct access to Trade Desk, Google DV360, Amazon DSP</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Real-time bid optimization across display, video, native, CTV</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Advanced audience segmentation and lookalike modeling</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Cross-device attribution and conversion tracking</span>
+                </li>
+              </ul>
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <p className="text-sm font-semibold text-gray-900 mb-2">Typical Results:</p>
+                <p className="text-gray-600">2.8x average ROAS improvement, 47% reduction in cost per acquisition, $50M+ annual ad spend managed</p>
+              </div>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">What You Get</h3>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Platform Access</h4>
+                  <p className="text-gray-600">Enterprise agreements with major DSPs (typically $50K+ minimums) accessible at any budget level</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Strategic Management</h4>
+                  <p className="text-gray-600">Dedicated campaign strategists managing daily optimization and performance</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Transparent Reporting</h4>
+                  <p className="text-gray-600">Real-time dashboard showing spend, performance, and attribution by channel</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Service 2: Strategic Marketing */}
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1">
+              <div className="bg-white border border-gray-200 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Integrated Approach</h3>
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Multi-Channel Strategy</h4>
+                    <p className="text-gray-600">Paid search, paid social, SEO, content, email working together</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Brand + Performance</h4>
+                    <p className="text-gray-600">Build awareness while driving immediate conversions</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Continuous Optimization</h4>
+                    <p className="text-gray-600">Monthly strategy reviews and tactical adjustments</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <div className="w-16 h-16 bg-navy rounded-2xl flex items-center justify-center mb-6">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-5xl font-bold text-gray-900 mb-4">
+                Strategic Marketing
+              </h2>
+              <p className="text-xl text-gray-600 mb-6">
+                Integrated campaigns that build brands and drive revenue through coordinated multi-channel execution.
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Brand positioning and messaging architecture</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Search, social, display campaign management</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Content strategy and SEO optimization</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Email automation and lead nurturing</span>
+                </li>
+              </ul>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <p className="text-sm font-semibold text-gray-900 mb-2">Typical Results:</p>
+                <p className="text-gray-600">340% average ROI increase, 3x qualified lead volume, 94% client retention rate</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Service 3: Business Transformation */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="w-16 h-16 bg-navy rounded-2xl flex items-center justify-center mb-6">
+                <Lightbulb className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-5xl font-bold text-gray-900 mb-4">
+                Business Transformation
+              </h2>
+              <p className="text-xl text-gray-600 mb-6">
+                Build the marketing infrastructure needed to scale efficiently and make data-driven decisions.
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">MarTech stack audit and optimization</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">CRM implementation (HubSpot, Salesforce, etc.)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Analytics and reporting infrastructure</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-navy mr-3">•</span>
+                  <span className="text-gray-900">Process automation and team training</span>
+                </li>
+              </ul>
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <p className="text-sm font-semibold text-gray-900 mb-2">Typical Timeline:</p>
+                <p className="text-gray-600">3-6 month transformation projects with ongoing optimization and support</p>
+              </div>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Transformation Focus</h3>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Infrastructure</h4>
+                  <p className="text-gray-600">Platform selection, implementation, and integration across your marketing stack</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Data & Analytics</h4>
+                  <p className="text-gray-600">Unified reporting, attribution modeling, and performance dashboards</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Process & People</h4>
+                  <p className="text-gray-600">Workflow design, team training, and ongoing strategic support</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-32 px-6 bg-gray-900">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-5xl font-bold text-white mb-6">
+            Ready to Get Started?
+          </h2>
+          <p className="text-xl text-gray-400 mb-10">
+            Schedule a consultation to discuss which services align with your growth goals.
+          </p>
+          <Link 
+            href="/contact"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-navy hover:bg-navy-hover text-white font-semibold rounded-lg text-lg transition-colors"
+          >
+            Schedule Consultation
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer - Same as homepage */}
+      <footer className="bg-gray-900 text-gray-400 py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ amount: 0.2 }}
-            className="text-center mb-16"
-          >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-4">
-              ADDITIONAL CAPABILITIES
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="md:col-span-1">
+              <div className="mb-4">
+                <Image
+                  src="/logos/vrvo_wordmark_white.svg"
+                  alt="Vrvo"
+                  width={120}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+              </div>
+              <p className="text-gray-400 text-sm mb-4">
+                Enterprise marketing for ambitious businesses.
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-2 h-2 bg-navy rounded-full"></div>
+                <span className="text-sm text-gray-400">Denver, CO</span>
+              </div>
             </div>
-            <h2 className="text-5xl font-display text-deep-charcoal mb-6">
-              Complete Marketing Infrastructure
-            </h2>
-            <p className="text-lg text-deep-charcoal/80 max-w-3xl mx-auto">
-              Beyond our core services, we provide the complete marketing infrastructure your business needs to scale.
-            </p>
-          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: BarChart3,
-                title: "Analytics & Reporting",
-                description: "Advanced attribution modeling and real-time performance dashboards"
-              },
-              {
-                icon: Users,
-                title: "Team Training",
-                description: "Comprehensive training programs for your marketing team"
-              },
-              {
-                icon: Zap,
-                title: "Marketing Automation",
-                description: "Complete automation setup and optimization"
-              },
-              {
-                icon: Target,
-                title: "A/B Testing",
-                description: "Systematic testing and optimization across all channels"
-              }
-            ].map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ amount: 0.2 }}
-                className="bg-white rounded-lg p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-12 h-12 bg-rich-navy/10 rounded-lg flex items-center justify-center mb-4">
-                  <service.icon className="w-6 h-6 text-rich-navy" />
-                </div>
-                <h3 className="text-xl font-display text-deep-charcoal mb-3">{service.title}</h3>
-                <p className="text-deep-charcoal/80 text-sm">{service.description}</p>
-              </motion.div>
-            ))}
+            <div>
+              <h3 className="font-bold mb-4 text-white">Services</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/services" className="hover:text-white transition-colors">Programmatic Advertising</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Strategic Marketing</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Business Transformation</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-4 text-white">Company</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Approach</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-4 text-white">Resources</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
+                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2025 Vrvo. All rights reserved.</p>
+            <p className="mt-2">Enterprise marketing for ambitious businesses.</p>
+            <div className="mt-4 flex justify-center gap-6">
+              <Link href="/policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/policy" className="hover:text-white transition-colors">Terms of Service</Link>
+            </div>
           </div>
         </div>
-      </section>
+      </footer>
 
-      {/* Process Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ amount: 0.2 }}
-            className="text-center mb-16"
-          >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-4">
-              OUR PROCESS
-            </div>
-            <h2 className="text-5xl font-display text-deep-charcoal mb-6">
-              How We Transform Your Marketing
-            </h2>
-            <p className="text-lg text-deep-charcoal/80 max-w-3xl mx-auto">
-              Our proven methodology ensures every project delivers measurable results and sustainable growth.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-5 gap-8">
-            {[
-              {
-                step: "01",
-                title: "Discovery & Audit",
-                description: "Deep dive into your current marketing infrastructure, processes, and team structure."
-              },
-              {
-                step: "02",
-                title: "Strategic Architecture",
-                description: "Develop a bespoke growth blueprint with technology, channels, and implementation plan."
-              },
-              {
-                step: "03",
-                title: "Infrastructure Build",
-                description: "Implement MarTech stack, data pipelines, and automation tools for scale."
-              },
-              {
-                step: "04",
-                title: "Campaign Launch",
-                description: "Execute programmatic campaigns with precision and real-time optimization."
-              },
-              {
-                step: "05",
-                title: "Continuous Optimization",
-                description: "Ongoing monitoring, testing, and strategic adjustments for maximum ROI."
-              }
-            ].map((phase, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ amount: 0.2 }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 bg-rich-navy text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
-                  {phase.step}
-                </div>
-                <h3 className="text-xl font-display text-deep-charcoal mb-3">{phase.title}</h3>
-                <p className="text-deep-charcoal/80 text-sm">{phase.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-rich-navy">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ amount: 0.2 }}
-            className="space-y-8"
-          >
-            <h2 className="text-h2 font-display text-warm-linen">
-              Ready to Transform Your Marketing?
-            </h2>
-            <p className="text-xl text-warm-linen/90 max-w-2xl mx-auto">
-              Let's discuss how our full-stack approach can accelerate your growth.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact">
-                <MagneticButton className="bg-warm-linen text-rich-navy px-8 py-4 rounded-sm hover:bg-burnt-orange hover:text-warm-linen transition-all duration-300 font-medium">
-                  Schedule Strategy Call
-                  <ArrowRight className="inline-block ml-2 w-5 h-5" />
-                </MagneticButton>
-              </Link>
-              <Link href="/about">
-                <MagneticButton className="border border-warm-linen text-warm-linen px-8 py-4 rounded-sm hover:bg-warm-linen hover:text-rich-navy transition-all duration-300 font-medium">
-                  Download Service Guide
-                </MagneticButton>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-      
-      {/* Footer */}
-      <Footer />
-    </div>
-  );
+    </main>
+  )
 }
