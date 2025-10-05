@@ -8,21 +8,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Sophisticated premium color palette
-        'deep-charcoal': '#1A1A1A',
-        'warm-linen': '#FAF8F5',
-        'rich-navy': '#1E3A5F',
-        'burnt-orange': '#D2691E',
-        'warm-gold': '#B8860B',
-        'soft-sage': '#8FBC8F',
-        'forest-green': '#2D5F4F',
-        'platinum': '#E5E4E2',
-        'rich-charcoal': '#1A1A1A',
-        'black': '#0A0A0A',
+        // Monochrome + Navy color system
+        'navy': '#1E3A5F',
+        'navy-hover': '#2C4F7C',
       },
       fontFamily: {
-        'display': ['Cirka', 'serif'],
-        'body': ['Atkinson Hyperlegible', 'Inter', 'sans-serif'],
+        'body': ['Inter', 'sans-serif'],
         'mono': ['JetBrains Mono', 'monospace'],
       },
       fontSize: {

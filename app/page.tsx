@@ -137,14 +137,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-warm-linen relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Custom Cursor */}
       <MagneticCursor />
       
       
       {/* Scroll Progress Bar */}
       <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-rich-navy to-burnt-orange origin-left z-50"
+        className="fixed top-0 left-0 right-0 h-1 bg-navy origin-left z-50"
         style={{ scaleX }}
       />
       
@@ -156,7 +156,7 @@ export default function Home() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="fixed top-0 left-0 right-0 z-40 h-20 bg-warm-linen/80 backdrop-blur-2xl border-b border-deep-charcoal/6 hover:bg-warm-linen/90 transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-40 h-20 bg-white/90 backdrop-blur-2xl border-b border-gray-200 hover:bg-white transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center">
@@ -169,19 +169,19 @@ export default function Home() {
             />
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/services" className="text-deep-charcoal hover:text-forest-green transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
+            <Link href="/services" className="text-gray-600 hover:text-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
               Services
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-forest-green transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-navy transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/about" className="text-deep-charcoal hover:text-forest-green transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
+            <Link href="/about" className="text-gray-600 hover:text-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
               About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-forest-green transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-navy transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/case-studies" className="text-deep-charcoal hover:text-forest-green transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
+            <Link href="/case-studies" className="text-gray-600 hover:text-navy transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group hover:scale-105">
               Case Studies
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-forest-green transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-navy transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/contact" className="bg-rich-navy text-warm-linen px-6 py-3 rounded-sm hover:bg-forest-green hover:shadow-lg hover:shadow-forest-green/25 hover:scale-105 transition-all duration-300 uppercase text-xs tracking-[0.1em] font-medium">
+            <Link href="/contact" className="bg-navy text-white px-6 py-3 rounded-sm hover:bg-navy-hover hover:shadow-lg hover:scale-105 transition-all duration-300 uppercase text-xs tracking-[0.1em] font-medium">
               Partner With Us
             </Link>
           </div>
@@ -204,7 +204,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-burnt-orange text-sm uppercase tracking-widest"
+                  className="text-navy text-sm uppercase tracking-widest font-medium"
                 >
                   Enterprise Marketing. SMB Accessibility.
                 </motion.div>
@@ -212,17 +212,17 @@ export default function Home() {
                 <div className="space-y-2">
                   <ScrambleText 
                     text="Don't Compete" 
-                    className="text-5xl md:text-7xl font-display text-deep-charcoal block font-bold leading-[0.95] tracking-[-0.03em]"
+                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
                     speed={50}
                   />
                   <ScrambleText 
                     text="On Budget." 
-                    className="text-5xl md:text-7xl font-display text-deep-charcoal block font-bold leading-[0.95] tracking-[-0.03em]"
+                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
                     speed={50}
                   />
                   <ScrambleText 
                     text="Compete On Strategy." 
-                    className="text-5xl md:text-7xl font-display text-forest-green block font-bold leading-[0.95] tracking-[-0.03em]"
+                    className="text-7xl md:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter"
                     speed={50}
                   />
                 </div>
@@ -231,7 +231,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
-                  className="text-body text-[#2C2C2C] max-w-2xl leading-relaxed"
+                  className="text-lg text-gray-600 max-w-2xl leading-relaxed"
                 >
                   Vrvo brings programmatic advertising, integrated marketing, and business transformation consulting—normally reserved for enterprise—to ambitious small and mid-sized businesses.
                 </motion.p>
@@ -243,12 +243,12 @@ export default function Home() {
                   className="flex flex-col sm:flex-row gap-4"
                 >
                   <Link href="/contact">
-                    <MagneticButton className="bg-rich-navy text-warm-linen px-8 py-4 rounded-sm hover:bg-forest-green hover:shadow-xl hover:shadow-forest-green/25 transition-all duration-300 font-medium shadow-lg">
+                    <MagneticButton className="bg-navy text-white px-8 py-4 rounded-sm hover:bg-navy-hover hover:shadow-xl transition-all duration-300 font-medium shadow-lg">
                       See What's Possible
                     </MagneticButton>
                   </Link>
                   <Link href="/services">
-                    <MagneticButton className="border-2 border-deep-charcoal text-deep-charcoal px-8 py-4 rounded-sm hover:bg-deep-charcoal hover:text-warm-linen hover:shadow-xl hover:shadow-deep-charcoal/25 transition-all duration-300 font-medium shadow-md">
+                    <MagneticButton className="border-2 border-gray-900 text-gray-900 px-8 py-4 rounded-sm hover:bg-gray-50 hover:shadow-xl transition-all duration-300 font-medium shadow-md">
                       View Our Approach
                     </MagneticButton>
                   </Link>
@@ -274,29 +274,26 @@ export default function Home() {
                     ]
                   }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="bg-white/95 backdrop-blur-xl rounded-lg p-8 shadow-2xl border-2 border-forest-green/20 hover:border-forest-green/40 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
+                  className="bg-white rounded-lg p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
                 >
-                  {/* Subtle glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-forest-green/5 to-transparent pointer-events-none"></div>
-                  
                   <div className="space-y-6 relative z-10">
-                    <div className="text-sm uppercase tracking-widest text-deep-charcoal/70 font-medium">
+                    <div className="text-sm uppercase tracking-widest text-gray-600 font-medium">
                       Real Client Growth
                     </div>
                     <motion.div 
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                      className="font-mono text-8xl font-bold text-forest-green"
+                      className="font-mono text-8xl font-bold text-gray-900"
                     >
                       <AnimatedNumber value={3.4} suffix="x" />
                     </motion.div>
-                    <div className="text-[#2C2C2C] font-medium">
+                    <div className="text-gray-600 font-medium">
                       Average revenue increase, Year 1
                     </div>
-                    <div className="h-16 bg-gradient-to-r from-forest-green to-burnt-orange rounded opacity-30 relative overflow-hidden">
-                      {/* Animated sparkline effect */}
+                    <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
+                      {/* Simple animated bar */}
                       <motion.div 
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        className="absolute inset-0 bg-gray-400"
                         animate={{ x: ['-100%', '100%'] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                       />
@@ -310,7 +307,7 @@ export default function Home() {
       </section>
 
       {/* Services Section with Interactive Elements */}
-      <section id="services" className="py-8 bg-white relative">
+      <section id="services" className="py-32 bg-white relative">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -319,13 +316,13 @@ export default function Home() {
             viewport={{ amount: 0.2 }}
             className="text-center mb-12"
           >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-4">
+            <div className="text-navy text-sm uppercase tracking-widest mb-4 font-medium">
               FULL-STACK CAPABILITIES
             </div>
-            <h2 className="text-h2 font-display text-deep-charcoal mb-6">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
               Three Pillars. One Unified Strategy.
             </h2>
-            <p className="text-body text-deep-charcoal/80 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Most agencies do one thing. We architect complete growth systems.
             </p>
           </motion.div>
@@ -337,30 +334,30 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ amount: 0.2 }}
-              className="bg-white/80 backdrop-blur-xl rounded-lg p-8 border-l-4 border-rich-navy hover:shadow-2xl hover:shadow-rich-navy/20 hover:bg-white/95 hover:scale-[1.03] hover:-translate-y-3 transition-all duration-500 relative overflow-hidden group"
+              className="bg-white rounded-lg p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 text-burnt-orange text-[120px] font-bold opacity-10 -mr-4 -mt-4">
+              <div className="absolute top-0 right-0 text-gray-300 text-[120px] font-bold opacity-20 -mr-4 -mt-4">
                 01
               </div>
               <div className="space-y-6">
-                <div className="w-16 h-16 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
-                  <Target className="w-8 h-8 text-rich-navy" />
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                  <Target className="w-8 h-8 text-gray-900" />
                 </div>
                 <div>
-                  <h3 className="text-3xl font-display text-deep-charcoal mb-2 font-bold">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">
                     Programmatic Advertising
                   </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest font-medium">
+                  <p className="text-navy text-sm uppercase tracking-widest font-medium">
                     Precision at scale
                   </p>
                 </div>
-                <p className="text-deep-charcoal/80 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed">
                   Enterprise DSP relationships and AI-powered bidding strategies that Fortune 500s use. Real-time optimization across display, video, native, and CTV.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <div className="font-mono text-rich-navy">$50M+ annual spend managed</div>
-                  <div className="font-mono text-rich-navy">2.8x average ROAS improvement</div>
-                  <div className="font-mono text-rich-navy">94% campaign success rate</div>
+                  <div className="font-mono text-navy">$50M+ annual spend managed</div>
+                  <div className="font-mono text-navy">2.8x average ROAS improvement</div>
+                  <div className="font-mono text-navy">94% campaign success rate</div>
                 </div>
               </div>
             </motion.div>
@@ -371,30 +368,30 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ amount: 0.2 }}
-              className="bg-warm-linen/80 backdrop-blur-xl rounded-lg p-8 border border-deep-charcoal/10 hover:shadow-2xl hover:shadow-deep-charcoal/20 hover:bg-warm-linen/95 hover:scale-[1.03] hover:-translate-y-3 transition-all duration-500 relative overflow-hidden group"
+              className="bg-white rounded-lg p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 text-burnt-orange text-[120px] font-bold opacity-10 -mr-4 -mt-4">
+              <div className="absolute top-0 right-0 text-gray-300 text-[120px] font-bold opacity-20 -mr-4 -mt-4">
                 02
               </div>
               <div className="space-y-6">
-                <div className="w-16 h-16 bg-rich-navy/10 rounded-lg flex items-center justify-center group-hover:bg-rich-navy/20 transition-colors">
-                  <TrendUp className="w-8 h-8 text-rich-navy" />
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                  <TrendUp className="w-8 h-8 text-gray-900" />
                 </div>
                 <div>
-                  <h3 className="text-3xl font-display text-deep-charcoal mb-2 font-bold">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">
                     Strategic Marketing
                   </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest font-medium">
+                  <p className="text-navy text-sm uppercase tracking-widest font-medium">
                     Integrated execution
                   </p>
                 </div>
-                <p className="text-deep-charcoal/80 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed">
                   Cross-channel orchestration that connects every touchpoint. From awareness to conversion, we build systems that work together.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <div className="font-mono text-rich-navy">360° campaign integration</div>
-                  <div className="font-mono text-rich-navy">Multi-touch attribution</div>
-                  <div className="font-mono text-rich-navy">Unified customer journey</div>
+                  <div className="font-mono text-navy">360° campaign integration</div>
+                  <div className="font-mono text-navy">Multi-touch attribution</div>
+                  <div className="font-mono text-navy">Unified customer journey</div>
                 </div>
               </div>
             </motion.div>
@@ -405,30 +402,30 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ amount: 0.2 }}
-              className="bg-deep-charcoal/90 backdrop-blur-xl text-warm-linen rounded-lg p-8 hover:shadow-2xl hover:shadow-burnt-orange/20 hover:bg-deep-charcoal hover:scale-[1.03] hover:-translate-y-3 transition-all duration-500 relative overflow-hidden group"
+              className="bg-gray-900 text-white rounded-lg p-8 hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 text-burnt-orange text-[120px] font-bold opacity-10 -mr-4 -mt-4">
+              <div className="absolute top-0 right-0 text-gray-700 text-[120px] font-bold opacity-20 -mr-4 -mt-4">
                 03
               </div>
               <div className="space-y-6">
-                <div className="w-16 h-16 bg-copper/20 rounded-lg flex items-center justify-center group-hover:bg-burnt-orange/30 transition-colors">
-                  <Lightbulb className="w-8 h-8 text-burnt-orange" />
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center group-hover:bg-gray-700 transition-colors">
+                  <Lightbulb className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-3xl font-display text-warm-linen mb-2 font-bold">
+                  <h3 className="text-3xl font-bold text-white mb-2">
                     Business Transformation
                   </h3>
-                  <p className="text-burnt-orange text-sm uppercase tracking-widest font-medium">
+                  <p className="text-navy text-sm uppercase tracking-widest font-medium">
                     Infrastructure that scales
                   </p>
                 </div>
-                <p className="text-warm-linen/80 leading-relaxed">
+                <p className="text-gray-400 leading-relaxed">
                   Beyond campaigns. We architect the marketing infrastructure, processes, and team structure that supports sustainable growth.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <div className="font-mono text-burnt-orange">Marketing automation setup</div>
-                  <div className="font-mono text-burnt-orange">Team structure optimization</div>
-                  <div className="font-mono text-burnt-orange">Process standardization</div>
+                  <div className="font-mono text-navy">Marketing automation setup</div>
+                  <div className="font-mono text-navy">Team structure optimization</div>
+                  <div className="font-mono text-navy">Process standardization</div>
                 </div>
               </div>
             </motion.div>
@@ -482,7 +479,7 @@ export default function Home() {
       </section>
 
       {/* Proof Section with Animated Counters */}
-      <section id="proof" className="py-16 bg-white">
+      <section id="proof" className="py-32 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -491,7 +488,7 @@ export default function Home() {
             viewport={{ amount: 0.2 }}
             className="text-center mb-12"
           >
-            <h2 className="text-h2 font-display text-deep-charcoal mb-6">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
               Built for Businesses That Think Bigger
             </h2>
           </motion.div>
@@ -511,12 +508,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ amount: 0.2 }}
-                className="text-center p-8 bg-warm-linen/50 rounded-lg hover:bg-warm-linen/70 hover:shadow-lg transition-all duration-300 group"
+                className="text-center p-8 bg-white rounded-lg border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300 group"
               >
-                <div className="font-mono text-7xl font-bold text-rich-navy mb-4 group-hover:text-forest-green transition-colors duration-300">
+                <div className="font-mono text-6xl font-bold text-gray-900 mb-4 group-hover:text-navy transition-colors duration-300">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-[#2C2C2C] font-medium text-sm uppercase tracking-wider">
+                <div className="text-gray-600 font-medium text-sm uppercase tracking-wider">
                   {stat.label}
                 </div>
               </motion.div>
@@ -527,7 +524,7 @@ export default function Home() {
 
 
       {/* Infinite Marquee */}
-      <section className="bg-warm-linen">
+      <section className="bg-gray-50">
         <Marquee 
           items={[
             "Programmatic Advertising",
@@ -665,7 +662,7 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 bg-rich-navy">
+      <section className="py-32 bg-gray-900">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -674,21 +671,21 @@ export default function Home() {
             viewport={{ amount: 0.2 }}
             className="space-y-8"
           >
-            <h2 className="text-h2 font-display text-warm-linen">
+            <h2 className="text-5xl md:text-6xl font-bold text-white leading-tight tracking-tight">
               Ready to Compete on Strategy?
             </h2>
-            <p className="text-xl text-warm-linen/90 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
               See how Vrvo can transform your marketing from cost center to growth engine.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/contact">
-                <MagneticButton className="bg-warm-linen text-rich-navy px-8 py-4 rounded-sm hover:bg-burnt-orange hover:text-warm-linen transition-all duration-300 font-medium">
+                <MagneticButton className="bg-navy text-white px-8 py-4 rounded-sm hover:bg-navy-hover hover:shadow-xl transition-all duration-300 font-medium">
                   Schedule Strategy Call
                   <ArrowRight className="inline-block ml-2 w-5 h-5" />
                 </MagneticButton>
               </Link>
               <Link href="/case-studies">
-                <MagneticButton className="border border-warm-linen text-warm-linen px-8 py-4 rounded-sm hover:bg-warm-linen hover:text-rich-navy transition-all duration-300 font-medium">
+                <MagneticButton className="border-2 border-white text-white px-8 py-4 rounded-sm hover:bg-white hover:text-gray-900 transition-all duration-300 font-medium">
                   See Our Case Studies
                 </MagneticButton>
               </Link>
@@ -698,7 +695,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 bg-deep-charcoal text-warm-linen">
+      <footer className="py-16 bg-gray-900 text-gray-400">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
@@ -711,45 +708,45 @@ export default function Home() {
                   className="h-8 w-auto"
                 />
               </div>
-              <p className="text-warm-linen/80 text-sm">
+              <p className="text-gray-400 text-sm">
                 Enterprise marketing for ambitious businesses.
               </p>
             </div>
             
             <div>
-              <h3 className="font-display font-bold mb-4">Services</h3>
-              <ul className="space-y-2 text-sm text-warm-linen/80">
-                <li><Link href="/services" className="hover:text-burnt-orange transition-colors">Programmatic Advertising</Link></li>
-                <li><Link href="/services" className="hover:text-burnt-orange transition-colors">Strategic Marketing</Link></li>
-                <li><Link href="/services" className="hover:text-burnt-orange transition-colors">Business Transformation</Link></li>
+              <h3 className="font-bold mb-4 text-white">Services</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/services" className="hover:text-white transition-colors">Programmatic Advertising</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Strategic Marketing</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Business Transformation</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-display font-bold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm text-warm-linen/80">
-                <li><Link href="/about" className="hover:text-burnt-orange transition-colors">About</Link></li>
-                <li><Link href="/services" className="hover:text-burnt-orange transition-colors">Approach</Link></li>
-                <li><Link href="/contact" className="hover:text-burnt-orange transition-colors">Contact</Link></li>
-                <li><Link href="/careers" className="hover:text-burnt-orange transition-colors">Careers</Link></li>
+              <h3 className="font-bold mb-4 text-white">Company</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/services" className="hover:text-white transition-colors">Approach</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-display font-bold mb-4">Resources</h3>
-              <ul className="space-y-2 text-sm text-warm-linen/80">
-                <li><Link href="/case-studies" className="hover:text-burnt-orange transition-colors">Case Studies</Link></li>
-                <li><Link href="/blog" className="hover:text-burnt-orange transition-colors">Blog</Link></li>
+              <h3 className="font-bold mb-4 text-white">Resources</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
+                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-warm-linen/20 mt-12 pt-8 text-center text-warm-linen/60 text-sm">
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
             <p>&copy; 2025 Vrvo. All rights reserved.</p>
             <p className="mt-2">Enterprise marketing for ambitious businesses.</p>
             <div className="mt-4 flex justify-center gap-6">
-              <Link href="/policy" className="hover:text-burnt-orange transition-colors">Privacy Policy</Link>
-              <Link href="/policy" className="hover:text-burnt-orange transition-colors">Terms of Service</Link>
+              <Link href="/policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/policy" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
           </div>
         </div>

@@ -7,24 +7,50 @@
 
 @layer base {
         :root {
-          --background: #FAF8F5;
-          --foreground: #1A1A1A;
+          /* Text */
+          --text-primary: #1A1A1A;
+          --text-secondary: #6B6B6B;
+          --text-tertiary: #9CA3AF;
+          
+          /* Backgrounds */
+          --bg-primary: #FFFFFF;
+          --bg-secondary: #FAFAFA;
+          --bg-dark: #1A1A1A;
+          
+          /* Accent */
+          --accent-primary: #1E3A5F;
+          --accent-hover: #2C4F7C;
+          
+          /* Borders & Dividers */
+          --border-light: #E8E8E8;
+          --border-medium: #D1D5DB;
         }
 }
 
 @layer base {
   * {
-    @apply border-deep-charcoal/10;
+    @apply border-gray-200;
   }
   
   body {
-    @apply bg-warm-linen text-deep-charcoal font-body;
+    @apply bg-white text-gray-900 font-body;
     font-feature-settings: "rlig" 1, "calt" 1;
     overflow-x: hidden;
   }
   
   html {
     scroll-behavior: smooth;
+  }
+  
+  /* Focus states for accessibility */
+  *:focus {
+    outline: 2px solid #1E3A5F;
+    outline-offset: 2px;
+  }
+  
+  /* Remove default focus for mouse users */
+  *:focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
@@ -86,7 +112,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #FAFAFA;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -95,5 +121,5 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D2691E;
+  background: #2C4F7C;
 }
