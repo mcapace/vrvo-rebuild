@@ -11,7 +11,6 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['framer-motion', '@vercel/analytics'],
   },
   compiler: {
