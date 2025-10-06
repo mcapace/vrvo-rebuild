@@ -75,7 +75,7 @@ export default function Home() {
         transition={{ duration: 0.6 }}
         className="fixed top-0 left-0 right-0 z-40 h-20 bg-white/95 border-b border-gray-200 hover:bg-white transition-all duration-300"
       >
-        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
           <div className="flex items-center">
             <Image
               src="/logos/vrvo_wordmark_black.svg"
@@ -102,13 +102,20 @@ export default function Home() {
               Partner With Us
             </Link>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <Link href="/contact" className="bg-navy text-white px-4 py-2 rounded-sm hover:bg-navy-hover transition-all duration-300 uppercase text-xs tracking-[0.1em] font-medium">
+              Contact
+            </Link>
+          </div>
         </div>
       </motion.nav>
 
       {/* Hero Section with Advanced Interactions */}
       <section className="h-screen flex items-center relative">
-        <div className="max-w-7xl mx-auto px-6 w-full">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-center">
             {/* Left Column - 60% */}
             <div className="lg:col-span-7">
               <motion.div
@@ -126,20 +133,20 @@ export default function Home() {
                   Enterprise Marketing. SMB Accessibility.
                 </motion.div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <ScrambleText 
                     text="Don't Compete" 
-                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
+                    className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
                     speed={50}
                   />
                   <ScrambleText 
                     text="On Budget." 
-                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
+                    className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
                     speed={50}
                   />
                   <ScrambleText 
                     text="Compete On Strategy." 
-                    className="text-7xl md:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter"
+                    className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter"
                     speed={50}
                   />
                 </div>
@@ -148,7 +155,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
-                  className="text-lg text-gray-600 max-w-2xl leading-relaxed"
+                  className="text-base sm:text-lg text-gray-600 max-w-2xl leading-relaxed"
                 >
                   Vrvo brings programmatic advertising, integrated marketing, and business transformation consulting—normally reserved for enterprise—to ambitious small and mid-sized businesses.
                 </motion.p>
@@ -157,15 +164,15 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.0 }}
-                  className="flex flex-col sm:flex-row gap-4"
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                 >
                   <Link href="/contact">
-                    <MagneticButton className="bg-navy text-white px-8 py-4 rounded-sm hover:bg-navy-hover hover:shadow-xl transition-all duration-300 font-medium shadow-lg">
+                    <MagneticButton className="bg-navy text-white px-6 sm:px-8 py-3 sm:py-4 rounded-sm hover:bg-navy-hover hover:shadow-xl transition-all duration-300 font-medium shadow-lg text-sm sm:text-base">
                       See What's Possible
                     </MagneticButton>
                   </Link>
                   <Link href="/services">
-                    <MagneticButton className="border-2 border-gray-900 text-gray-900 px-8 py-4 rounded-sm hover:bg-gray-50 hover:shadow-xl transition-all duration-300 font-medium shadow-md">
+                    <MagneticButton className="border-2 border-gray-900 text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-sm hover:bg-gray-50 hover:shadow-xl transition-all duration-300 font-medium shadow-md text-sm sm:text-base">
                       View Our Approach
                     </MagneticButton>
                   </Link>
@@ -191,7 +198,7 @@ export default function Home() {
                     ]
                   }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="bg-white rounded-lg p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
+                  className="bg-white rounded-lg p-4 sm:p-6 lg:p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="space-y-6 relative z-10">
                     <div className="text-sm uppercase tracking-widest text-gray-600 font-medium">
@@ -200,11 +207,11 @@ export default function Home() {
                     <motion.div 
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                      className="font-mono text-8xl font-bold text-gray-900"
+                      className="font-mono text-4xl sm:text-6xl lg:text-8xl font-bold text-gray-900"
                     >
                       <ScrambleText 
                         text="3.4x" 
-                        className="font-mono text-8xl font-bold text-gray-900"
+                        className="font-mono text-4xl sm:text-6xl lg:text-8xl font-bold text-gray-900"
                         speed={30}
                       />
                     </motion.div>
