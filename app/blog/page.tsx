@@ -3,11 +3,42 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Clock, Tag, Target, TrendingUp, Lightbulb, BarChart3, Users, Zap, FileText, Settings, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import Navigation from '../components/Navigation';
 import { MagneticCursor } from '../components/MagneticCursor';
 import Footer from '../components/Footer';
 
 export default function Blog() {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        alert('Successfully subscribed to our newsletter!');
+        setEmail('');
+      } else {
+        alert('Failed to subscribe. Please try again.');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Programmatic Advertising':
@@ -246,16 +277,23 @@ export default function Blog() {
             <p className="text-lg text-gray-600 mb-8">
               Get the latest insights on programmatic advertising, marketing infrastructure, and business transformation delivered to your inbox.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
+                required
                 className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy"
               />
-              <button className="bg-navy text-white px-6 py-3 rounded-lg hover:bg-navy-hover transition-all duration-300 font-medium">
-                Subscribe
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-navy text-white px-6 py-3 rounded-lg hover:bg-navy-hover transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
-            </div>
+            </form>
             <p className="text-sm text-gray-500">
               No spam. Unsubscribe at any time.
             </p>

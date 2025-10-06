@@ -181,26 +181,45 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="relative"
               >
-                <div className="bg-white rounded-lg p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden">
+                <motion.div
+                  animate={{ 
+                    y: [0, -10, 0],
+                    boxShadow: [
+                      "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                      "0 35px 60px -12px rgba(0, 0, 0, 0.35)",
+                      "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                    ]
+                  }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  className="bg-white rounded-lg p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
+                >
                   <div className="space-y-6 relative z-10">
                     <div className="text-sm uppercase tracking-widest text-gray-600 font-medium">
                       Real Client Growth
                     </div>
-                    <div className="font-mono text-8xl font-bold text-gray-900">
+                    <motion.div 
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      className="font-mono text-8xl font-bold text-gray-900"
+                    >
                       <ScrambleText 
                         text="3.4x" 
                         className="font-mono text-8xl font-bold text-gray-900"
                         speed={30}
                       />
-                    </div>
+                    </motion.div>
                     <div className="text-gray-600 font-medium">
                       Average revenue increase, Year 1
                     </div>
                     <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gray-400" />
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-r from-navy to-navy-hover rounded"
+                        animate={{ x: ['-100%', '100%'] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      />
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             </div>
           </div>

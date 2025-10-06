@@ -14,10 +14,34 @@ export default function Contact() {
     message: ''
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Add your form submission logic here
-    console.log('Form submitted:', formData)
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        alert('Message sent successfully! We\'ll get back to you soon.')
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          budget: '',
+          message: ''
+        })
+      } else {
+        alert('Failed to send message. Please try again.')
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      alert('Failed to send message. Please try again.')
+    }
   }
 
   return (
