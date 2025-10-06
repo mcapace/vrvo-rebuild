@@ -143,7 +143,7 @@ export default function CookieBanner() {
                   <p className="text-sm text-deep-charcoal/80">
                     We use cookies to enhance your experience, analyze site traffic, and personalize content. 
                     <Link href="/policy" className="text-rich-navy hover:text-rich-navy/80 underline ml-1">
-                      Learn more
+                      Learn more about our privacy policy and cookie usage
                     </Link>
                   </p>
                 </div>
