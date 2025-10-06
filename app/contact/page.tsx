@@ -27,6 +27,7 @@ export default function Contact() {
       })
 
       if (response.ok) {
+        const result = await response.json()
         alert('Message sent successfully! We\'ll get back to you soon.')
         setFormData({
           name: '',
@@ -36,11 +37,13 @@ export default function Contact() {
           message: ''
         })
       } else {
-        alert('Failed to send message. Please try again.')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Form submission error:', response.status, errorData)
+        alert(`Failed to send message. Error: ${response.status}. Please try again or contact hello@vrvo.co directly.`)
       }
     } catch (error) {
       console.error('Form submission error:', error)
-      alert('Failed to send message. Please try again.')
+      alert('Network error. Please try again or contact hello@vrvo.co directly.')
     }
   }
 
@@ -189,6 +192,13 @@ export default function Contact() {
                 >
                   Send Message
                 </button>
+                
+                <p className="text-sm text-gray-500 text-center mt-4">
+                  Having trouble? Email us directly at{' '}
+                  <a href="mailto:hello@vrvo.co" className="text-navy hover:underline">
+                    hello@vrvo.co
+                  </a>
+                </p>
               </form>
             </div>
 
