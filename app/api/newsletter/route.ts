@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,25 +26,24 @@ Email: ${email}
 Subscribed from Vrvo website newsletter signup
     `.trim();
 
-    // Create transporter (using Gmail SMTP as example)
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
-      }
-    });
-
-    // Send email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER || 'noreply@vrvo.co',
-      to: 'hello@vrvo.co',
+    // Send email using Resend
+    const { data, error } = await resend.emails.send({
+      from: 'Vrvo Website <noreply@vrvo.co>',
+      to: ['hello@vrvo.co'],
       subject: 'New Newsletter Subscription - Vrvo Website',
       text: emailContent,
-      replyTo: email
+      replyTo: email,
     });
 
-    console.log('Newsletter subscription email sent to hello@vrvo.co');
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json(
+        { error: 'Failed to send email' },
+        { status: 500 }
+      );
+    }
+
+    console.log('Newsletter subscription email sent to hello@vrvo.co:', data);
 
     return NextResponse.json(
       { message: 'Successfully subscribed to newsletter' },
