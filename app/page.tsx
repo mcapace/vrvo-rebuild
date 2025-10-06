@@ -256,9 +256,9 @@ export default function Home() {
                   Enterprise DSP relationships and AI-powered bidding strategies that Fortune 500s use. Real-time optimization across display, video, native, and CTV.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <div className="font-mono text-navy">$50M+ annual spend managed</div>
-                  <div className="font-mono text-navy">2.8x average ROAS improvement</div>
-                  <div className="font-mono text-navy">94% campaign success rate</div>
+                  <div className="font-mono text-navy font-semibold">$50M+ annual spend managed</div>
+                  <div className="font-mono text-navy font-semibold">2.8x average ROAS improvement</div>
+                  <div className="font-mono text-navy font-semibold">94% campaign success rate</div>
                 </div>
               </div>
             </motion.div>
@@ -290,9 +290,9 @@ export default function Home() {
                   Cross-channel orchestration that connects every touchpoint. From awareness to conversion, we build systems that work together.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <div className="font-mono text-navy">360° campaign integration</div>
-                  <div className="font-mono text-navy">Multi-touch attribution</div>
-                  <div className="font-mono text-navy">Unified customer journey</div>
+                  <div className="font-mono text-navy font-semibold">360° campaign integration</div>
+                  <div className="font-mono text-navy font-semibold">Multi-touch attribution</div>
+                  <div className="font-mono text-navy font-semibold">Unified customer journey</div>
                 </div>
               </div>
             </motion.div>
@@ -324,9 +324,9 @@ export default function Home() {
                   Beyond campaigns. We architect the marketing infrastructure, processes, and team structure that supports sustainable growth.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <div className="font-mono text-navy">Marketing automation setup</div>
-                  <div className="font-mono text-navy">Team structure optimization</div>
-                  <div className="font-mono text-navy">Process standardization</div>
+                  <div className="font-mono text-white/90">Marketing automation setup</div>
+                  <div className="font-mono text-white/90">Team structure optimization</div>
+                  <div className="font-mono text-white/90">Process standardization</div>
                 </div>
               </div>
             </motion.div>
@@ -429,22 +429,33 @@ export default function Home() {
       </section>
 
 
-      {/* Infinite Marquee */}
-      <section className="bg-gray-50">
-        <Marquee 
-          items={[
-            "Programmatic Advertising",
-            "Strategic Marketing", 
-            "Business Transformation",
-            "Data Analytics",
-            "Marketing Automation",
-            "Performance Optimization",
-            "Cross-Channel Integration",
-            "ROI Maximization"
-          ]}
-          speed={25}
-          className="py-1"
-        />
+      {/* Advanced Infinite Marquee */}
+      <section className="bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Expertise</h3>
+            <p className="text-gray-600">Comprehensive marketing solutions for ambitious businesses</p>
+          </div>
+          <Marquee 
+            items={[
+              "Programmatic Advertising",
+              "Strategic Marketing", 
+              "Business Transformation",
+              "Data Analytics",
+              "Marketing Automation",
+              "Performance Optimization",
+              "Cross-Channel Integration",
+              "ROI Maximization",
+              "Customer Journey Mapping",
+              "Attribution Modeling",
+              "Campaign Optimization",
+              "Revenue Growth"
+            ]}
+            speed={30}
+            direction="left"
+            className="py-4"
+          />
+        </div>
       </section>
 
       {/* Differentiation Section */}
