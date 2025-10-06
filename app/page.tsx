@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 
 // Import custom components
+import { ScrambleText } from './components/ScrambleText';
 import { AnimatedNumber } from './components/AnimatedNumber';
 import { Marquee } from './components/Marquee';
 import { MagneticButton } from './components/MagneticButton';
@@ -126,15 +127,21 @@ export default function Home() {
                 </motion.div>
                 
                 <div className="space-y-2">
-                  <h1 className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter">
-                    Don't Compete
-                  </h1>
-                  <h1 className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter">
-                    On Budget.
-                  </h1>
-                  <h1 className="text-7xl md:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter">
-                    Compete On Strategy.
-                  </h1>
+                  <ScrambleText 
+                    text="Don't Compete" 
+                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
+                    speed={50}
+                  />
+                  <ScrambleText 
+                    text="On Budget." 
+                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
+                    speed={50}
+                  />
+                  <ScrambleText 
+                    text="Compete On Strategy." 
+                    className="text-7xl md:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter"
+                    speed={50}
+                  />
                 </div>
                 
                 <motion.p 
@@ -180,7 +187,11 @@ export default function Home() {
                       Real Client Growth
                     </div>
                     <div className="font-mono text-8xl font-bold text-gray-900">
-                      <AnimatedNumber value={3.4} suffix="x" />
+                      <ScrambleText 
+                        text="3.4x" 
+                        className="font-mono text-8xl font-bold text-gray-900"
+                        speed={30}
+                      />
                     </div>
                     <div className="text-gray-600 font-medium">
                       Average revenue increase, Year 1
@@ -402,7 +413,11 @@ export default function Home() {
                 className="text-center p-8 bg-white rounded-lg border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300 group"
               >
                 <div className="font-mono text-6xl font-bold text-gray-900 mb-4 group-hover:text-navy transition-colors duration-300">
-                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
+                  <ScrambleText 
+                    text={`${stat.value}${stat.suffix}`}
+                    className="font-mono text-6xl font-bold text-gray-900"
+                    speed={40}
+                  />
                 </div>
                 <div className="text-gray-600 font-medium text-sm uppercase tracking-wider">
                   {stat.label}
