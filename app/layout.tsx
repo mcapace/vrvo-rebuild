@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Analytics from './components/Analytics'
 import StructuredData from './components/StructuredData'
@@ -10,7 +10,19 @@ import ConsentTester from "./components/ConsentTester";
 import FacebookPixel from "./components/FacebookPixel";
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-inter'
+})
+
+const jetbrainsMono = JetBrains_Mono({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-jetbrains-mono'
+})
 
 export const metadata: Metadata = {
   title: 'Vrvo | Enterprise Programmatic Advertising for SMBs',
@@ -79,7 +91,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
@@ -88,7 +100,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <StructuredData />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <ConsentInitializer />
         <ConsentManager />
         <ConsentTester />

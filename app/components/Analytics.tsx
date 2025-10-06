@@ -7,9 +7,19 @@ export default function Analytics() {
     <>
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-8ZK93TZL47"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
+        onLoad={() => {
+          // Initialize GA after script loads
+          if (typeof window !== 'undefined' && window.gtag) {
+            window.gtag('js', new Date());
+            window.gtag('config', 'G-8ZK93TZL47', {
+              'anonymize_ip': true,
+              'cookie_flags': 'SameSite=None;Secure'
+            });
+          }
+        }}
       />
-      <Script id="google-analytics" strategy="afterInteractive">
+      <Script id="google-analytics" strategy="lazyOnload">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
@@ -40,12 +50,6 @@ export default function Analytics() {
               'security_storage': 'granted'
             });
           }
-          
-          gtag('js', new Date());
-          gtag('config', 'G-8ZK93TZL47', {
-            'anonymize_ip': true,
-            'cookie_flags': 'SameSite=None;Secure'
-          });
         `}
       </Script>
     </>

@@ -13,8 +13,8 @@ module.exports = {
         'navy-hover': '#2C4F7C',
       },
       fontFamily: {
-        'body': ['Inter', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'monospace'],
+        'body': ['var(--font-inter)', 'Inter', 'sans-serif'],
+        'mono': ['var(--font-jetbrains-mono)', 'JetBrains Mono', 'monospace'],
       },
       fontSize: {
         'hero': ['104px', { lineHeight: '0.9', letterSpacing: '-0.04em' }],

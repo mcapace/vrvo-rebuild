@@ -1,35 +1,22 @@
 "use client";
 
-import { useRef, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 import Image from 'next/image';
 import { 
   Target, 
   TrendUp, 
   Lightbulb, 
   ArrowRight,
-  CheckCircle,
-  List,
-  X
+  CheckCircle
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 
 // Import custom components
-import { ScrambleText } from './components/ScrambleText';
-import { MagneticCursor } from './components/MagneticCursor';
 import { AnimatedNumber } from './components/AnimatedNumber';
-import { ImageReveal } from './components/ImageReveal';
 import { Marquee } from './components/Marquee';
 import { MagneticButton } from './components/MagneticButton';
 import Footer from './components/Footer';
-
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 
 // Word Reveal Animation
@@ -71,84 +58,14 @@ const WordReveal = ({ text, className }: { text: string; className?: string }) =
 export default function Home() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
-  
-  // Lenis smooth scroll setup
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
-
-  // GSAP ScrollTrigger setup
-  useEffect(() => {
-    // Horizontal scroll section
-    const cards = gsap.utils.toArray('.scroll-card');
-    
-    gsap.to(cards, {
-      xPercent: -100 * (cards.length - 1),
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.scroll-container',
-        pin: true,
-        scrub: 2,
-        snap: {
-          snapTo: 1 / (cards.length - 1),
-          duration: { min: 0.4, max: 1.0 },
-          delay: 0.2,
-          ease: 'power2.inOut'
-        },
-        end: () => '+=' + ((document.querySelector('.scroll-container') as HTMLElement)?.offsetWidth || 0) * 2
-      }
-    });
-
-    // Text scramble on scroll
-    gsap.utils.toArray('.scramble-trigger').forEach((trigger: any) => {
-      gsap.fromTo(trigger, 
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: trigger,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Custom Cursor */}
-      <MagneticCursor />
-      
-      
+    <div className="min-h-screen bg-white relative">
       {/* Scroll Progress Bar */}
       <motion.div 
         className="fixed top-0 left-0 right-0 h-1 bg-navy origin-left z-50"
         style={{ scaleX }}
       />
-      
       
       {/* Navigation */}
       <motion.nav 
@@ -209,21 +126,15 @@ export default function Home() {
                 </motion.div>
                 
                 <div className="space-y-2">
-                  <ScrambleText 
-                    text="Don't Compete" 
-                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
-                    speed={50}
-                  />
-                  <ScrambleText 
-                    text="On Budget." 
-                    className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter"
-                    speed={50}
-                  />
-                  <ScrambleText 
-                    text="Compete On Strategy." 
-                    className="text-7xl md:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter"
-                    speed={50}
-                  />
+                  <h1 className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter">
+                    Don't Compete
+                  </h1>
+                  <h1 className="text-7xl md:text-8xl font-bold text-gray-900 block leading-[0.9] tracking-tighter">
+                    On Budget.
+                  </h1>
+                  <h1 className="text-7xl md:text-8xl font-bold text-navy block leading-[0.9] tracking-tighter">
+                    Compete On Strategy.
+                  </h1>
                 </div>
                 
                 <motion.p 
@@ -263,42 +174,22 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="relative"
               >
-                <motion.div
-                  animate={{ 
-                    y: [0, -10, 0],
-                    boxShadow: [
-                      "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                      "0 35px 60px -12px rgba(0, 0, 0, 0.35)",
-                      "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-                    ]
-                  }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="bg-white rounded-lg p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
-                >
+                <div className="bg-white rounded-lg p-8 shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-500 relative overflow-hidden">
                   <div className="space-y-6 relative z-10">
                     <div className="text-sm uppercase tracking-widest text-gray-600 font-medium">
                       Real Client Growth
                     </div>
-                    <motion.div 
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                      className="font-mono text-8xl font-bold text-gray-900"
-                    >
+                    <div className="font-mono text-8xl font-bold text-gray-900">
                       <AnimatedNumber value={3.4} suffix="x" />
-                    </motion.div>
+                    </div>
                     <div className="text-gray-600 font-medium">
                       Average revenue increase, Year 1
                     </div>
                     <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
-                      {/* Simple animated bar */}
-                      <motion.div 
-                        className="absolute inset-0 bg-gray-400"
-                        animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      />
+                      <div className="absolute inset-0 bg-gray-400" />
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </motion.div>
             </div>
           </div>
@@ -432,28 +323,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Methodology Section with Horizontal Scroll */}
-      <section id="methodology" className="py-8 bg-warm-linen">
-        <div className="max-w-7xl mx-auto px-6 mb-6">
+      {/* Methodology Section */}
+      <section id="methodology" className="py-32 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ amount: 0.2 }}
-            className="text-center"
+            className="text-center mb-12"
           >
-            <div className="text-burnt-orange text-sm uppercase tracking-widest mb-4">OUR APPROACH</div>
-            <h2 className="text-h2 font-display text-deep-charcoal mb-6">
+            <div className="text-navy text-sm uppercase tracking-widest mb-4 font-medium">OUR APPROACH</div>
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
               A Proven Path to Growth
             </h2>
-            <p className="text-body text-deep-charcoal/80 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Most agencies start at #4. We start at #1, building a solid foundation for lasting success.
             </p>
           </motion.div>
-        </div>
 
-        <div className="scroll-container relative w-full h-[600px] overflow-hidden">
-          <div className="flex h-full">
+          <div className="grid md:grid-cols-5 gap-8">
             {[
               { num: '01', title: 'Discovery & Audit', description: 'Deep dive into your current marketing, sales, and operational infrastructure to identify opportunities.' },
               { num: '02', title: 'Strategic Architecture', description: 'Develop a bespoke growth blueprint, outlining technology, channels, and a phased implementation plan.' },
@@ -461,17 +350,20 @@ export default function Home() {
               { num: '04', title: 'Campaign Launch', description: 'Execute programmatic campaigns and integrated marketing initiatives with precision and real-time optimization.' },
               { num: '05', title: 'Continuous Optimization', description: 'Ongoing monitoring, A/B testing, and strategic adjustments to maximize ROI and adapt to market changes.' },
             ].map((phase, i) => (
-              <div key={i} className="scroll-card w-screen flex-shrink-0 flex items-center justify-center">
-                <div className="relative max-w-md text-center">
-                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[80px] font-display text-deep-charcoal opacity-15 leading-none">
-                    {phase.num}
-                  </span>
-                  <h3 className="text-3xl font-display text-deep-charcoal mb-4 pt-24 uppercase tracking-wide">
-                    {phase.title}
-                  </h3>
-                  <p className="text-lg text-deep-charcoal/80 leading-relaxed">{phase.description}</p>
-                </div>
-              </div>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                viewport={{ amount: 0.2 }}
+                className="text-center p-6 bg-white rounded-lg border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300"
+              >
+                <div className="text-6xl font-bold text-gray-300 mb-4">{phase.num}</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 uppercase tracking-wide">
+                  {phase.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed text-sm">{phase.description}</p>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -541,7 +433,7 @@ export default function Home() {
       </section>
 
       {/* Differentiation Section */}
-      <section className="py-16 bg-gradient-to-b from-deep-charcoal to-black relative">
+      <section className="py-32 bg-gray-900">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -550,7 +442,7 @@ export default function Home() {
             viewport={{ amount: 0.2 }}
             className="text-center mb-12"
           >
-            <h2 className="text-h2 font-display text-warm-linen mb-6">
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight tracking-tight">
               Why Vrvo Works Differently
             </h2>
           </motion.div>
@@ -582,13 +474,13 @@ export default function Home() {
                 viewport={{ amount: 0.2 }}
                 className="space-y-4"
               >
-                <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center mb-4">
-                  <CheckCircle className="w-6 h-6 text-burnt-orange" />
+                <div className="w-12 h-12 bg-navy/20 rounded-lg flex items-center justify-center mb-4">
+                  <CheckCircle className="w-6 h-6 text-navy" />
                 </div>
-                <h3 className="text-2xl font-display text-warm-linen">
+                <h3 className="text-2xl font-bold text-white">
                   {principle.title}
                 </h3>
-                <p className="text-warm-linen/80 leading-relaxed">
+                <p className="text-gray-400 leading-relaxed">
                   {principle.description}
                 </p>
               </motion.div>
@@ -598,7 +490,7 @@ export default function Home() {
       </section>
 
       {/* Technology Section */}
-      <section className="py-16 bg-warm-linen">
+      <section className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -607,10 +499,10 @@ export default function Home() {
             viewport={{ amount: 0.2 }}
             className="text-center mb-12"
           >
-            <h2 className="text-h2 font-display text-deep-charcoal mb-6">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
               Enterprise Stack. SMB Accessibility.
             </h2>
-            <p className="text-body text-deep-charcoal/80 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
               These platforms have $50K+ minimums. We have enterprise agreements that let our clients access them.
             </p>
           </motion.div>
@@ -639,19 +531,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ amount: 0.2 }}
-                className="bg-white rounded-lg p-8 border border-deep-charcoal/10"
+                className="bg-white rounded-lg p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300"
               >
-                <h3 className="text-xl font-display text-deep-charcoal mb-4">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
                   {category.title}
                 </h3>
                 <div className="space-y-2 mb-4">
                   {category.platforms.map((platform, i) => (
-                    <div key={i} className="text-sm text-rich-navy font-mono">
+                    <div key={i} className="text-sm text-navy font-mono">
                       {platform}
                     </div>
                   ))}
                 </div>
-                <p className="text-sm text-deep-charcoal/70">
+                <p className="text-sm text-gray-600">
                   {category.description}
                 </p>
               </motion.div>
