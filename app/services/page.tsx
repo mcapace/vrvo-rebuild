@@ -17,8 +17,8 @@ export default function Services() {
               src="/logos/vrvo_wordmark_black.svg" 
               alt="Vrvo" 
               width={140} 
-              height={48}
-              className="h-10 w-auto"
+              height={40}
+              className="h-8 w-auto"
             />
           </Link>
           <div className="hidden md:flex items-center space-x-8">

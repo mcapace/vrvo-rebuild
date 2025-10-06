@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,22 +30,25 @@ ${message || 'No message provided'}
 Submitted from Vrvo website contact form
     `.trim();
 
-    // For now, we'll just log the submission
-    // In production, you would integrate with an email service like SendGrid, Resend, or Nodemailer
-    console.log('Contact form submission:', {
-      to: 'hello@vrvo.co',
-      subject: 'New Contact Form Submission',
-      content: emailContent
+    // Create transporter (using Gmail SMTP as example)
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER || 'your-email@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your-app-password'
+      }
     });
 
-    // TODO: Integrate with email service to send to hello@vrvo.co
-    // Example with Resend:
-    // await resend.emails.send({
-    //   from: 'noreply@vrvo.co',
-    //   to: 'hello@vrvo.co',
-    //   subject: 'New Contact Form Submission',
-    //   text: emailContent
-    // });
+    // Send email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER || 'noreply@vrvo.co',
+      to: 'hello@vrvo.co',
+      subject: 'New Contact Form Submission - Vrvo Website',
+      text: emailContent,
+      replyTo: email
+    });
+
+    console.log('Contact form email sent to hello@vrvo.co');
 
     return NextResponse.json(
       { message: 'Form submitted successfully' },

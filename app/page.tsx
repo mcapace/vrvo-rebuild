@@ -335,7 +335,7 @@ export default function Home() {
                   <h3 className="text-3xl font-bold text-white mb-2">
                     Business Transformation
                   </h3>
-                  <p className="text-navy text-sm uppercase tracking-widest font-medium">
+                  <p className="text-white/90 text-sm uppercase tracking-widest font-medium">
                     Infrastructure that scales
                   </p>
                 </div>

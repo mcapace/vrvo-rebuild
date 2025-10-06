@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,22 +24,25 @@ Email: ${email}
 Subscribed from Vrvo website newsletter signup
     `.trim();
 
-    // For now, we'll just log the subscription
-    // In production, you would integrate with an email service like SendGrid, Resend, or Nodemailer
-    console.log('Newsletter subscription:', {
-      to: 'hello@vrvo.co',
-      subject: 'New Newsletter Subscription',
-      content: emailContent
+    // Create transporter (using Gmail SMTP as example)
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER || 'your-email@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your-app-password'
+      }
     });
 
-    // TODO: Integrate with email service to send to hello@vrvo.co
-    // Example with Resend:
-    // await resend.emails.send({
-    //   from: 'noreply@vrvo.co',
-    //   to: 'hello@vrvo.co',
-    //   subject: 'New Newsletter Subscription',
-    //   text: emailContent
-    // });
+    // Send email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER || 'noreply@vrvo.co',
+      to: 'hello@vrvo.co',
+      subject: 'New Newsletter Subscription - Vrvo Website',
+      text: emailContent,
+      replyTo: email
+    });
+
+    console.log('Newsletter subscription email sent to hello@vrvo.co');
 
     return NextResponse.json(
       { message: 'Successfully subscribed to newsletter' },
