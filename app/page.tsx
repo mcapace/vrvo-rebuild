@@ -113,8 +113,8 @@ export default function Home() {
       </motion.nav>
 
       {/* Hero Section with Advanced Interactions */}
-      <section className="h-screen flex items-center relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+      <section className="min-h-screen flex items-center relative pt-20 sm:pt-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full py-4 sm:py-0">
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-center">
             {/* Left Column - 60% */}
             <div className="lg:col-span-7">
@@ -122,7 +122,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="space-y-8"
+                className="space-y-6 sm:space-y-8"
               >
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -246,7 +246,7 @@ export default function Home() {
             <div className="text-navy text-sm uppercase tracking-widest mb-4 font-medium">
               FULL-STACK CAPABILITIES
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
               Three Pillars. One Unified Strategy.
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -261,7 +261,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ amount: 0.2 }}
-              className="bg-white rounded-lg p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
+              className="bg-white rounded-lg p-4 sm:p-6 lg:p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 text-gray-300 text-[120px] font-bold opacity-20 -mr-4 -mt-4">
                 01
@@ -295,7 +295,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ amount: 0.2 }}
-              className="bg-white rounded-lg p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
+              className="bg-white rounded-lg p-4 sm:p-6 lg:p-8 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 text-gray-300 text-[120px] font-bold opacity-20 -mr-4 -mt-4">
                 02
