@@ -128,7 +128,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-navy text-sm uppercase tracking-widest font-medium"
+                  className="text-navy text-xs sm:text-sm uppercase tracking-wide sm:tracking-widest font-medium mb-2 sm:mb-0"
                 >
                   Enterprise Marketing. SMB Accessibility.
                 </motion.div>
