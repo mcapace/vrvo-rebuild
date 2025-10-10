@@ -8,6 +8,7 @@ import Footer from '../../components/Footer';
 
 export default function Success() {
   const [sessionId, setSessionId] = useState<string>('');
+  const isTestMode = sessionId.startsWith('cs_test_');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -38,6 +39,26 @@ export default function Success() {
           </div>
         </div>
       </nav>
+
+      {/* Test Mode Banner */}
+      {isTestMode && (
+        <div className="bg-green-50 border-b-2 border-green-400">
+          <div className="max-w-7xl mx-auto px-6 py-3">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center space-x-2">
+                <div className="flex-shrink-0">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-green-800">
+                    <strong>TEST MODE SUCCESS</strong> - This was a test transaction. No real money was charged.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Success Content */}
       <section className="py-16 px-6">
@@ -114,3 +135,6 @@ export default function Success() {
     </main>
   );
 }
+
+
+
