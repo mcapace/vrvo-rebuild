@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { REPORTING_SESSION_COOKIE } from '@/lib/reportingSession.constants'
 
+function noStoreHeaders(res: NextResponse) {
+  res.headers.set('Cache-Control', 'private, no-store, max-age=0, must-revalidate')
+  res.headers.set('Vary', 'Cookie')
+  return res
+}
+
 /**
  * Edge-safe gate: session tokens are `payload.signature` (base64url); reject missing/malformed
  * cookies before the response is cached. Cryptographic verification still runs on the server route.
@@ -23,7 +29,7 @@ export function middleware(request: NextRequest) {
   const isReportingLogin =
     pathname === '/reporting/login' || pathname.startsWith('/reporting/login/')
   if (isReportingLogin) {
-    return NextResponse.next()
+    return noStoreHeaders(NextResponse.next())
   }
 
   if (pathname.startsWith('/reporting')) {
@@ -32,8 +38,9 @@ export function middleware(request: NextRequest) {
       const url = request.nextUrl.clone()
       url.pathname = '/reporting/login'
       url.searchParams.set('from', pathname)
-      return NextResponse.redirect(url)
+      return noStoreHeaders(NextResponse.redirect(url))
     }
+    return noStoreHeaders(NextResponse.next())
   }
 
   return NextResponse.next()

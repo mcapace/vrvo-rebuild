@@ -173,7 +173,17 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
   const varianceAhead = lastDay ? lastDay.cumulativeActual > lastDay.cumulativePlanned : false
 
   return (
-    <div className="min-h-screen bg-slate-100/90 pb-12 font-body">
+    <div
+      data-reporting-dashboard="v3-dsp-overview"
+      className="min-h-screen bg-white pb-12 font-body shadow-[0_0_0_1px_rgba(15,23,42,0.06)] sm:mx-auto sm:max-w-[1420px] sm:rounded-b-xl"
+    >
+      {/* Build marker — remove after confirming CDN/clients pick up new chunks */}
+      <div
+        className="bg-gradient-to-r from-teal-500 via-navy to-amber-500 px-4 py-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-white shadow-inner"
+        role="status"
+      >
+        Reporting overview v3 · Missing this stripe = stale cache — hard refresh or Incognito
+      </div>
       {/* Utility ribbon — DSP-style shortcuts */}
       <div className="border-b border-navy/80 bg-navy">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-1 px-3 py-2 text-[11px] font-medium text-white/95 sm:px-5">
