@@ -95,6 +95,12 @@ function formatReportTs(iso: string) {
   }).format(d)
 }
 
+function scrollToReportingSection(id: string) {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 function bubbleFill(goal: number, pace: number): string {
   const gx = goal >= 90
   const py = pace >= 90
@@ -273,6 +279,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             headline={`${delivery.pctDelivered}% of booked impressions delivered.`}
             sub="Awareness + ticket-path display extension."
             footer="View flight detail"
+            footerAnchorId="reporting-flight-detail"
           >
             <div className="flex flex-col items-center gap-2 pt-1">
               {funnelTiers.map((t, i) => (
@@ -297,6 +304,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             headline={`${formatPercent(delivery.pctDelivered, 0)} of booked volume delivered.`}
             sub={`Booked media ~ $${formatNumber(Math.round(bookedSpend))} · Actual spend ~ $${formatNumber(Math.round(mediaCost))}`}
             footer="View pacing curve"
+            footerAnchorId="reporting-pacing-curve"
           >
             <div className="h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -338,6 +346,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             headline={`${channelBars[0]?.label ?? 'Geo'} leads impression mix.`}
             sub={campaign.geo.headline}
             footer="View geo breakdown"
+            footerAnchorId="reporting-geo-breakdown"
           >
             <div className="h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -366,6 +375,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             headline="Layered cohorts across modeled, purchase, and contextual signals."
             sub="Fixture split illustrative of activation paths."
             footer="View audience deals"
+            footerAnchorId="reporting-audience-strategy"
           >
             <div className="h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -505,7 +515,10 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
         </section>
 
         {/* Detailed charts — full width */}
-        <section className="mt-10 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section
+          id="reporting-pacing-curve"
+          className="mt-10 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
           <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
             Cumulative impression pacing
           </h3>
@@ -653,7 +666,10 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-3">
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section
+            id="reporting-geo-breakdown"
+            className="scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
             <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
               Geo mix
             </h3>
@@ -736,7 +752,10 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
         </div>
 
         {/* Daily table */}
-        <section className="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <section
+          id="reporting-flight-detail"
+          className="mt-8 scroll-mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+        >
           <div className="border-b border-slate-100 bg-slate-50 px-5 py-3">
             <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">Daily grain · export</h3>
             <p className="mt-1 text-[11px] text-slate-500">Fixture series — swap for warehouse / DSP pulls.</p>
@@ -806,7 +825,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
           </p>
         </section>
 
-        <section className="mt-8">
+        <section id="reporting-audience-strategy" className="mt-8 scroll-mt-8">
           <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Audience strategy</h3>
           <div className="mt-4 space-y-4">
             {campaign.audiences.map((bucket) => (
@@ -863,12 +882,15 @@ function OverviewCard({
   headline,
   sub,
   footer,
+  footerAnchorId,
   children,
 }: {
   eyebrow: string
   headline: string
   sub?: string
   footer: string
+  /** In-page section `id` for smooth scroll (reporting dashboard). */
+  footerAnchorId?: string
   children: ReactNode
 }) {
   return (
@@ -877,12 +899,22 @@ function OverviewCard({
       <p className="mt-2 text-[15px] font-semibold leading-snug text-slate-900">{headline}</p>
       {sub ? <p className="mt-2 text-[11px] leading-snug text-slate-500">{sub}</p> : null}
       <div className="mt-3 flex flex-1 flex-col">{children}</div>
-      <button
-        type="button"
-        className="mt-3 text-left text-[11px] font-semibold uppercase tracking-wide text-navy hover:underline"
-      >
-        {footer}
-      </button>
+      {footerAnchorId ? (
+        <a
+          href={`#${footerAnchorId}`}
+          className="mt-3 inline-block text-left text-[11px] font-semibold uppercase tracking-wide text-navy underline decoration-navy/30 underline-offset-2 transition-colors hover:text-navy hover:decoration-navy"
+          onClick={(e) => {
+            e.preventDefault()
+            scrollToReportingSection(footerAnchorId)
+          }}
+        >
+          {footer}
+        </a>
+      ) : (
+        <span className="mt-3 text-left text-[11px] font-semibold uppercase tracking-wide text-navy/50">
+          {footer}
+        </span>
+      )}
     </div>
   )
 }
