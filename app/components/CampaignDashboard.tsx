@@ -102,6 +102,10 @@ function scrollToReportingSection(id: string) {
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+const RIBBON_ACTION =
+  'rounded-sm px-2 py-1 text-left text-white/95 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50'
+const RIBBON_ACTION_PRIMARY = `${RIBBON_ACTION} bg-white/15 hover:bg-white/20`
+
 function bubbleFill(goal: number, pace: number): string {
   const gx = goal >= 90
   const py = pace >= 90
@@ -229,20 +233,39 @@ export function CampaignDashboard({
     >
       {/* Utility ribbon — DSP-style shortcuts */}
       <div className="border-b border-navy/80 bg-navy">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-1 px-3 py-2 text-[11px] font-medium text-white/95 sm:px-5">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-1 px-3 py-2 text-[11px] font-medium sm:px-5">
           <button
             type="button"
             onClick={handleExportReport}
-            className="rounded-sm px-2 py-1 hover:bg-white/10"
+            className={RIBBON_ACTION_PRIMARY}
+            aria-label="Export campaign report as CSV"
           >
             Export report
           </button>
           <span className="text-white/40">|</span>
-          <span className="rounded-sm px-2 py-1 hover:bg-white/10">Schedule report</span>
+          <button
+            type="button"
+            onClick={() => scrollToReportingSection('reporting-schedule-report')}
+            className={RIBBON_ACTION}
+          >
+            Schedule report
+          </button>
           <span className="text-white/40">|</span>
-          <span className="rounded-sm px-2 py-1 hover:bg-white/10">Line items</span>
+          <button
+            type="button"
+            onClick={() => scrollToReportingSection('reporting-line-items')}
+            className={RIBBON_ACTION}
+          >
+            Line items
+          </button>
           <span className="text-white/40">|</span>
-          <span className="rounded-sm px-2 py-1 hover:bg-white/10">Creative</span>
+          <button
+            type="button"
+            onClick={() => scrollToReportingSection('reporting-creative')}
+            className={RIBBON_ACTION}
+          >
+            Creative
+          </button>
           <span className="ml-auto tabular-nums text-white/70">
             IO {tradeDesk.meta.ioNumber}
           </span>
@@ -769,6 +792,42 @@ export function CampaignDashboard({
           </section>
         </div>
 
+        <section
+          id="reporting-line-items"
+          className="mt-8 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+          <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Line item detail</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Insertion IDs and supply path — mirror your DSP line item when connecting warehouse feeds.
+          </p>
+          <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">IO number</dt>
+              <dd className="mt-1 font-medium tabular-nums text-slate-900">{tradeDesk.meta.ioNumber}</dd>
+            </div>
+            <div className="sm:col-span-2">
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Line item</dt>
+              <dd className="mt-1 font-medium text-slate-900">{tradeDesk.meta.lineItem}</dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">DSP</dt>
+              <dd className="mt-1 text-slate-800">{tradeDesk.meta.dsp}</dd>
+            </div>
+            <div className="lg:col-span-2">
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Supply path</dt>
+              <dd className="mt-1 text-slate-800">{tradeDesk.meta.supplyPath}</dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Currency</dt>
+              <dd className="mt-1 tabular-nums text-slate-800">{tradeDesk.meta.currency}</dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Last data date</dt>
+              <dd className="mt-1 tabular-nums text-slate-800">{tradeDesk.meta.lastDataDate}</dd>
+            </div>
+          </dl>
+        </section>
+
         {/* Daily table */}
         <section
           id="reporting-flight-detail"
@@ -837,7 +896,10 @@ export function CampaignDashboard({
           </div>
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section
+          id="reporting-creative"
+          className="mt-8 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
           <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Click-through & assets</h3>
           <p className="mt-2 text-sm text-slate-600">{campaign.tracking.description}</p>
           <p className="mt-3 break-all rounded-lg bg-slate-50 p-3 text-xs text-navy underline">
@@ -873,6 +935,24 @@ export function CampaignDashboard({
               </article>
             ))}
           </div>
+        </section>
+
+        <section
+          id="reporting-schedule-report"
+          className="mt-8 scroll-mt-8 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 shadow-sm"
+        >
+          <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Schedule report delivery</h3>
+          <p className="mt-2 max-w-2xl text-sm text-slate-600">
+            Ask for recurring CSV exports or summary emails. We confirm cadence, filters, and recipients with your team.
+          </p>
+          <a
+            href={`mailto:hello@vrvo.co?subject=${encodeURIComponent(`Report schedule: ${campaign.name}`)}&body=${encodeURIComponent(
+              `Campaign: ${campaign.name} (${campaign.id})\n\nPreferred cadence (e.g. weekly / monthly):\nRecipients:\nNotes:\n`,
+            )}`}
+            className="mt-4 inline-flex items-center rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-navy/90"
+          >
+            Email hello@vrvo.co to schedule
+          </a>
         </section>
 
         <footer className="mt-12 border-t border-slate-200 pt-6 text-center text-[10px] text-slate-500">
