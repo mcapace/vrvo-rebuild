@@ -3,9 +3,18 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 
-export default function ReportingLoginPage() {
+function ReportingLoginShell() {
+  return (
+    <div className="flex min-h-[50vh] flex-col items-center justify-center px-4 py-16">
+      <div className="h-12 w-full max-w-md animate-pulse rounded-sm bg-slate-200" />
+      <p className="mt-4 text-xs text-slate-500">Loading sign-in…</p>
+    </div>
+  )
+}
+
+function ReportingLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [password, setPassword] = useState('')
@@ -41,6 +50,54 @@ export default function ReportingLoginPage() {
   }
 
   return (
+    <main className="flex flex-1 flex-col items-center justify-center px-4 py-16">
+      <div className="w-full max-w-md border border-gray-200 bg-white p-8 shadow-sm">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
+          Restricted · Campaign reporting
+        </p>
+        <h1 className="mt-3 text-2xl font-light tracking-tight text-gray-900">Sign in</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          Enter the reporting password to view trade desk dashboards.
+        </p>
+
+        <form onSubmit={onSubmit} className="mt-8 space-y-4">
+          <div>
+            <label htmlFor="reporting-password" className="sr-only">
+              Password
+            </label>
+            <input
+              id="reporting-password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 px-4 py-3 font-mono text-sm outline-none ring-navy focus:border-navy focus:ring-1 focus:ring-navy"
+              placeholder="Password"
+              required
+              disabled={pending}
+            />
+          </div>
+          {error ? (
+            <p className="font-mono text-xs text-red-700" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full bg-navy py-3 font-mono text-xs font-semibold uppercase tracking-[0.15em] text-white transition-colors hover:bg-navy-hover disabled:opacity-60"
+          >
+            {pending ? 'Signing in…' : 'Continue'}
+          </button>
+        </form>
+      </div>
+    </main>
+  )
+}
+
+export default function ReportingLoginPage() {
+  return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="border-b border-gray-200 bg-white px-4 py-6">
         <div className="mx-auto flex max-w-lg items-center justify-between">
@@ -59,49 +116,9 @@ export default function ReportingLoginPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center px-4 py-16">
-        <div className="w-full max-w-md border border-gray-200 bg-white p-8 shadow-sm">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
-            Restricted · Campaign reporting
-          </p>
-          <h1 className="mt-3 text-2xl font-light tracking-tight text-gray-900">Sign in</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Enter the reporting password to view trade desk dashboards.
-          </p>
-
-          <form onSubmit={onSubmit} className="mt-8 space-y-4">
-            <div>
-              <label htmlFor="reporting-password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="reporting-password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 px-4 py-3 font-mono text-sm outline-none ring-navy focus:border-navy focus:ring-1 focus:ring-navy"
-                placeholder="Password"
-                required
-                disabled={pending}
-              />
-            </div>
-            {error ? (
-              <p className="font-mono text-xs text-red-700" role="alert">
-                {error}
-              </p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={pending}
-              className="w-full bg-navy py-3 font-mono text-xs font-semibold uppercase tracking-[0.15em] text-white transition-colors hover:bg-navy-hover disabled:opacity-60"
-            >
-              {pending ? 'Signing in…' : 'Continue'}
-            </button>
-          </form>
-        </div>
-      </main>
+      <Suspense fallback={<ReportingLoginShell />}>
+        <ReportingLoginForm />
+      </Suspense>
     </div>
   )
 }
