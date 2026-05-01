@@ -1,7 +1,8 @@
 'use client'
 
 import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
-import { useMemo, type ReactNode } from 'react'
+import { downloadCampaignReportCsv } from '@/lib/reportingExport'
+import { useCallback, useMemo, type ReactNode } from 'react'
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -210,6 +211,10 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
   const lastDay = tradeDesk.daily[tradeDesk.daily.length - 1]
   const varianceAhead = lastDay ? lastDay.cumulativeActual > lastDay.cumulativePlanned : false
 
+  const handleExportReport = useCallback(() => {
+    downloadCampaignReportCsv(campaign)
+  }, [campaign])
+
   return (
     <div
       data-reporting-dashboard="v3-dsp-overview"
@@ -218,7 +223,13 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
       {/* Utility ribbon — DSP-style shortcuts */}
       <div className="border-b border-navy/80 bg-navy">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-1 px-3 py-2 text-[11px] font-medium text-white/95 sm:px-5">
-          <span className="rounded-sm px-2 py-1 hover:bg-white/10">Export</span>
+          <button
+            type="button"
+            onClick={handleExportReport}
+            className="rounded-sm px-2 py-1 hover:bg-white/10"
+          >
+            Export report
+          </button>
           <span className="text-white/40">|</span>
           <span className="rounded-sm px-2 py-1 hover:bg-white/10">Schedule report</span>
           <span className="text-white/40">|</span>
@@ -756,9 +767,18 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
           id="reporting-flight-detail"
           className="mt-8 scroll-mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
         >
-          <div className="border-b border-slate-100 bg-slate-50 px-5 py-3">
-            <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">Daily grain · export</h3>
-            <p className="mt-1 text-[11px] text-slate-500">Fixture series — swap for warehouse / DSP pulls.</p>
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 bg-slate-50 px-5 py-3">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">Daily grain · export</h3>
+              <p className="mt-1 text-[11px] text-slate-500">Fixture series — swap for warehouse / DSP pulls.</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleExportReport}
+              className="shrink-0 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-navy shadow-sm transition-colors hover:bg-slate-50"
+            >
+              Download CSV
+            </button>
           </div>
           <div className="max-h-[420px] overflow-auto">
             <table className="w-full min-w-[900px] border-collapse text-left text-xs">
