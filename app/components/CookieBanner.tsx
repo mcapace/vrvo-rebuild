@@ -39,7 +39,9 @@ export default function CookieBanner() {
       marketing: true
     };
     localStorage.setItem('cookieConsent', JSON.stringify(allPreferences));
+    setPreferences(allPreferences);
     setShowBanner(false);
+    setShowSettings(false);
     // Update Google Consent Mode v2
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
@@ -95,6 +97,7 @@ export default function CookieBanner() {
     };
     localStorage.setItem('cookieConsent', JSON.stringify(minimalPreferences));
     setShowBanner(false);
+    setShowSettings(false);
     // Deny all non-essential cookies in Google Consent Mode v2
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('consent', 'update', {
@@ -149,25 +152,29 @@ export default function CookieBanner() {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <button
-                  onClick={() => setShowSettings(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-deep-charcoal border border-deep-charcoal/20 rounded-sm hover:bg-deep-charcoal/5 transition-colors text-sm"
+                  type="button"
+                  onClick={acceptAll}
+                  className="bg-rich-navy text-white px-4 py-2 rounded-sm hover:bg-rich-navy/90 transition-colors text-sm font-medium shadow-sm"
+                  aria-label="Accept all cookies"
                 >
-                  <Settings className="w-4 h-4" />
-                  Customize
+                  Accept all
                 </button>
                 <button
+                  type="button"
                   onClick={rejectAll}
                   className="px-4 py-2 text-deep-charcoal border border-deep-charcoal/20 rounded-sm hover:bg-deep-charcoal/5 transition-colors text-sm"
                 >
-                  Reject All
+                  Reject non-essential
                 </button>
                 <button
-                  onClick={acceptAll}
-                  className="bg-rich-navy text-white px-4 py-2 rounded-sm hover:bg-rich-navy/90 transition-colors text-sm"
+                  type="button"
+                  onClick={() => setShowSettings(true)}
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-deep-charcoal border border-deep-charcoal/20 rounded-sm hover:bg-deep-charcoal/5 transition-colors text-sm"
                 >
-                  Accept All
+                  <Settings className="w-4 h-4 shrink-0" />
+                  Customize
                 </button>
               </div>
             </div>
@@ -247,18 +254,28 @@ export default function CookieBanner() {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-deep-charcoal/10">
+              <div className="flex flex-col gap-3 pt-4 border-t border-deep-charcoal/10 sm:flex-row sm:flex-wrap sm:items-center">
                 <button
+                  type="button"
+                  onClick={acceptAll}
+                  className="bg-rich-navy text-white px-4 py-2 rounded-sm hover:bg-rich-navy/90 transition-colors text-sm font-medium shadow-sm"
+                  aria-label="Accept all cookies"
+                >
+                  Accept all
+                </button>
+                <button
+                  type="button"
                   onClick={rejectAll}
                   className="px-4 py-2 text-deep-charcoal border border-deep-charcoal/20 rounded-sm hover:bg-deep-charcoal/5 transition-colors text-sm"
                 >
-                  Reject All
+                  Reject non-essential
                 </button>
                 <button
+                  type="button"
                   onClick={acceptSelected}
-                  className="bg-rich-navy text-white px-4 py-2 rounded-sm hover:bg-rich-navy/90 transition-colors text-sm"
+                  className="px-4 py-2 text-deep-charcoal border border-deep-charcoal/20 rounded-sm hover:bg-deep-charcoal/5 transition-colors text-sm"
                 >
-                  Save Preferences
+                  Save preferences
                 </button>
               </div>
             </div>
