@@ -3,6 +3,18 @@
  * Source: internal campaign brief / stakeholder email (May 2026).
  */
 
+import {
+  buildDeviceSplit,
+  buildFormatDelivery,
+  buildGeoDelivery,
+  buildTradeDeskDaily,
+  type DeviceSplitRow,
+  type FormatDeliveryRow,
+  type GeoDeliveryRow,
+  type TradeDeskDailyRow,
+  type TradeDeskMeta,
+} from './tradeDeskSeries'
+
 export interface AudienceCohort {
   title: string
   detail: string
@@ -13,6 +25,14 @@ export interface AudienceBucket {
   label: string
   description: string
   cohorts: AudienceCohort[]
+}
+
+export interface CampaignTradeDesk {
+  meta: TradeDeskMeta
+  daily: TradeDeskDailyRow[]
+  geoDelivery: GeoDeliveryRow[]
+  formatDelivery: FormatDeliveryRow[]
+  deviceSplit: DeviceSplitRow[]
 }
 
 export interface CampaignReport {
@@ -48,14 +68,20 @@ export interface CampaignReport {
     clickthroughUrl: string
   }
   audiences: AudienceBucket[]
+  tradeDesk: CampaignTradeDesk
 }
+
+const LAUNCH = '2026-03-27'
+/** As-of date for fixture daily grain (matches stakeholder “still in market” snapshot). */
+const REPORT_AS_OF = '2026-05-01'
+const FLIGHT_PLANNED_DAYS = 41
 
 export const bigSmokeMiamiCampaign: CampaignReport = {
   id: 'big_smoke_miami_2026',
   name: 'Big Smoke Miami — Digital Extension',
   clientFacingName: 'Big Smoke Miami digital extension',
   flight: {
-    launched: '2026-03-27',
+    launched: LAUNCH,
     inMarket: true,
     summary: 'Launched March 27; still in market.',
   },
@@ -160,4 +186,47 @@ export const bigSmokeMiamiCampaign: CampaignReport = {
       ],
     },
   ],
+  tradeDesk: (() => {
+    const deliveredImp = Math.round((357_000 * 89) / 100)
+    const meta: TradeDeskMeta = {
+      reportGeneratedAt: `${REPORT_AS_OF}T23:59:00.000Z`,
+      ioNumber: 'VRVO-IO-BSM-2026-Q2',
+      lineItem: 'Big Smoke Miami — Display Extension',
+      dsp: 'Programmatic (open auction + PMP)',
+      supplyPath: 'Direct publisher / SSP aggregated',
+      flightPlannedDays: FLIGHT_PLANNED_DAYS,
+      lastDataDate: REPORT_AS_OF,
+      currency: 'USD',
+    }
+    return {
+      meta,
+      daily: buildTradeDeskDaily({
+        launchDate: LAUNCH,
+        lastDate: REPORT_AS_OF,
+        impressionsBooked: 357_000,
+        pctDelivered: 89,
+        overallCtrPct: 1.024,
+        flightPlannedDays: FLIGHT_PLANNED_DAYS,
+      }),
+      geoDelivery: buildGeoDelivery(
+        deliveredImp,
+        ['Miami-Dade', 'Broward', 'Palm Beach'],
+        ['Tampa', 'Orlando', 'Naples / Fort Myers', 'Jacksonville'],
+      ),
+      formatDelivery: buildFormatDelivery(
+        [
+          '970×250 billboard',
+          '728×90 leaderboard',
+          '300×600 half-page',
+          '300×250 medium rectangle',
+          '300×300 mobile square',
+          '320×100 large mobile banner',
+          '320×50 mobile banner',
+          '160×600 wide skyscraper',
+        ],
+        deliveredImp,
+      ),
+      deviceSplit: buildDeviceSplit(),
+    }
+  })(),
 }
