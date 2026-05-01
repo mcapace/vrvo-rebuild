@@ -36,10 +36,19 @@ const TTD = {
   slate: '#64748b',
   plan: '#94a3b8',
   grid: '#e2e8f0',
-  qGood: 'rgba(16, 185, 129, 0.12)',
-  qWarn: 'rgba(234, 179, 8, 0.12)',
-  qBad: 'rgba(239, 68, 68, 0.1)',
-  qInfo: 'rgba(59, 130, 246, 0.1)',
+  /**
+   * Quadrant matrix fills — tuned to read like common Trade Desk–style goal vs pacing views:
+   * upper-right = healthy (cool mint green), upper-left = goal pressure (harvest gold),
+   * lower-left = critical (rose/coral), lower-right = pacing pressure with goal intact (blue).
+   */
+  quadrant: {
+    goalOkPaceOk: 'rgba(16, 185, 129, 0.26)',
+    goalRiskPaceOk: 'rgba(251, 191, 36, 0.34)',
+    goalRiskPaceRisk: 'rgba(251, 113, 133, 0.26)',
+    goalOkPaceRisk: 'rgba(59, 130, 246, 0.22)',
+  },
+  refGoal: '#0f766e',
+  refPace: '#1E3A5F',
 }
 
 function formatNumber(n: number) {
@@ -67,10 +76,11 @@ function formatReportTs(iso: string) {
 function bubbleFill(goal: number, pace: number): string {
   const gx = goal >= 90
   const py = pace >= 90
-  if (gx && py) return '#10b981'
-  if (!gx && py) return '#eab308'
-  if (!gx && !py) return '#ef4444'
-  return '#3b82f6'
+  // Match quadrant semantic hues (TTD-style traffic-light matrix)
+  if (gx && py) return '#059669'
+  if (!gx && py) return '#d97706'
+  if (!gx && !py) return '#e11d48'
+  return '#2563eb'
 }
 
 export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
@@ -367,19 +377,19 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
           </div>
 
           <div className="relative mt-4 h-[380px] w-full">
-            <div className="pointer-events-none absolute inset-0 grid grid-cols-2 grid-rows-2 text-[10px] font-medium uppercase tracking-wide text-slate-400">
-              <div className="flex items-start justify-start p-2">Goal at risk · Pacing ok</div>
-              <div className="flex items-start justify-end p-2">Goal on track · Pacing ok</div>
-              <div className="flex items-end justify-start p-2">Goal at risk · Pacing risk</div>
-              <div className="flex items-end justify-end p-2">Goal on track · Pacing risk</div>
+            <div className="pointer-events-none absolute inset-0 grid grid-cols-2 grid-rows-2 text-[10px] font-semibold uppercase tracking-wide">
+              <div className="flex items-start justify-start p-2 text-amber-900/70">Goal at risk · Pacing ok</div>
+              <div className="flex items-start justify-end p-2 text-emerald-900/75">Goal on track · Pacing ok</div>
+              <div className="flex items-end justify-start p-2 text-rose-900/75">Goal at risk · Pacing risk</div>
+              <div className="flex items-end justify-end p-2 text-blue-900/70">Goal on track · Pacing risk</div>
             </div>
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 24, right: 24, bottom: 24, left: 24 }}>
                 <CartesianGrid stroke={TTD.grid} strokeDasharray="4 4" />
-                <ReferenceArea x1={0} x2={90} y1={90} y2={100} fill={TTD.qWarn} />
-                <ReferenceArea x1={90} x2={100} y1={90} y2={100} fill={TTD.qGood} />
-                <ReferenceArea x1={0} x2={90} y1={0} y2={90} fill={TTD.qBad} />
-                <ReferenceArea x1={90} x2={100} y1={0} y2={90} fill={TTD.qInfo} />
+                <ReferenceArea x1={0} x2={90} y1={90} y2={100} fill={TTD.quadrant.goalRiskPaceOk} />
+                <ReferenceArea x1={90} x2={100} y1={90} y2={100} fill={TTD.quadrant.goalOkPaceOk} />
+                <ReferenceArea x1={0} x2={90} y1={0} y2={90} fill={TTD.quadrant.goalRiskPaceRisk} />
+                <ReferenceArea x1={90} x2={100} y1={0} y2={90} fill={TTD.quadrant.goalOkPaceRisk} />
                 <XAxis
                   type="number"
                   dataKey="goalOnTrack"
@@ -401,15 +411,17 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                 <ZAxis type="number" dataKey="spend" range={[60, 320]} />
                 <ReferenceLine
                   x={90}
-                  stroke="#64748b"
-                  strokeDasharray="4 4"
-                  label={{ value: '90% goal', position: 'top', fontSize: 10, fill: TTD.slate }}
+                  stroke={TTD.refGoal}
+                  strokeWidth={1.5}
+                  strokeDasharray="5 5"
+                  label={{ value: '90% goal', position: 'top', fontSize: 10, fill: TTD.refGoal }}
                 />
                 <ReferenceLine
                   y={90}
-                  stroke="#64748b"
-                  strokeDasharray="4 4"
-                  label={{ value: '90% pace', position: 'right', fontSize: 10, fill: TTD.slate }}
+                  stroke={TTD.refPace}
+                  strokeWidth={1.5}
+                  strokeDasharray="5 5"
+                  label={{ value: '90% pace', position: 'right', fontSize: 10, fill: TTD.refPace }}
                 />
                 <Tooltip
                   cursor={{ strokeDasharray: '3 3' }}
