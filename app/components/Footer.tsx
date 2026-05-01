@@ -56,7 +56,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; 2025 Vrvo. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Vrvo. All rights reserved.</p>
           <p className="mt-2">Enterprise marketing for ambitious businesses.</p>
           <div className="mt-4 flex justify-center gap-6">
             <Link href="/policy" className="hover:text-white transition-colors">Privacy Policy</Link>
