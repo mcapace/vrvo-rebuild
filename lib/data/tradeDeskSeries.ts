@@ -125,17 +125,17 @@ export function buildTradeDeskDaily(params: {
     cumA += actualImp
     cumP = Math.min(impressionsBooked, Math.round(plannedDailyRate * (i + 1)))
 
-    const baseCtr = overallCtrPct / 100
+    /** Daily CTR in percent (e.g. 1.024). Same units as `overallCtrPct`. */
     const ctrNoise = 1 + (Math.sin(i * 1.7) * 0.09 + Math.cos(i * 0.9) * 0.06)
-    const ctr = Math.max(0.55, Math.min(1.55, baseCtr * ctrNoise))
-    const clicks = Math.max(0, Math.round((actualImp * ctr) / 100))
+    const ctrPct = Math.max(0.55, Math.min(1.55, overallCtrPct * ctrNoise))
+    const clicks = Math.max(0, Math.round((actualImp * ctrPct) / 100))
 
     rows.push({
       date,
       plannedImp,
       actualImp,
       clicks,
-      ctr: ctr * 100,
+      ctr: ctrPct,
       cumulativeActual: cumA,
       cumulativePlanned: cumP,
       paceIndex: cumP > 0 ? cumA / cumP : 1,
