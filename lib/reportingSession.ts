@@ -1,7 +1,7 @@
 import crypto from 'crypto'
+import { REPORTING_SESSION_COOKIE } from './reportingSession.constants'
 
-/** HttpOnly cookie name for reporting access (signed session token). */
-export const REPORTING_SESSION_COOKIE = 'vrvo_reporting_session'
+export { REPORTING_SESSION_COOKIE }
 
 const DEFAULT_SESSION_MAX_AGE_S = 60 * 60 * 24 * 7 // 7 days
 

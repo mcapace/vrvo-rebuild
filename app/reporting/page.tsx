@@ -6,7 +6,11 @@ import Footer from '../components/Footer'
 import { ReportingSignOut } from '../components/ReportingSignOut'
 import { CampaignDashboard } from '../components/CampaignDashboard'
 import { bigSmokeMiamiCampaign } from '@/lib/data/bigSmokeMiami'
-import { REPORTING_SESSION_COOKIE, verifyReportingSessionToken } from '@/lib/reportingSession'
+import { REPORTING_SESSION_COOKIE } from '@/lib/reportingSession.constants'
+import { verifyReportingSessionToken } from '@/lib/reportingSession'
+
+/** Always run auth on the server; avoid cached HTML without the cookie check. */
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Campaign reporting | Vrvo',

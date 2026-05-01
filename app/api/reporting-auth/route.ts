@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
+import { REPORTING_SESSION_COOKIE } from '@/lib/reportingSession.constants'
 import {
-  REPORTING_SESSION_COOKIE,
   createReportingSessionToken,
   getExpectedReportingPassword,
   getReportingSessionMaxAge,
