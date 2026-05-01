@@ -49,6 +49,28 @@ const TTD = {
   },
   refGoal: '#0f766e',
   refPace: '#1E3A5F',
+  /** Budget / cap reference (matches forecast accent family in DSP UIs) */
+  refCap: '#b91c1c',
+  forecast: '#dc2626',
+}
+
+/** Unified Recharts presentation — matches quadrant “Trade Desk–style” density & palette */
+const CHART = {
+  marginLg: { top: 14, right: 18, left: 10, bottom: 10 },
+  marginMd: { top: 12, right: 16, left: 8, bottom: 10 },
+  tick: { fontSize: 10, fill: TTD.slate },
+  tickSm: { fontSize: 9, fill: TTD.slate },
+  gridH: { stroke: TTD.grid, strokeDasharray: '4 4' as const },
+  gridV: { stroke: TTD.grid, strokeDasharray: '4 4' as const },
+  tooltip: {
+    contentStyle: {
+      fontSize: 11,
+      border: '1px solid #e2e8f0',
+      borderRadius: 8,
+      boxShadow: '0 4px 14px rgba(15, 23, 42, 0.09)',
+    },
+  },
+  legend: { wrapperStyle: { fontSize: 11, paddingTop: 10 } },
 }
 
 function formatNumber(n: number) {
@@ -259,7 +281,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                     className="flex h-10 items-center justify-center rounded-sm text-center text-[11px] font-semibold text-white shadow-inner transition-all"
                     style={{
                       width: `${t.widthPct}%`,
-                      background: i === 0 ? TTD.orange : i === 1 ? TTD.orangeLight : '#fdba74',
+                      background: i === 0 ? TTD.navy : i === 1 ? TTD.teal : TTD.orangeLight,
                     }}
                   >
                     {formatNumber(t.value)}
@@ -278,34 +300,35 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
           >
             <div className="h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={spendAreaData} margin={{ top: 4, right: 4, left: -18, bottom: 0 }}>
+                <ComposedChart data={spendAreaData} margin={{ top: 6, right: 6, left: 2, bottom: 2 }}>
                   <defs>
-                    <linearGradient id="spendFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={TTD.teal} stopOpacity={0.35} />
-                      <stop offset="100%" stopColor={TTD.teal} stopOpacity={0.05} />
+                    <linearGradient id="spendFillMini" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={TTD.teal} stopOpacity={0.4} />
+                      <stop offset="100%" stopColor={TTD.teal} stopOpacity={0.06} />
                     </linearGradient>
                   </defs>
+                  <CartesianGrid {...CHART.gridH} vertical={false} />
                   <Area
                     type="monotone"
                     dataKey="spendK"
                     stroke={TTD.teal}
-                    fill="url(#spendFill)"
+                    fill="url(#spendFillMini)"
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="forecastK"
-                    stroke="#dc2626"
+                    stroke={TTD.forecast}
                     strokeDasharray="5 5"
                     strokeWidth={1.5}
                     dot={false}
                   />
-                  <XAxis dataKey="shortDate" tick={{ fontSize: 9 }} stroke={TTD.slate} hide />
-                  <YAxis tick={{ fontSize: 9 }} stroke={TTD.slate} width={28} />
+                  <XAxis dataKey="shortDate" tick={CHART.tickSm} stroke={TTD.slate} hide />
+                  <YAxis tick={CHART.tickSm} stroke={TTD.slate} width={32} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
-            <p className="mt-1 text-center text-[10px] text-slate-400">
+            <p className="mt-1 text-center text-[10px] text-slate-500">
               Teal = cumulative delivered (000s) · Red dashed = planned cumulative
             </p>
           </OverviewCard>
@@ -321,11 +344,18 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                 <BarChart
                   data={channelBars}
                   layout="vertical"
-                  margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
+                  margin={{ top: 2, right: 8, left: 0, bottom: 2 }}
                 >
+                  <CartesianGrid {...CHART.gridV} horizontal={false} />
                   <XAxis type="number" hide />
-                  <YAxis type="category" dataKey="label" width={78} tick={{ fontSize: 9 }} stroke={TTD.slate} />
-                  <Bar dataKey="imps" fill={TTD.teal} radius={[0, 3, 3, 0]} barSize={10} />
+                  <YAxis
+                    type="category"
+                    dataKey="label"
+                    width={78}
+                    tick={CHART.tickSm}
+                    stroke={TTD.slate}
+                  />
+                  <Bar dataKey="imps" fill={TTD.teal} radius={[0, 4, 4, 0]} barSize={10} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -350,11 +380,11 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                     outerRadius={62}
                     paddingAngle={2}
                   >
-                    {[TTD.purple, TTD.navy, TTD.orangeLight].map((c, i) => (
+                    {[TTD.teal, TTD.navy, TTD.orangeLight].map((c, i) => (
                       <Cell key={i} fill={c} stroke="#fff" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: number) => `${v}%`} />
+                  <Tooltip contentStyle={CHART.tooltip.contentStyle} formatter={(v: number) => `${v}%`} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -384,7 +414,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
               <div className="flex items-end justify-end p-2 text-blue-900/70">Goal on track · Pacing risk</div>
             </div>
             <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 24, right: 24, bottom: 24, left: 24 }}>
+              <ScatterChart margin={{ top: 28, right: 28, bottom: 28, left: 28 }}>
                 <CartesianGrid stroke={TTD.grid} strokeDasharray="4 4" />
                 <ReferenceArea x1={0} x2={90} y1={90} y2={100} fill={TTD.quadrant.goalRiskPaceOk} />
                 <ReferenceArea x1={90} x2={100} y1={90} y2={100} fill={TTD.quadrant.goalOkPaceOk} />
@@ -395,7 +425,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                   dataKey="goalOnTrack"
                   name="Goal proxy"
                   domain={[40, 100]}
-                  tick={{ fontSize: 10, fill: TTD.slate }}
+                  tick={CHART.tick}
                   stroke={TTD.slate}
                   label={{ value: 'Delivery / goal health →', position: 'bottom', offset: 0, fontSize: 11 }}
                 />
@@ -404,7 +434,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                   dataKey="pacing"
                   name="Pacing"
                   domain={[40, 100]}
-                  tick={{ fontSize: 10, fill: TTD.slate }}
+                  tick={CHART.tick}
                   stroke={TTD.slate}
                   label={{ value: 'Pacing health', angle: -90, position: 'insideLeft', fontSize: 11 }}
                 />
@@ -425,7 +455,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                 />
                 <Tooltip
                   cursor={{ strokeDasharray: '3 3' }}
-                  contentStyle={{ fontSize: 11 }}
+                  contentStyle={CHART.tooltip.contentStyle}
                   formatter={(value: number, name: string, props: { payload?: { name?: string } }) => {
                     if (name === 'spend') return [formatNumber(Math.round(value)), 'Impressions']
                     return [value, name]
@@ -481,37 +511,44 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
           </h3>
           <div className="mt-4 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={cumulativeChartData} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={TTD.grid} vertical={false} />
-                <XAxis dataKey="shortDate" tick={{ fontSize: 10 }} stroke={TTD.slate} />
+              <ComposedChart data={cumulativeChartData} margin={CHART.marginLg}>
+                <defs>
+                  <linearGradient id="planBandMain" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={TTD.plan} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={TTD.plan} stopOpacity={0.06} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid {...CHART.gridH} vertical={false} />
+                <XAxis dataKey="shortDate" tick={CHART.tick} stroke={TTD.slate} />
                 <YAxis
-                  tick={{ fontSize: 10 }}
+                  tick={CHART.tick}
                   stroke={TTD.slate}
                   tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`)}
                 />
-                <Tooltip contentStyle={{ fontSize: 11 }} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip contentStyle={CHART.tooltip.contentStyle} />
+                <Legend {...CHART.legend} />
                 <Area
                   type="monotone"
                   dataKey="cumulativePlanned"
                   name="Planned cumulative"
                   stroke={TTD.plan}
-                  fill={TTD.grid}
-                  fillOpacity={0.45}
+                  fill="url(#planBandMain)"
+                  fillOpacity={1}
                 />
                 <Line
                   type="monotone"
                   dataKey="cumulativeActual"
                   name="Actual cumulative"
-                  stroke={TTD.navy}
-                  strokeWidth={2}
+                  stroke={TTD.teal}
+                  strokeWidth={2.5}
                   dot={false}
                 />
                 <ReferenceLine
                   y={delivery.impressionsPurchased}
-                  stroke="#dc2626"
-                  strokeDasharray="4 4"
-                  label={{ value: 'Booked cap', fontSize: 10, fill: '#991b1b' }}
+                  stroke={TTD.refCap}
+                  strokeDasharray="5 5"
+                  strokeWidth={1.5}
+                  label={{ value: 'Booked cap', fontSize: 10, fill: TTD.refCap }}
                 />
               </ComposedChart>
             </ResponsiveContainer>
@@ -526,20 +563,28 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
                 data={cumulativeChartData.map((d) => ({ ...d, variance: d.actualImp - d.plannedImp }))}
-                margin={{ top: 8, right: 16, left: 4, bottom: 4 }}
+                margin={CHART.marginLg}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke={TTD.grid} vertical={false} />
-                <XAxis dataKey="shortDate" tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                <YAxis yAxisId="left" tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                <Tooltip contentStyle={{ fontSize: 11 }} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar yAxisId="left" dataKey="actualImp" name="Actual imps" fill={TTD.navy} radius={[2, 2, 0, 0]} />
+                <CartesianGrid {...CHART.gridH} vertical={false} />
+                <XAxis dataKey="shortDate" tick={CHART.tick} stroke={TTD.slate} />
+                <YAxis yAxisId="left" tick={CHART.tick} stroke={TTD.slate} />
+                <Tooltip contentStyle={CHART.tooltip.contentStyle} />
+                <Legend {...CHART.legend} />
+                <Bar
+                  yAxisId="left"
+                  dataKey="actualImp"
+                  name="Actual imps"
+                  fill={TTD.teal}
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={56}
+                />
                 <Line
                   yAxisId="left"
                   type="monotone"
                   dataKey="plannedImp"
                   name="Planned daily slice"
-                  stroke={TTD.slate}
+                  stroke={TTD.navyMuted}
+                  strokeDasharray="6 4"
                   strokeWidth={2}
                   dot={false}
                 />
@@ -553,13 +598,30 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">CTR trend</h3>
             <div className="mt-4 h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={cumulativeChartData} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={TTD.grid} vertical={false} />
-                  <XAxis dataKey="shortDate" tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                  <YAxis tick={{ fontSize: 10 }} stroke={TTD.slate} tickFormatter={(v) => `${v.toFixed(2)}%`} />
-                  <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => [`${v.toFixed(3)}%`, 'CTR']} />
-                  <ReferenceLine y={performance.ctrPct} stroke="#059669" strokeDasharray="4 4" />
-                  <Line type="monotone" dataKey="ctr" name="CTR" stroke={TTD.navyMuted} strokeWidth={2} dot={false} />
+                <LineChart data={cumulativeChartData} margin={CHART.marginMd}>
+                  <CartesianGrid {...CHART.gridH} vertical={false} />
+                  <XAxis dataKey="shortDate" tick={CHART.tick} stroke={TTD.slate} />
+                  <YAxis tick={CHART.tick} stroke={TTD.slate} tickFormatter={(v) => `${v.toFixed(2)}%`} />
+                  <Tooltip
+                    contentStyle={CHART.tooltip.contentStyle}
+                    formatter={(v: number) => [`${v.toFixed(3)}%`, 'CTR']}
+                  />
+                  <Legend {...CHART.legend} />
+                  <ReferenceLine
+                    y={performance.ctrPct}
+                    stroke={TTD.refGoal}
+                    strokeDasharray="5 5"
+                    strokeWidth={1.5}
+                    label={{ value: 'Blended avg', fontSize: 10, fill: TTD.refGoal }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="ctr"
+                    name="CTR"
+                    stroke={TTD.navy}
+                    strokeWidth={2}
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -569,13 +631,21 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Pace index vs plan</h3>
             <div className="mt-4 h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={cumulativeChartData} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={TTD.grid} vertical={false} />
-                  <XAxis dataKey="shortDate" tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                  <YAxis tick={{ fontSize: 10 }} stroke={TTD.slate} tickFormatter={(v) => `${v.toFixed(0)}%`} />
-                  <Tooltip contentStyle={{ fontSize: 11 }} />
-                  <ReferenceLine y={0} stroke={TTD.slate} />
-                  <Line type="monotone" dataKey="pacePct" name="Δ vs plan" stroke="#b45309" strokeWidth={2} dot={false} />
+                <LineChart data={cumulativeChartData} margin={CHART.marginMd}>
+                  <CartesianGrid {...CHART.gridH} vertical={false} />
+                  <XAxis dataKey="shortDate" tick={CHART.tick} stroke={TTD.slate} />
+                  <YAxis tick={CHART.tick} stroke={TTD.slate} tickFormatter={(v) => `${v.toFixed(0)}%`} />
+                  <Tooltip contentStyle={CHART.tooltip.contentStyle} />
+                  <Legend {...CHART.legend} />
+                  <ReferenceLine y={0} stroke={TTD.slate} strokeDasharray="4 4" />
+                  <Line
+                    type="monotone"
+                    dataKey="pacePct"
+                    name="Δ vs plan"
+                    stroke={TTD.refPace}
+                    strokeWidth={2}
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -596,13 +666,13 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                     label: g.region.length > 14 ? `${g.region.slice(0, 12)}…` : g.region,
                   }))}
                   layout="vertical"
-                  margin={{ top: 4, right: 16, left: 4, bottom: 4 }}
+                  margin={{ top: 10, right: 18, left: 8, bottom: 10 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke={TTD.grid} horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                  <YAxis type="category" dataKey="label" width={96} tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                  <Tooltip contentStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="impressions" fill={TTD.navy} radius={[0, 3, 3, 0]} />
+                  <CartesianGrid {...CHART.gridV} horizontal={false} />
+                  <XAxis type="number" tick={CHART.tick} stroke={TTD.slate} />
+                  <YAxis type="category" dataKey="label" width={96} tick={CHART.tick} stroke={TTD.slate} />
+                  <Tooltip contentStyle={CHART.tooltip.contentStyle} />
+                  <Bar dataKey="impressions" fill={TTD.teal} radius={[0, 4, 4, 0]} maxBarSize={28} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -615,12 +685,19 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
             <p className="mt-2 text-[11px] text-slate-500">{campaign.creative.environments}</p>
             <div className="mt-4 h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={tradeDesk.formatDelivery} margin={{ top: 4, right: 8, left: 8, bottom: 48 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={TTD.grid} vertical={false} />
-                  <XAxis dataKey="format" tick={{ fontSize: 9 }} stroke={TTD.slate} angle={-35} textAnchor="end" height={56} />
-                  <YAxis tick={{ fontSize: 10 }} stroke={TTD.slate} />
-                  <Tooltip contentStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="impressions" fill={TTD.navyMuted} radius={[3, 3, 0, 0]} />
+                <BarChart data={tradeDesk.formatDelivery} margin={{ top: 12, right: 14, left: 10, bottom: 52 }}>
+                  <CartesianGrid {...CHART.gridH} vertical={false} />
+                  <XAxis
+                    dataKey="format"
+                    tick={CHART.tickSm}
+                    stroke={TTD.slate}
+                    angle={-35}
+                    textAnchor="end"
+                    height={56}
+                  />
+                  <YAxis tick={CHART.tick} stroke={TTD.slate} />
+                  <Tooltip contentStyle={CHART.tooltip.contentStyle} />
+                  <Bar dataKey="impressions" fill={TTD.teal} radius={[4, 4, 0, 0]} maxBarSize={48} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -643,12 +720,15 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
                     outerRadius={78}
                     paddingAngle={2}
                   >
-                    {[TTD.navy, TTD.navyMuted, TTD.grid].map((c, i) => (
+                    {[TTD.teal, TTD.navy, TTD.orangeLight].map((c, i) => (
                       <Cell key={i} fill={c} stroke="#fff" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Tooltip formatter={(v: number) => `${v.toFixed(1)}%`} />
+                  <Legend {...CHART.legend} />
+                  <Tooltip
+                    contentStyle={CHART.tooltip.contentStyle}
+                    formatter={(v: number) => `${v.toFixed(1)}%`}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
