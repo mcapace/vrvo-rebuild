@@ -27,6 +27,8 @@ export default async function ReportingPage() {
     redirect('/reporting/login?from=%2Freporting')
   }
 
+  const generatedAt = new Date().toISOString()
+
   return (
     <>
       <Navigation />
@@ -36,7 +38,7 @@ export default async function ReportingPage() {
             <ReportingSignOut />
           </div>
         </div>
-        <CampaignDashboard campaign={bigSmokeMiamiCampaign} />
+        <CampaignDashboard campaign={bigSmokeMiamiCampaign} generatedAt={generatedAt} />
       </main>
       <Footer />
     </>

@@ -112,7 +112,14 @@ function bubbleFill(goal: number, pace: number): string {
   return '#2563eb'
 }
 
-export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
+export function CampaignDashboard({
+  campaign,
+  /** Server request time — true “last refresh” for this page view. */
+  generatedAt,
+}: {
+  campaign: CampaignReport
+  generatedAt: string
+}) {
   const { delivery, tradeDesk, performance } = campaign
   const deliveredImp = Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
   const mediaCost = (deliveredImp / 1000) * delivery.cpmUsd
@@ -212,8 +219,8 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
   const varianceAhead = lastDay ? lastDay.cumulativeActual > lastDay.cumulativePlanned : false
 
   const handleExportReport = useCallback(() => {
-    downloadCampaignReportCsv(campaign)
-  }, [campaign])
+    downloadCampaignReportCsv(campaign, { generatedAt })
+  }, [campaign, generatedAt])
 
   return (
     <div
@@ -257,7 +264,7 @@ export function CampaignDashboard({ campaign }: { campaign: CampaignReport }) {
               <div>
                 Last refresh{' '}
                 <span className="font-medium text-slate-800">
-                  {formatReportTs(tradeDesk.meta.reportGeneratedAt)}
+                  {formatReportTs(generatedAt)}
                 </span>
               </div>
               <div className="mt-0.5">{tradeDesk.meta.lineItem}</div>

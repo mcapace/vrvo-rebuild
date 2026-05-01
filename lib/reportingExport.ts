@@ -13,13 +13,22 @@ function row(values: (string | number | boolean)[]): string {
 /** UTF-8 BOM so Excel on Windows recognizes UTF-8. */
 const CSV_BOM = '\uFEFF'
 
+export type CampaignReportExportOptions = {
+  /** ISO-8601 instant; defaults to `new Date().toISOString()` at export time. */
+  generatedAt?: string
+}
+
 /**
  * Single workbook-style CSV: summary metrics, daily grain, then geo / format / device blocks.
  * Suitable for spreadsheets or BI ingestion.
  */
-export function buildCampaignReportCsv(campaign: CampaignReport): string {
+export function buildCampaignReportCsv(
+  campaign: CampaignReport,
+  options?: CampaignReportExportOptions,
+): string {
   const { delivery, tradeDesk, performance, flight } = campaign
   const td = tradeDesk.meta
+  const reportGeneratedAt = options?.generatedAt ?? new Date().toISOString()
 
   const deliveredImp = Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
   const mediaCost = (deliveredImp / 1000) * delivery.cpmUsd
@@ -45,7 +54,7 @@ export function buildCampaignReportCsv(campaign: CampaignReport): string {
   lines.push(row(['Supply path', td.supplyPath]))
   lines.push(row(['Currency', td.currency]))
   lines.push(row(['Flight planned days', td.flightPlannedDays]))
-  lines.push(row(['Report generated at', td.reportGeneratedAt]))
+  lines.push(row(['Report generated at', reportGeneratedAt]))
   lines.push(row(['Last data date', td.lastDataDate]))
   lines.push(row(['Booked impressions', delivery.impressionsPurchased]))
   lines.push(row(['Delivered impressions', deliveredImp]))
@@ -127,8 +136,11 @@ export function buildCampaignReportCsv(campaign: CampaignReport): string {
   return CSV_BOM + lines.join('\n')
 }
 
-export function downloadCampaignReportCsv(campaign: CampaignReport): void {
-  const csv = buildCampaignReportCsv(campaign)
+export function downloadCampaignReportCsv(
+  campaign: CampaignReport,
+  options?: CampaignReportExportOptions,
+): void {
+  const csv = buildCampaignReportCsv(campaign, options)
   const stamp = new Date().toISOString().slice(0, 10)
   const safeId = campaign.id.replace(/[^a-zA-Z0-9-_]/g, '_')
   const filename = `VRVO_report_${safeId}_${stamp}.csv`
