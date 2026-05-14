@@ -1,6 +1,7 @@
 'use client'
 
 import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CampaignDashboard } from './CampaignDashboard'
@@ -944,9 +945,21 @@ export function ReportingScenarioLab() {
           aria-label="Expanded campaign report"
         >
           <div className="mx-auto flex max-w-[1420px] flex-wrap items-center justify-between gap-3 border-b border-slate-300/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-sm sm:px-6">
-            <p className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-900" title={scenario.name}>
-              {scenario.name}
-            </p>
+            <div className="flex min-w-0 max-w-full flex-1 items-center gap-3 sm:gap-4">
+              <Link href="/" className="flex shrink-0 items-center" aria-label="Vrvo home">
+                <Image
+                  src="/logos/vrvo_wordmark_black.svg"
+                  alt="Vrvo"
+                  width={140}
+                  height={40}
+                  className="h-7 w-auto sm:h-8"
+                  priority
+                />
+              </Link>
+              <p className="min-w-0 truncate text-sm font-semibold text-slate-900" title={scenario.name}>
+                {scenario.name}
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => setReportExpanded(false)}
