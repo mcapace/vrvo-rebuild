@@ -149,6 +149,27 @@ export function ReportingScenarioLab() {
   formRef.current = form
 
   const [saveBanner, setSaveBanner] = useState<{ orderId: string; at: string } | null>(null)
+  const [reportExpanded, setReportExpanded] = useState(false)
+  const expandedScrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!scenario) setReportExpanded(false)
+  }, [scenario])
+
+  useEffect(() => {
+    if (!reportExpanded) return
+    expandedScrollRef.current?.scrollTo(0, 0)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setReportExpanded(false)
+    }
+    window.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [reportExpanded])
 
   const refreshOrders = useCallback(() => {
     setSavedOrders(loadReportingOrders())
@@ -328,7 +349,8 @@ export function ReportingScenarioLab() {
   const fieldError = useCallback((field: string) => issues.find((i) => i.field === field)?.message, [issues])
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pb-16 pt-6 sm:px-6">
+    <>
+      <div className="mx-auto max-w-[1400px] px-4 pb-16 pt-6 sm:px-6">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Reporting · orders</p>
@@ -864,23 +886,80 @@ export function ReportingScenarioLab() {
                 inputs.
               </p>
             </div>
+          ) : reportExpanded ? (
+            <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-8 text-center">
+              <p className="text-sm font-medium text-slate-700">Report open in expanded view</p>
+              <p className="mt-2 max-w-sm text-xs text-slate-500">
+                Use <span className="font-semibold text-slate-700">Shrink report</span> in the bar above the dashboard, or press{' '}
+                <kbd className="rounded border border-slate-300 bg-white px-1 font-mono text-[10px]">Esc</kbd>.
+              </p>
+              <button
+                type="button"
+                onClick={() => setReportExpanded(false)}
+                className="mt-4 rounded-md bg-navy px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-navy/90"
+              >
+                Shrink report
+              </button>
+            </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-xs text-slate-500">
-                {activeOrderId ? (
-                  <>
-                    Active order <span className="font-mono font-semibold text-slate-800">{activeOrderId}</span> — use the
-                    ribbon <span className="font-medium">Export report</span> for CSV.
-                  </>
-                ) : (
-                  <>Preview run — ribbon <span className="font-medium">Export report</span> downloads CSV for this preview.</>
-                )}
-              </p>
-              <CampaignDashboard campaign={scenario} generatedAt={generatedAt} />
+              <div className="flex flex-wrap items-start justify-between gap-3 gap-y-2">
+                <p className="min-w-0 flex-1 text-xs text-slate-500">
+                  {activeOrderId ? (
+                    <>
+                      Active order <span className="font-mono font-semibold text-slate-800">{activeOrderId}</span> — use the
+                      ribbon <span className="font-medium">Export report</span> for CSV.
+                    </>
+                  ) : (
+                    <>
+                      Preview run — ribbon <span className="font-medium">Export report</span> downloads CSV for this preview.
+                    </>
+                  )}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setReportExpanded(true)}
+                  className="shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-navy shadow-sm transition-colors hover:bg-slate-50"
+                >
+                  Expand report
+                </button>
+              </div>
+              <CampaignDashboard
+                campaign={scenario}
+                generatedAt={generatedAt}
+                onExpandReport={() => setReportExpanded(true)}
+              />
             </div>
           )}
         </div>
       </div>
     </div>
+
+      {scenario && generatedAt && reportExpanded ? (
+        <div
+          ref={expandedScrollRef}
+          className="fixed inset-0 z-[90] overflow-y-auto bg-slate-200/95 pb-8 pt-3 shadow-[0_-8px_40px_rgba(15,23,42,0.12)]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Expanded campaign report"
+        >
+          <div className="mx-auto flex max-w-[1420px] flex-wrap items-center justify-between gap-3 border-b border-slate-300/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-sm sm:px-6">
+            <p className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-900" title={scenario.name}>
+              {scenario.name}
+            </p>
+            <button
+              type="button"
+              onClick={() => setReportExpanded(false)}
+              className="shrink-0 rounded-md bg-navy px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-navy/90"
+            >
+              Shrink report
+            </button>
+          </div>
+          <div className="mx-auto max-w-[1420px] px-2 pt-2 sm:px-4">
+            <CampaignDashboard campaign={scenario} generatedAt={generatedAt} />
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }

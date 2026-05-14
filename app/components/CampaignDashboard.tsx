@@ -125,9 +125,12 @@ export function CampaignDashboard({
   campaign,
   /** Server request time — true “last refresh” for this page view. */
   generatedAt,
+  /** When set, ribbon shows “Expand report” (e.g. order-entry page with a narrow preview column). */
+  onExpandReport,
 }: {
   campaign: CampaignReport
   generatedAt: string
+  onExpandReport?: () => void
 }) {
   const { delivery, tradeDesk, performance } = campaign
   const deliveredImp = Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
@@ -272,6 +275,19 @@ export function CampaignDashboard({
             Creative
           </button>
           <span className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-1 tabular-nums text-white/70">
+            {onExpandReport ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onExpandReport}
+                  className={RIBBON_ACTION}
+                  aria-label="Expand report to full window"
+                >
+                  Expand report
+                </button>
+                <span className="text-white/40">|</span>
+              </>
+            ) : null}
             <Link
               href="/reporting/scenario"
               className="font-medium text-white/95 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white hover:decoration-white/60"
