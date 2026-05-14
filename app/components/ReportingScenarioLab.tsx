@@ -945,8 +945,8 @@ export function ReportingScenarioLab() {
           aria-label="Expanded campaign report"
         >
           <div className="mx-auto flex max-w-[1420px] flex-wrap items-center justify-between gap-3 border-b border-slate-300/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-sm sm:px-6">
-            <div className="flex min-w-0 max-w-full flex-1 items-center gap-3 sm:gap-4">
-              <Link href="/" className="flex shrink-0 items-center" aria-label="Vrvo home">
+            <div className="flex min-w-0 max-w-full flex-1 items-start gap-3 sm:gap-4">
+              <Link href="/" className="flex shrink-0 items-center pt-1" aria-label="Vrvo home">
                 <Image
                   src="/logos/vrvo_wordmark_black.svg"
                   alt="Vrvo"
@@ -956,14 +956,24 @@ export function ReportingScenarioLab() {
                   priority
                 />
               </Link>
-              <p className="min-w-0 truncate text-sm font-semibold text-slate-900" title={scenario.name}>
-                {scenario.name}
-              </p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-slate-900" title={scenario.name}>
+                  {scenario.name}
+                </p>
+                <p
+                  className="mt-0.5 truncate text-xs text-slate-600"
+                  title={`${scenario.clientFacingName} · IO ${scenario.tradeDesk.meta.ioNumber}`}
+                >
+                  <span className="font-medium text-slate-700">{scenario.clientFacingName}</span>
+                  <span className="text-slate-400"> · </span>
+                  <span className="tabular-nums">IO {scenario.tradeDesk.meta.ioNumber}</span>
+                </p>
+              </div>
             </div>
             <button
               type="button"
               onClick={() => setReportExpanded(false)}
-              className="shrink-0 rounded-md bg-navy px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-navy/90"
+              className="shrink-0 self-center rounded-md bg-navy px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-navy/90"
             >
               Shrink report
             </button>
