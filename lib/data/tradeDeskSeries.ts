@@ -145,6 +145,106 @@ export function buildTradeDeskDaily(params: {
   return rows
 }
 
+/** One calendar slice with exact delivered impressions and clicks (sums preserved). */
+export type MonthlyDeliverySegment = {
+  start: string
+  end: string
+  impressions: number
+  clicks: number
+}
+
+/**
+ * Builds daily rows so each segment’s impressions and clicks sum exactly to the inputs
+ * (within-segment day splits use weekend-weighted noise like `buildTradeDeskDaily`).
+ * Planned curve is linear against `impressionsBooked` over `flightPlannedDays` from first row.
+ */
+export function buildTradeDeskDailyFromMonthlySegments(params: {
+  segments: MonthlyDeliverySegment[]
+  impressionsBooked: number
+  flightPlannedDays: number
+}): TradeDeskDailyRow[] {
+  const { segments, impressionsBooked, flightPlannedDays } = params
+  if (!segments.length || flightPlannedDays < 1) return []
+
+  type Day = { date: string; actualImp: number; clicks: number }
+  const days: Day[] = []
+
+  for (const seg of segments) {
+    const n = daysInclusive(seg.start, seg.end)
+    if (n < 1) continue
+
+    const weights: number[] = []
+    for (let i = 0; i < n; i++) {
+      const iso = addDays(seg.start, i)
+      const [y, m, d] = iso.split('-').map(Number)
+      const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay()
+      const weekend = wd === 0 || wd === 6 ? 0.68 : 1.02
+      const wave = 1 + 0.08 * Math.sin((i / Math.max(n, 2)) * Math.PI)
+      weights.push(weekend * wave)
+    }
+
+    const sumW = weights.reduce((a, b) => a + b, 0)
+    let imps = weights.map((w) => Math.round((seg.impressions * w) / sumW))
+    let diff = seg.impressions - imps.reduce((a, b) => a + b, 0)
+    let ix = imps.length - 1
+    while (diff !== 0 && ix >= 0) {
+      const adj = diff > 0 ? 1 : -1
+      if (imps[ix] + adj >= 0) {
+        imps[ix] += adj
+        diff -= adj
+      }
+      ix -= 1
+    }
+
+    const segTotalImp = imps.reduce((a, b) => a + b, 0)
+    let clk = imps.map((imp) => Math.round((seg.clicks * imp) / Math.max(segTotalImp, 1)))
+    diff = seg.clicks - clk.reduce((a, b) => a + b, 0)
+    ix = clk.length - 1
+    while (diff !== 0 && ix >= 0) {
+      const adj = diff > 0 ? 1 : -1
+      if (clk[ix] + adj >= 0) {
+        clk[ix] += adj
+        diff -= adj
+      }
+      ix -= 1
+    }
+
+    for (let i = 0; i < n; i++) {
+      days.push({ date: addDays(seg.start, i), actualImp: imps[i], clicks: clk[i] })
+    }
+  }
+
+  const nRows = days.length
+  if (!nRows) return []
+
+  const plannedDailyRate = impressionsBooked / flightPlannedDays
+  let cumA = 0
+  const rows: TradeDeskDailyRow[] = []
+
+  for (let i = 0; i < nRows; i++) {
+    const { date, actualImp, clicks } = days[i]
+    const dayPlannedTotal = Math.min(impressionsBooked, plannedDailyRate * (i + 1))
+    const prevPlanned = Math.min(impressionsBooked, plannedDailyRate * i)
+    const plannedImp = Math.round(dayPlannedTotal - prevPlanned)
+    cumA += actualImp
+    const cumP = Math.min(impressionsBooked, Math.round(plannedDailyRate * (i + 1)))
+    const ctrPct = actualImp > 0 ? (clicks / actualImp) * 100 : 0
+
+    rows.push({
+      date,
+      plannedImp,
+      actualImp,
+      clicks,
+      ctr: Math.round(ctrPct * 1000) / 1000,
+      cumulativeActual: cumA,
+      cumulativePlanned: cumP,
+      paceIndex: cumP > 0 ? cumA / cumP : 1,
+    })
+  }
+
+  return rows
+}
+
 export function buildGeoDelivery(
   deliveredImp: number,
   primary: string[],

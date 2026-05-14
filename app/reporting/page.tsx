@@ -7,6 +7,7 @@ import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 import { ReportingSignOut } from '../components/ReportingSignOut'
 import { CampaignDashboard } from '../components/CampaignDashboard'
+import { arizonaOfficeOfTourismCampaign } from '@/lib/data/arizonaOfficeOfTourism'
 import { bigSmokeMiamiCampaign } from '@/lib/data/bigSmokeMiami'
 import { REPORTING_SESSION_COOKIE } from '@/lib/reportingSession.constants'
 import { verifyReportingSessionToken } from '@/lib/reportingSession'
@@ -23,12 +24,20 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function ReportingPage() {
+export default async function ReportingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ campaign?: string }>
+}) {
   const cookieStore = await cookies()
   const token = cookieStore.get(REPORTING_SESSION_COOKIE)?.value
   if (!verifyReportingSessionToken(token)) {
     redirect('/reporting/login?from=%2Freporting')
   }
+
+  const { campaign: campaignKey } = await searchParams
+  const campaign =
+    campaignKey === 'arizona' ? arizonaOfficeOfTourismCampaign : bigSmokeMiamiCampaign
 
   const generatedAt = new Date().toISOString()
 
@@ -49,17 +58,41 @@ export default async function ReportingPage() {
                   priority
                 />
               </Link>
-              <Link
-                href="/reporting/scenario"
-                className="text-xs font-semibold uppercase tracking-wide text-navy underline decoration-navy/25 underline-offset-2 hover:decoration-navy"
-              >
-                New reporting order — enter line item, save order, pull CSV
-              </Link>
+              <nav className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold uppercase tracking-wide">
+                <Link
+                  href="/reporting"
+                  className={`transition-colors hover:text-navy ${
+                    campaignKey !== 'arizona' ? 'text-navy' : 'text-slate-500 underline decoration-slate-300 underline-offset-2'
+                  }`}
+                >
+                  Big Smoke Miami
+                </Link>
+                <span className="hidden text-slate-300 sm:inline" aria-hidden>
+                  |
+                </span>
+                <Link
+                  href="/reporting?campaign=arizona"
+                  className={`transition-colors hover:text-navy ${
+                    campaignKey === 'arizona' ? 'text-navy' : 'text-slate-500 underline decoration-slate-300 underline-offset-2'
+                  }`}
+                >
+                  Arizona Office of Tourism
+                </Link>
+                <span className="hidden text-slate-300 sm:inline" aria-hidden>
+                  |
+                </span>
+                <Link
+                  href="/reporting/scenario"
+                  className="text-navy underline decoration-navy/25 underline-offset-2 hover:decoration-navy"
+                >
+                  New reporting order
+                </Link>
+              </nav>
             </div>
             <ReportingSignOut />
           </div>
         </div>
-        <CampaignDashboard campaign={bigSmokeMiamiCampaign} generatedAt={generatedAt} />
+        <CampaignDashboard campaign={campaign} generatedAt={generatedAt} />
       </main>
       <Footer />
     </>
