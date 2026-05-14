@@ -1,5 +1,5 @@
 /**
- * Synthetic trade-desk time series aligned to book totals (fixture / QA).
+ * Trade-desk-shaped time series aligned to book totals (internal QA / planning projections).
  * Daily counts sum to delivered impressions; pacing curve vs planned flight length.
  */
 

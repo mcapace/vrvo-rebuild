@@ -3,7 +3,7 @@ import type { ScenarioPlannerInput } from '@/lib/reportingScenario'
 /** Browser-only persistence for draft reporting orders (no server). */
 export const REPORTING_ORDERS_STORAGE_KEY = 'vrvo_reporting_orders_v1'
 
-/** Last order that should auto-run when reopening `/reporting/scenario` (if enabled). */
+/** Last order that should auto-run when reopening the new-order reporting page (if enabled). */
 export const REPORTING_LAST_ACTIVE_ORDER_ID_KEY = 'vrvo_reporting_last_active_order_id'
 
 /** `"1"` / `"0"` — when `"1"`, load last active order and run reporting on page open. */

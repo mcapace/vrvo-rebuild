@@ -27,6 +27,10 @@ import {
   Scatter,
 } from 'recharts'
 
+function isPlanningViewCampaign(id: string): boolean {
+  return id.startsWith('plan_') || id.startsWith('scenario_')
+}
+
 /** Palette inspired by DSP overview UIs (clean whites + navy + semantic chart hues). */
 const TTD = {
   navy: '#1E3A5F',
@@ -173,7 +177,7 @@ export function CampaignDashboard({
     value: d.sharePct,
   }))
 
-  /** Modeled vs deterministic vs contextual — illustrative split for Big Smoke fixture. */
+  /** Modeled vs deterministic vs contextual — illustrative split for the overview card. */
   const dataActivationPie = [
     { name: 'Modeled / scale', value: 52 },
     { name: 'Purchase / POS', value: 31 },
@@ -318,7 +322,7 @@ export function CampaignDashboard({
 
       <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
         <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-          Live campaign overview
+          Campaign overview
         </h2>
 
         {/* Four overview cards — Trade Desk–style */}
@@ -423,9 +427,9 @@ export function CampaignDashboard({
             eyebrow="Audience data"
             headline="Layered cohorts across modeled, purchase, and contextual signals."
             sub={
-              campaign.id.startsWith('scenario_')
+              isPlanningViewCampaign(campaign.id)
                 ? 'Illustrative mix for the overview card; open Audience strategy for this campaign’s cohort list.'
-                : 'Fixture split illustrative of activation paths.'
+                : 'Illustrative split — modeled, purchase, and contextual paths.'
             }
             footer="View audience deals"
             footerAnchorId="reporting-audience-strategy"
@@ -459,14 +463,14 @@ export function CampaignDashboard({
           <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                Live campaign performance
+                Creative & format performance
               </h3>
               <p className="mt-2 max-w-2xl text-sm text-slate-600">
-                Creative sizes plotted by pacing health vs delivery-to-goal proxy (fixture). Bubble area ∝
-                impressions. Reference lines at 90%.
+                Creative sizes plotted by pacing health vs delivery-to-goal proxy. Bubble area ∝ impressions.
+                Reference lines at 90%.
               </p>
             </div>
-            <p className="text-[11px] text-slate-400">Click markers in live DSP — here, hover for detail</p>
+            <p className="text-[11px] text-slate-400">Hover markers for detail (DSP-style layout).</p>
           </div>
 
           <div className="relative mt-4 h-[380px] w-full">
@@ -848,7 +852,9 @@ export function CampaignDashboard({
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 bg-slate-50 px-5 py-3">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">Daily grain · export</h3>
-              <p className="mt-1 text-[11px] text-slate-500">Fixture series — swap for warehouse / DSP pulls.</p>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Daily export — connect your warehouse or DSP for live pulls when available.
+              </p>
             </div>
             <button
               type="button"
@@ -968,7 +974,7 @@ export function CampaignDashboard({
         </section>
 
         <footer className="mt-12 border-t border-slate-200 pt-6 text-center text-[10px] text-slate-500">
-          Fixture campaign ID {campaign.id} · UI aligned to common DSP overview patterns — not affiliated with The Trade Desk.
+          Campaign ID {campaign.id} · UI aligned to common DSP overview patterns — not affiliated with The Trade Desk.
         </footer>
       </div>
     </div>

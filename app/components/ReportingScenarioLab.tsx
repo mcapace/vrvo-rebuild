@@ -192,7 +192,7 @@ export function ReportingScenarioLab() {
       } catch (e) {
         setScenario(null)
         setGeneratedAt(null)
-        setRunError(e instanceof Error ? e.message : 'Could not build scenario.')
+        setRunError(e instanceof Error ? e.message : 'Could not build the report.')
         return { ok: false }
       }
     },
@@ -345,7 +345,7 @@ export function ReportingScenarioLab() {
           href="/reporting"
           className="shrink-0 rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-navy shadow-sm transition-colors hover:bg-slate-50"
         >
-          ← Fixture dashboard
+          ← Reporting overview
         </Link>
       </div>
 
@@ -860,7 +860,8 @@ export function ReportingScenarioLab() {
               <p className="text-sm font-medium text-slate-700">No reporting pulled yet</p>
               <p className="mt-2 max-w-md text-xs text-slate-500">
                 Complete order entry, then choose <span className="font-semibold text-slate-700">Create order & pull reporting</span>{' '}
-                or open a saved order. The dashboard and CSV export use synthetic pacing from your flight and CTR inputs.
+                or open a saved order. The dashboard and CSV reflect pacing projected from your flight dates and CTR
+                inputs.
               </p>
             </div>
           ) : (

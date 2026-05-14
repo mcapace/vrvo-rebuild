@@ -1,5 +1,5 @@
 /**
- * Fixture: Big Smoke Miami digital extension — for dashboard development & QA.
+ * Sample campaign: Big Smoke Miami digital extension — benchmark for dashboard development & QA.
  * Source: internal campaign brief / stakeholder email (May 2026).
  */
 
@@ -72,8 +72,8 @@ export interface CampaignReport {
 }
 
 /**
- * Reference audience cohorts (Big Smoke Miami brief) — reused in the scenario lab so partner
- * reports show the same depth of audience strategy as the live fixture.
+ * Reference audience cohorts (Big Smoke Miami brief) — optional depth when building planning orders;
+ * the benchmark campaign below uses the same structure.
  */
 export const bigSmokeReferenceAudienceBuckets: AudienceBucket[] = [
     {
@@ -142,7 +142,7 @@ export const bigSmokeReferenceAudienceBuckets: AudienceBucket[] = [
   ]
 
 const LAUNCH = '2026-03-27'
-/** As-of date for fixture daily grain (matches stakeholder “still in market” snapshot). */
+/** As-of date for daily grain (matches stakeholder “still in market” snapshot). */
 const REPORT_AS_OF = '2026-05-01'
 const FLIGHT_PLANNED_DAYS = 41
 

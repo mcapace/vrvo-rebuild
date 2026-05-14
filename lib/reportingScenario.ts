@@ -7,7 +7,7 @@ import {
   daysInclusive,
 } from '@/lib/data/tradeDeskSeries'
 
-/** Default IAB mix for scenario previews (matches Big Smoke fixture set). */
+/** Default IAB mix for planning-view reports (same sizes as the benchmark campaign). */
 export const SCENARIO_DEFAULT_FORMATS = [
   '970×250 billboard',
   '728×90 leaderboard',
@@ -28,7 +28,7 @@ export type ScenarioPlannerInput = {
   cpmUsd: number
   flightStart: string
   flightEnd: string
-  /** Last day included in the synthetic daily grain (inclusive). Defaults to `flightEnd`. */
+  /** Last day included in the daily grain (inclusive). Defaults to `flightEnd`. */
   asOfDate?: string
   /** Target blended CTR for the simulated flight (percent, e.g. 1.05). */
   targetCtrPct: number
@@ -187,7 +187,7 @@ export function validateScenarioInput(raw: ScenarioPlannerInput): ScenarioValida
     issues.push({ field: 'impressionsBooked', message: 'Booked impressions must be at least 1,000.' })
   }
   if (raw.impressionsBooked > 500_000_000) {
-    issues.push({ field: 'impressionsBooked', message: 'Booked impressions cap (500M) for this lab preview.' })
+    issues.push({ field: 'impressionsBooked', message: 'Booked impressions cap (500M) for this planning view.' })
   }
 
   if (!Number.isFinite(raw.cpmUsd) || raw.cpmUsd < 0.5 || raw.cpmUsd > 250) {
@@ -229,7 +229,7 @@ export function validateScenarioInput(raw: ScenarioPlannerInput): ScenarioValida
 
 /**
  * Builds a full `CampaignReport` compatible with `CampaignDashboard` + CSV export.
- * Synthetic daily grain uses the same mechanics as the Big Smoke fixture (weekend weighting, pacing vs linear plan).
+ * Daily grain uses the same pacing model as the benchmark report (weekend weighting, delivery vs linear plan).
  */
 export function buildScenarioCampaignReport(input: ScenarioPlannerInput): CampaignReport {
   const issues = validateScenarioInput(input)
@@ -269,14 +269,14 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_|_$/g, '')
     .slice(0, 40)
-  const id = `scenario_${slug || 'account'}_${Date.now()}`
+  const id = `plan_${slug || 'account'}_${Date.now()}`
 
   const nowIso = new Date().toISOString()
   const inMarket = parseUtcDate(asOfDate) < parseUtcDate(flightEnd)
 
   const supply =
     input.supplyPath?.trim() ||
-    'Open auction + curated PMP (scenario preview — replace with live supply path).'
+    'Open auction + curated PMP — set your supply path in the order entry.'
 
   const assetsUrl =
     input.creativeAssetsFolderUrl?.trim() ||
@@ -293,7 +293,7 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     cohorts: [
       {
         title: 'IO number',
-        detail: input.ioNumber?.trim() || 'SCENARIO-IO',
+        detail: input.ioNumber?.trim() || 'VRVO-IO-PLAN',
       },
       {
         title: 'Line item',
@@ -334,12 +334,12 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
 
   return {
     id,
-    name: `${input.lineItemName.trim()} — Scenario`,
+    name: input.lineItemName.trim(),
     clientFacingName: input.accountName.trim(),
     flight: {
       launched: flightStart,
       inMarket,
-      summary: `Scenario lab · ${flightPlannedDays}-day book · data through ${asOfDate} (${pctDelivered}% of booked imps). Not live delivery data.`,
+      summary: `${flightPlannedDays}-day book · planning snapshot through ${asOfDate} (${pctDelivered}% of booked impressions).`,
     },
     delivery: {
       cpmUsd,
@@ -348,15 +348,15 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     },
     performance: {
       ctrPct: targetCtr,
-      measurementNote: `Synthetic run: target CTR ${targetCtr}%. Daily CTR varies slightly around target (fixture noise). No conversion modeling.`,
+      measurementNote: `Target CTR ${targetCtr}%. Daily CTR varies slightly around the blended target for this projection. Click tracking only — no conversion attribution in this view.`,
     },
     geo: {
-      headline: 'Scenario geo split — illustrative DMA-style buckets for planning.',
+      headline: 'Geographic mix — DMA-style regions for planning.',
       primaryMarkets: primaryGeo,
       driveInMarkets: secondaryGeo,
     },
     creative: {
-      environments: 'Desktop and mobile; full IAB size coverage (scenario preview).',
+      environments: 'Desktop and mobile; full standard display sizes.',
       sizes: [...SCENARIO_DEFAULT_FORMATS],
       assetsFolderUrl: assetsUrl,
     },
@@ -368,9 +368,9 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     tradeDesk: {
       meta: {
         reportGeneratedAt: nowIso,
-        ioNumber: input.ioNumber?.trim() || 'SCENARIO-IO',
+        ioNumber: input.ioNumber?.trim() || 'VRVO-IO-PLAN',
         lineItem: input.lineItemName.trim(),
-        dsp: 'Scenario lab (synthetic pacing)',
+        dsp: 'Programmatic display — planning view',
         supplyPath: supply,
         flightPlannedDays,
         lastDataDate: asOfDate,
@@ -394,8 +394,8 @@ export function defaultScenarioFormValues(): Record<string, string | number | bo
     `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 
   return {
-    accountName: 'Test Advertiser — Scenario Co.',
-    ioNumber: 'VRVO-IO-SCENARIO-TEST',
+    accountName: 'Sample Advertiser Co.',
+    ioNumber: 'VRVO-IO-DEMO-001',
     lineItemName: 'Display awareness — test flight',
     impressionsBooked: 2_500_000,
     cpmUsd: 8.5,
@@ -408,7 +408,7 @@ export function defaultScenarioFormValues(): Record<string, string | number | bo
     supplyPath: 'Open auction + PG PMP with tier-1 news & sports.',
     pctDeliveredOverride: '',
     clickthroughUrl:
-      'https://www.tixr.com/groups/cabigsmoke/events/big-smoke-florida-175821?utm_source=vrvo&utm_medium=display&utm_campaign=demo_scenario',
+      'https://www.tixr.com/groups/cabigsmoke/events/big-smoke-florida-175821?utm_source=vrvo&utm_medium=display&utm_campaign=demo_plan',
     creativeAssetsFolderUrl:
       'https://drive.google.com/drive/folders/1x3DaJGM0RWAVpus5Qz-dsi6lbnpGO8Xr?usp=sharing',
     trackingDescription:

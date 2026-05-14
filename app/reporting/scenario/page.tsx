@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'New reporting order | Reporting | Vrvo',
-  description: 'Save browser-side orders, pull synthetic pacing dashboards, and export CSV.',
+  description: 'Save orders in this browser, open the reporting dashboard, and export CSV.',
   robots: { index: false, follow: false },
 }
 
