@@ -1,5 +1,4 @@
-import type { AudienceBucket, CampaignReport } from '@/lib/data/bigSmokeMiami'
-import { bigSmokeReferenceAudienceBuckets } from '@/lib/data/bigSmokeMiami'
+import type { AudienceBucket, AudienceCohort, CampaignReport } from '@/lib/data/bigSmokeMiami'
 import {
   buildDeviceSplit,
   buildFormatDelivery,
@@ -40,10 +39,15 @@ export type ScenarioPlannerInput = {
   clickthroughUrl: string
   /** Optional Drive / DAM link for creative assets. */
   creativeAssetsFolderUrl?: string
-  /** How clicks are routed / what is measured (shown in reporting like Big Smoke). */
+  /** How clicks are routed / what is measured (shown in reporting). */
   trackingDescription?: string
-  /** When true (default), append Big Smoke–style reference cohort buckets for deck parity. */
-  includeReferenceCohorts?: boolean
+  /** Label for first audience bucket (cohorts below). */
+  audiencePrimaryLabel?: string
+  /** One cohort per line: `Title — Detail` or `Title | Detail`. */
+  audiencePrimaryCohortsText: string
+  /** Label for second audience bucket. */
+  audienceSecondaryLabel?: string
+  audienceSecondaryCohortsText?: string
   /**
    * Override % of booked impressions treated as delivered by `asOfDate`.
    * When omitted, delivery follows calendar progress: elapsed days ÷ full flight days (capped at 100%).
@@ -60,7 +64,14 @@ export function normalizeScenarioPlannerInput(input: ScenarioPlannerInput): Scen
     clickthroughUrl: ct || String(d.clickthroughUrl),
     creativeAssetsFolderUrl: input.creativeAssetsFolderUrl,
     trackingDescription: input.trackingDescription,
-    includeReferenceCohorts: input.includeReferenceCohorts !== false,
+    audiencePrimaryLabel: input.audiencePrimaryLabel,
+    audiencePrimaryCohortsText:
+      (input.audiencePrimaryCohortsText != null && String(input.audiencePrimaryCohortsText).trim() !== '')
+        ? String(input.audiencePrimaryCohortsText)
+        : String(d.audiencePrimaryCohortsText),
+    audienceSecondaryLabel: input.audienceSecondaryLabel,
+    audienceSecondaryCohortsText:
+      input.audienceSecondaryCohortsText != null ? String(input.audienceSecondaryCohortsText) : String(d.audienceSecondaryCohortsText ?? ''),
   }
 }
 
@@ -74,6 +85,69 @@ function validHttpUrl(s: string): boolean {
 }
 
 export type ScenarioValidationIssue = { field: string; message: string }
+
+/**
+ * Each non-empty line becomes one cohort. Use `Title — Detail` or `Title | Detail`.
+ * If no separator, the whole line is the title and detail prompts to add more.
+ */
+export function parseAudienceCohortLines(text: string): AudienceCohort[] {
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+  const out: AudienceCohort[] = []
+  for (const line of lines) {
+    const em = line.indexOf(' — ')
+    const pipe = line.indexOf(' | ')
+    let title: string
+    let detail: string
+    if (em >= 0) {
+      title = line.slice(0, em).trim()
+      detail = line.slice(em + 3).trim()
+    } else if (pipe >= 0) {
+      title = line.slice(0, pipe).trim()
+      detail = line.slice(pipe + 3).trim()
+    } else {
+      title = line.slice(0, 160).trim()
+      detail =
+        line.length > 160
+          ? line.slice(160).trim()
+          : 'Add a longer description after an em dash on the same line (Title — detail).'
+    }
+    if (!title) continue
+    if (!detail) detail = title
+    out.push({ title, detail })
+  }
+  return out
+}
+
+function buildScenarioAudienceBuckets(input: ScenarioPlannerInput, thisOrderBucket: AudienceBucket): AudienceBucket[] {
+  const primaryLabel = input.audiencePrimaryLabel?.trim() || 'Primary audience & reach'
+  const primaryCohorts = parseAudienceCohortLines(input.audiencePrimaryCohortsText ?? '')
+  const secondaryLabel = input.audienceSecondaryLabel?.trim() || 'Secondary audience & signals'
+  const secondaryCohorts = parseAudienceCohortLines(input.audienceSecondaryCohortsText ?? '')
+
+  const buckets: AudienceBucket[] = [thisOrderBucket]
+
+  if (primaryCohorts.length > 0) {
+    buckets.push({
+      id: 'campaign-primary-audiences',
+      label: primaryLabel,
+      description: 'Primary audience tiers and data partners for this campaign (from your order entry).',
+      cohorts: primaryCohorts,
+    })
+  }
+  if (secondaryCohorts.length > 0) {
+    buckets.push({
+      id: 'campaign-secondary-audiences',
+      label: secondaryLabel,
+      description: 'Secondary, contextual, CRM, or niche layers for this campaign (from your order entry).',
+      cohorts: secondaryCohorts,
+    })
+  }
+
+  return buckets
+}
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -133,6 +207,16 @@ export function validateScenarioInput(raw: ScenarioPlannerInput): ScenarioValida
   const assets = raw.creativeAssetsFolderUrl?.trim() ?? ''
   if (assets && !validHttpUrl(assets)) {
     issues.push({ field: 'creativeAssetsFolderUrl', message: 'Creative assets URL must be a valid http(s) link or left blank.' })
+  }
+
+  const primaryCohorts = parseAudienceCohortLines(raw.audiencePrimaryCohortsText ?? '')
+  const secondaryCohorts = parseAudienceCohortLines(raw.audienceSecondaryCohortsText ?? '')
+  if (primaryCohorts.length === 0 && secondaryCohorts.length === 0) {
+    issues.push({
+      field: 'audiencePrimaryCohortsText',
+      message:
+        'Add at least one campaign-specific cohort in Primary or Secondary (one per line: Partner or segment — description).',
+    })
   }
 
   const o = raw.pctDeliveredOverride
@@ -202,8 +286,6 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     input.trackingDescription?.trim() ||
     'All display creative routes to the click-through URL below so users land on your conversion path, not a generic marketing home page.'
 
-  const includeRef = input.includeReferenceCohorts !== false
-
   const thisOrderBucket: AudienceBucket = {
     id: 'this-order',
     label: 'This order',
@@ -236,9 +318,7 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     ],
   }
 
-  const audiences: AudienceBucket[] = includeRef
-    ? [thisOrderBucket, ...bigSmokeReferenceAudienceBuckets]
-    : [thisOrderBucket]
+  const audiences = buildScenarioAudienceBuckets(input, thisOrderBucket)
 
   const daily = buildTradeDeskDaily({
     launchDate: flightStart,
@@ -332,7 +412,12 @@ export function defaultScenarioFormValues(): Record<string, string | number | bo
     creativeAssetsFolderUrl:
       'https://drive.google.com/drive/folders/1x3DaJGM0RWAVpus5Qz-dsi6lbnpGO8Xr?usp=sharing',
     trackingDescription:
-      'All creative routes to the Tixr event page so users land on ticket purchase, not the marketing site.',
-    includeReferenceCohorts: true,
+      'Display traffic routes to your click-through URL for the next-step action you define for this campaign.',
+    audiencePrimaryLabel: 'Primary audience & reach',
+    audiencePrimaryCohortsText:
+      'Modeled in-market luxury shoppers — Household and purchase signals aligned to target metros.\nRetail & venue proximity — Geo-focused weights around flagship and event locations.',
+    audienceSecondaryLabel: 'Contextual & retention',
+    audienceSecondaryCohortsText:
+      'Premium editorial contextual — Brand-safe news & lifestyle adjacency.\nFirst-party retargeting — Site visitors and policy-compliant CRM match where available.',
   }
 }

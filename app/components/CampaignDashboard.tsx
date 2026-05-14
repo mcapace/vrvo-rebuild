@@ -422,7 +422,11 @@ export function CampaignDashboard({
           <OverviewCard
             eyebrow="Audience data"
             headline="Layered cohorts across modeled, purchase, and contextual signals."
-            sub="Fixture split illustrative of activation paths."
+            sub={
+              campaign.id.startsWith('scenario_')
+                ? 'Illustrative mix for the overview card; open Audience strategy for this campaign’s cohort list.'
+                : 'Fixture split illustrative of activation paths.'
+            }
             footer="View audience deals"
             footerAnchorId="reporting-audience-strategy"
           >

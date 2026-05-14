@@ -46,7 +46,10 @@ type FormState = {
   clickthroughUrl: string
   creativeAssetsFolderUrl: string
   trackingDescription: string
-  includeReferenceCohorts: boolean
+  audiencePrimaryLabel: string
+  audiencePrimaryCohortsText: string
+  audienceSecondaryLabel: string
+  audienceSecondaryCohortsText: string
 }
 
 function inputToFormState(input: ScenarioPlannerInput): FormState {
@@ -68,7 +71,10 @@ function inputToFormState(input: ScenarioPlannerInput): FormState {
     clickthroughUrl: input.clickthroughUrl,
     creativeAssetsFolderUrl: input.creativeAssetsFolderUrl ?? '',
     trackingDescription: input.trackingDescription ?? '',
-    includeReferenceCohorts: input.includeReferenceCohorts !== false,
+    audiencePrimaryLabel: input.audiencePrimaryLabel ?? '',
+    audiencePrimaryCohortsText: input.audiencePrimaryCohortsText ?? '',
+    audienceSecondaryLabel: input.audienceSecondaryLabel ?? '',
+    audienceSecondaryCohortsText: input.audienceSecondaryCohortsText ?? '',
   }
 }
 
@@ -96,7 +102,10 @@ function toInput(form: FormState): ScenarioPlannerInput {
     clickthroughUrl: form.clickthroughUrl.trim(),
     creativeAssetsFolderUrl: form.creativeAssetsFolderUrl.trim() || undefined,
     trackingDescription: form.trackingDescription.trim() || undefined,
-    includeReferenceCohorts: form.includeReferenceCohorts,
+    audiencePrimaryLabel: form.audiencePrimaryLabel.trim() || undefined,
+    audiencePrimaryCohortsText: form.audiencePrimaryCohortsText,
+    audienceSecondaryLabel: form.audienceSecondaryLabel.trim() || undefined,
+    audienceSecondaryCohortsText: form.audienceSecondaryCohortsText.trim() || undefined,
   }
 }
 
@@ -122,7 +131,10 @@ export function ReportingScenarioLab() {
     clickthroughUrl: String(defaults.clickthroughUrl),
     creativeAssetsFolderUrl: String(defaults.creativeAssetsFolderUrl ?? ''),
     trackingDescription: String(defaults.trackingDescription ?? ''),
-    includeReferenceCohorts: defaults.includeReferenceCohorts !== false,
+    audiencePrimaryLabel: String(defaults.audiencePrimaryLabel ?? ''),
+    audiencePrimaryCohortsText: String(defaults.audiencePrimaryCohortsText ?? ''),
+    audienceSecondaryLabel: String(defaults.audienceSecondaryLabel ?? ''),
+    audienceSecondaryCohortsText: String(defaults.audienceSecondaryCohortsText ?? ''),
   }))
 
   const [issues, setIssues] = useState<{ field: string; message: string }[]>([])
@@ -642,7 +654,7 @@ export function ReportingScenarioLab() {
                   className={`${inputClass} resize-y`}
                   value={form.trackingDescription}
                   onChange={(e) => update('trackingDescription', e.target.value)}
-                  placeholder="How clicks are routed and what is measured (shown above the URL in reporting, like Big Smoke)."
+                  placeholder="How clicks are routed and what is measured (shown above the URL in reporting)."
                 />
               </div>
 
@@ -660,18 +672,73 @@ export function ReportingScenarioLab() {
                 />
               </div>
 
-              <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-800">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-navy focus:ring-navy"
-                  checked={form.includeReferenceCohorts}
-                  onChange={(e) => setForm((f) => ({ ...f, includeReferenceCohorts: e.target.checked }))}
-                />
-                <span>
-                  <span className="font-medium">Include Big Smoke–style cohort reference</span> — adds the same core +
-                  lifestyle audience buckets as the Big Smoke fixture under “Audience strategy” (for deck parity).
-                </span>
-              </label>
+              <div className="border-t border-slate-100 pt-4">
+                <p className={labelClass}>Audience strategy (this campaign)</p>
+                <p className="mt-1 text-[11px] leading-snug text-slate-500">
+                  Each line becomes one cohort. Use <span className="font-mono text-slate-700">Title — detail</span> (em dash)
+                  or <span className="font-mono text-slate-700">Title | detail</span>. Enter at least one cohort in Primary or
+                  Secondary — these lists are unique to this order (no shared template).
+                </p>
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <label className={labelClass} htmlFor="sc-aud1-label">
+                      Primary bucket label
+                    </label>
+                    <input
+                      id="sc-aud1-label"
+                      className={inputClass}
+                      value={form.audiencePrimaryLabel}
+                      onChange={(e) => update('audiencePrimaryLabel', e.target.value)}
+                      placeholder="e.g. Core reach & modeled intent"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass} htmlFor="sc-aud1-lines">
+                      Primary cohorts <span className="text-rose-600">*</span>
+                    </label>
+                    <textarea
+                      id="sc-aud1-lines"
+                      rows={5}
+                      className={`${inputClass} resize-y font-mono text-[13px]`}
+                      value={form.audiencePrimaryCohortsText}
+                      onChange={(e) => update('audiencePrimaryCohortsText', e.target.value)}
+                      placeholder={
+                        'Example:\nEpsilon luxury index — HH income + purchase intent in target DMAs.\nVenue proximity — 15mi radius around flagship stores.'
+                      }
+                    />
+                    {fieldError('audiencePrimaryCohortsText') ? (
+                      <p className="mt-1 text-xs text-rose-600">{fieldError('audiencePrimaryCohortsText')}</p>
+                    ) : null}
+                  </div>
+                  <div>
+                    <label className={labelClass} htmlFor="sc-aud2-label">
+                      Secondary bucket label (optional)
+                    </label>
+                    <input
+                      id="sc-aud2-label"
+                      className={inputClass}
+                      value={form.audienceSecondaryLabel}
+                      onChange={(e) => update('audienceSecondaryLabel', e.target.value)}
+                      placeholder="e.g. Contextual & CRM"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass} htmlFor="sc-aud2-lines">
+                      Secondary cohorts (optional)
+                    </label>
+                    <textarea
+                      id="sc-aud2-lines"
+                      rows={4}
+                      className={`${inputClass} resize-y font-mono text-[13px]`}
+                      value={form.audienceSecondaryCohortsText}
+                      onChange={(e) => update('audienceSecondaryCohortsText', e.target.value)}
+                      placeholder={
+                        'Example:\nNews & sports PMP — Tier-1 publishers, brand-safe categories.\nSite retargeting — 30-day pixel pool; cap 5 impressions / user / day.'
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {runError ? <p className="mt-4 rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-800">{runError}</p> : null}
@@ -720,7 +787,10 @@ export function ReportingScenarioLab() {
                     clickthroughUrl: String(d.clickthroughUrl),
                     creativeAssetsFolderUrl: String(d.creativeAssetsFolderUrl ?? ''),
                     trackingDescription: String(d.trackingDescription ?? ''),
-                    includeReferenceCohorts: d.includeReferenceCohorts !== false,
+                    audiencePrimaryLabel: String(d.audiencePrimaryLabel ?? ''),
+                    audiencePrimaryCohortsText: String(d.audiencePrimaryCohortsText ?? ''),
+                    audienceSecondaryLabel: String(d.audienceSecondaryLabel ?? ''),
+                    audienceSecondaryCohortsText: String(d.audienceSecondaryCohortsText ?? ''),
                   })
                   setIssues([])
                   setRunError(null)
