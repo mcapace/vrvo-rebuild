@@ -7,6 +7,7 @@ import { CampaignDashboard } from './CampaignDashboard'
 import {
   buildScenarioCampaignReport,
   defaultScenarioFormValues,
+  normalizeScenarioPlannerInput,
   validateScenarioInput,
   type ScenarioPlannerInput,
 } from '@/lib/reportingScenario'
@@ -42,6 +43,10 @@ type FormState = {
   targetingNotes: string
   supplyPath: string
   pctDeliveredOverride: string
+  clickthroughUrl: string
+  creativeAssetsFolderUrl: string
+  trackingDescription: string
+  includeReferenceCohorts: boolean
 }
 
 function inputToFormState(input: ScenarioPlannerInput): FormState {
@@ -60,6 +65,10 @@ function inputToFormState(input: ScenarioPlannerInput): FormState {
     supplyPath: input.supplyPath ?? '',
     pctDeliveredOverride:
       o != null && Number.isFinite(o) ? String(o) : '',
+    clickthroughUrl: input.clickthroughUrl,
+    creativeAssetsFolderUrl: input.creativeAssetsFolderUrl ?? '',
+    trackingDescription: input.trackingDescription ?? '',
+    includeReferenceCohorts: input.includeReferenceCohorts !== false,
   }
 }
 
@@ -84,6 +93,10 @@ function toInput(form: FormState): ScenarioPlannerInput {
     targetingNotes: form.targetingNotes,
     supplyPath: form.supplyPath.trim() || undefined,
     pctDeliveredOverride: pctOverride != null && Number.isFinite(pctOverride) ? pctOverride : null,
+    clickthroughUrl: form.clickthroughUrl.trim(),
+    creativeAssetsFolderUrl: form.creativeAssetsFolderUrl.trim() || undefined,
+    trackingDescription: form.trackingDescription.trim() || undefined,
+    includeReferenceCohorts: form.includeReferenceCohorts,
   }
 }
 
@@ -106,6 +119,10 @@ export function ReportingScenarioLab() {
     targetingNotes: String(defaults.targetingNotes),
     supplyPath: String(defaults.supplyPath),
     pctDeliveredOverride: defaults.pctDeliveredOverride === '' ? '' : String(defaults.pctDeliveredOverride),
+    clickthroughUrl: String(defaults.clickthroughUrl),
+    creativeAssetsFolderUrl: String(defaults.creativeAssetsFolderUrl ?? ''),
+    trackingDescription: String(defaults.trackingDescription ?? ''),
+    includeReferenceCohorts: defaults.includeReferenceCohorts !== false,
   }))
 
   const [issues, setIssues] = useState<{ field: string; message: string }[]>([])
@@ -119,12 +136,17 @@ export function ReportingScenarioLab() {
   const formRef = useRef(form)
   formRef.current = form
 
+  const [saveBanner, setSaveBanner] = useState<{ orderId: string; at: string } | null>(null)
+
   const refreshOrders = useCallback(() => {
     setSavedOrders(loadReportingOrders())
   }, [])
 
   const applyValidatedInput = useCallback(
-    (input: ScenarioPlannerInput, opts: { persistNewOrder: boolean; orderId?: string | null }): boolean => {
+    (
+      input: ScenarioPlannerInput,
+      opts: { persistNewOrder: boolean; orderId?: string | null },
+    ): { ok: boolean; newOrderId?: string } => {
       setIssues([])
       setRunError(null)
       try {
@@ -146,18 +168,20 @@ export function ReportingScenarioLab() {
           persistLastActiveOrderId(orderId)
           setActiveOrderId(orderId)
           refreshOrders()
-        } else if (opts.orderId) {
+          return { ok: true, newOrderId: orderId }
+        }
+        if (opts.orderId) {
           persistLastActiveOrderId(opts.orderId)
           setActiveOrderId(opts.orderId)
         } else {
           setActiveOrderId(null)
         }
-        return true
+        return { ok: true }
       } catch (e) {
         setScenario(null)
         setGeneratedAt(null)
         setRunError(e instanceof Error ? e.message : 'Could not build scenario.')
-        return false
+        return { ok: false }
       }
     },
     [refreshOrders],
@@ -178,11 +202,11 @@ export function ReportingScenarioLab() {
     if (runOnLoad && lastId) {
       const o = orders.find((x) => x.orderId === lastId)
       if (o) {
-        const v = validateScenarioInput(o.input)
+        const v = validateScenarioInput(normalizeScenarioPlannerInput(o.input))
         if (v.length) {
           setIssues(v)
         } else {
-          applyValidatedInput(o.input, { persistNewOrder: false, orderId: o.orderId })
+          applyValidatedInput(normalizeScenarioPlannerInput(o.input), { persistNewOrder: false, orderId: o.orderId })
         }
       }
     }
@@ -223,7 +247,10 @@ export function ReportingScenarioLab() {
       setGeneratedAt(null)
       return
     }
-    applyValidatedInput(input, { persistNewOrder: true })
+    const r = applyValidatedInput(input, { persistNewOrder: true })
+    if (r.ok && r.newOrderId) {
+      setSaveBanner({ orderId: r.newOrderId, at: new Date().toISOString() })
+    }
   }, [form, applyValidatedInput])
 
   /** Re-run from form without creating a duplicate order (e.g. after edits). */
@@ -237,8 +264,8 @@ export function ReportingScenarioLab() {
       setGeneratedAt(null)
       return
     }
-    const ok = applyValidatedInput(input, { persistNewOrder: false, orderId: activeOrderId })
-    if (ok && activeOrderId) {
+    const r = applyValidatedInput(input, { persistNewOrder: false, orderId: activeOrderId })
+    if (r.ok && activeOrderId) {
       updateReportingOrderInput(activeOrderId, input)
       refreshOrders()
     }
@@ -260,14 +287,15 @@ export function ReportingScenarioLab() {
 
   const openSavedOrder = useCallback(
     (order: ReportingOrderRecord) => {
-      const v = validateScenarioInput(order.input)
+      const input = normalizeScenarioPlannerInput(order.input)
+      const v = validateScenarioInput(input)
       if (v.length) {
         setIssues(v)
         setScenario(null)
         setGeneratedAt(null)
         return
       }
-      applyValidatedInput(order.input, { persistNewOrder: false, orderId: order.orderId })
+      applyValidatedInput(input, { persistNewOrder: false, orderId: order.orderId })
     },
     [applyValidatedInput],
   )
@@ -308,6 +336,33 @@ export function ReportingScenarioLab() {
           ← Fixture dashboard
         </Link>
       </div>
+
+      {saveBanner ? (
+        <div
+          className="mb-6 flex flex-wrap items-start justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-4 shadow-sm"
+          role="status"
+        >
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-emerald-950">Order saved in this browser</p>
+            <p className="mt-1 font-mono text-xs font-medium text-emerald-900">{saveBanner.orderId}</p>
+            <p className="mt-2 text-xs leading-relaxed text-emerald-900/90">
+              Saved to <span className="font-medium">Saved orders</span> below — use <span className="font-medium">Pull reporting</span>{' '}
+              anytime. Dashboard ribbon <span className="font-medium">Export report</span> downloads CSV including URLs and
+              cohorts.
+            </p>
+            <p className="mt-1 text-[10px] text-emerald-800/80">
+              {new Date(saveBanner.at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSaveBanner(null)}
+            className="shrink-0 rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-900 hover:bg-emerald-100/80"
+          >
+            Dismiss
+          </button>
+        </div>
+      ) : null}
 
       <div className="grid gap-8 lg:grid-cols-12">
         <section className="space-y-5 lg:col-span-5">
@@ -543,6 +598,55 @@ export function ReportingScenarioLab() {
               </div>
 
               <div>
+                <label className={labelClass} htmlFor="sc-cturl">
+                  Click-through URL <span className="text-rose-600">*</span>
+                </label>
+                <input
+                  id="sc-cturl"
+                  type="url"
+                  className={inputClass}
+                  value={form.clickthroughUrl}
+                  onChange={(e) => update('clickthroughUrl', e.target.value)}
+                  placeholder="https://…"
+                  autoComplete="url"
+                />
+                {fieldError('clickthroughUrl') ? (
+                  <p className="mt-1 text-xs text-rose-600">{fieldError('clickthroughUrl')}</p>
+                ) : null}
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="sc-assets">
+                  Creative assets folder (optional)
+                </label>
+                <input
+                  id="sc-assets"
+                  type="url"
+                  className={inputClass}
+                  value={form.creativeAssetsFolderUrl}
+                  onChange={(e) => update('creativeAssetsFolderUrl', e.target.value)}
+                  placeholder="https://drive.google.com/… or DAM link"
+                />
+                {fieldError('creativeAssetsFolderUrl') ? (
+                  <p className="mt-1 text-xs text-rose-600">{fieldError('creativeAssetsFolderUrl')}</p>
+                ) : null}
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="sc-track-desc">
+                  Tracking / routing note
+                </label>
+                <textarea
+                  id="sc-track-desc"
+                  rows={3}
+                  className={`${inputClass} resize-y`}
+                  value={form.trackingDescription}
+                  onChange={(e) => update('trackingDescription', e.target.value)}
+                  placeholder="How clicks are routed and what is measured (shown above the URL in reporting, like Big Smoke)."
+                />
+              </div>
+
+              <div>
                 <label className={labelClass} htmlFor="sc-tgt">
                   Targeting & tactics
                 </label>
@@ -555,6 +659,19 @@ export function ReportingScenarioLab() {
                   placeholder="Geo, demo, segments, frequency caps, daypart, brand safety…"
                 />
               </div>
+
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-800">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-navy focus:ring-navy"
+                  checked={form.includeReferenceCohorts}
+                  onChange={(e) => setForm((f) => ({ ...f, includeReferenceCohorts: e.target.checked }))}
+                />
+                <span>
+                  <span className="font-medium">Include Big Smoke–style cohort reference</span> — adds the same core +
+                  lifestyle audience buckets as the Big Smoke fixture under “Audience strategy” (for deck parity).
+                </span>
+              </label>
             </div>
 
             {runError ? <p className="mt-4 rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-800">{runError}</p> : null}
@@ -600,12 +717,17 @@ export function ReportingScenarioLab() {
                     targetingNotes: String(d.targetingNotes),
                     supplyPath: String(d.supplyPath),
                     pctDeliveredOverride: '',
+                    clickthroughUrl: String(d.clickthroughUrl),
+                    creativeAssetsFolderUrl: String(d.creativeAssetsFolderUrl ?? ''),
+                    trackingDescription: String(d.trackingDescription ?? ''),
+                    includeReferenceCohorts: d.includeReferenceCohorts !== false,
                   })
                   setIssues([])
                   setRunError(null)
                   setScenario(null)
                   setGeneratedAt(null)
                   setActiveOrderId(null)
+                  setSaveBanner(null)
                 }}
                 className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
               >
@@ -615,7 +737,9 @@ export function ReportingScenarioLab() {
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Saved orders — pull reporting</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Saved orders — pull reporting ({savedOrders.length})
+            </h2>
             <p className="mt-2 text-xs text-slate-500">
               Select an order to reload inputs and regenerate the dashboard and CSV for that book.
             </p>

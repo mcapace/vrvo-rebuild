@@ -67,6 +67,9 @@ export function buildCampaignReportCsv(
   lines.push(row(['CPC (USD)', Math.round(cpc * 1000) / 1000]))
   lines.push(row(['Measurement note', performance.measurementNote]))
   lines.push(row(['Geo headline', campaign.geo.headline]))
+  lines.push(row(['Click-through URL', campaign.tracking.clickthroughUrl]))
+  lines.push(row(['Creative assets folder URL', campaign.creative.assetsFolderUrl]))
+  lines.push(row(['Tracking / routing description', campaign.tracking.description]))
 
   lines.push('')
   lines.push('Daily performance')

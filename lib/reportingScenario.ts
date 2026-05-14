@@ -1,4 +1,5 @@
-import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
+import type { AudienceBucket, CampaignReport } from '@/lib/data/bigSmokeMiami'
+import { bigSmokeReferenceAudienceBuckets } from '@/lib/data/bigSmokeMiami'
 import {
   buildDeviceSplit,
   buildFormatDelivery,
@@ -35,11 +36,41 @@ export type ScenarioPlannerInput = {
   targetingNotes: string
   /** Optional supply / inventory note (PMP, open auction, etc.). */
   supplyPath?: string
+  /** Primary landing URL for creative (https). */
+  clickthroughUrl: string
+  /** Optional Drive / DAM link for creative assets. */
+  creativeAssetsFolderUrl?: string
+  /** How clicks are routed / what is measured (shown in reporting like Big Smoke). */
+  trackingDescription?: string
+  /** When true (default), append Big Smoke–style reference cohort buckets for deck parity. */
+  includeReferenceCohorts?: boolean
   /**
    * Override % of booked impressions treated as delivered by `asOfDate`.
    * When omitted, delivery follows calendar progress: elapsed days ÷ full flight days (capped at 100%).
    */
   pctDeliveredOverride?: number | null
+}
+
+/** Older browser-saved orders may omit fields added later — merge so they still validate and open. */
+export function normalizeScenarioPlannerInput(input: ScenarioPlannerInput): ScenarioPlannerInput {
+  const d = defaultScenarioFormValues()
+  const ct = input.clickthroughUrl?.trim()
+  return {
+    ...input,
+    clickthroughUrl: ct || String(d.clickthroughUrl),
+    creativeAssetsFolderUrl: input.creativeAssetsFolderUrl,
+    trackingDescription: input.trackingDescription,
+    includeReferenceCohorts: input.includeReferenceCohorts !== false,
+  }
+}
+
+function validHttpUrl(s: string): boolean {
+  try {
+    const u = new URL(s.trim())
+    return u.protocol === 'http:' || u.protocol === 'https:'
+  } catch {
+    return false
+  }
 }
 
 export type ScenarioValidationIssue = { field: string; message: string }
@@ -91,6 +122,17 @@ export function validateScenarioInput(raw: ScenarioPlannerInput): ScenarioValida
 
   if (!Number.isFinite(raw.targetCtrPct) || raw.targetCtrPct < 0.05 || raw.targetCtrPct > 15) {
     issues.push({ field: 'targetCtrPct', message: 'Target CTR must be between 0.05% and 15%.' })
+  }
+
+  const ct = raw.clickthroughUrl?.trim() ?? ''
+  if (!ct) issues.push({ field: 'clickthroughUrl', message: 'Enter a click-through URL (https).' })
+  else if (!validHttpUrl(ct)) {
+    issues.push({ field: 'clickthroughUrl', message: 'Click-through URL must start with http:// or https://' })
+  }
+
+  const assets = raw.creativeAssetsFolderUrl?.trim() ?? ''
+  if (assets && !validHttpUrl(assets)) {
+    issues.push({ field: 'creativeAssetsFolderUrl', message: 'Creative assets URL must be a valid http(s) link or left blank.' })
   }
 
   const o = raw.pctDeliveredOverride
@@ -152,6 +194,52 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
     input.supplyPath?.trim() ||
     'Open auction + curated PMP (scenario preview — replace with live supply path).'
 
+  const assetsUrl =
+    input.creativeAssetsFolderUrl?.trim() ||
+    'https://drive.google.com/drive/folders/placeholder-add-your-creative-folder'
+
+  const trackingDescription =
+    input.trackingDescription?.trim() ||
+    'All display creative routes to the click-through URL below so users land on your conversion path, not a generic marketing home page.'
+
+  const includeRef = input.includeReferenceCohorts !== false
+
+  const thisOrderBucket: AudienceBucket = {
+    id: 'this-order',
+    label: 'This order',
+    description: 'Line item, destination URL, assets, and targeting captured from the order entry form.',
+    cohorts: [
+      {
+        title: 'IO number',
+        detail: input.ioNumber?.trim() || 'SCENARIO-IO',
+      },
+      {
+        title: 'Line item',
+        detail: input.lineItemName.trim(),
+      },
+      {
+        title: 'Click-through URL',
+        detail: input.clickthroughUrl.trim(),
+      },
+      {
+        title: 'Creative assets folder',
+        detail: input.creativeAssetsFolderUrl?.trim() || 'Not provided — add a Drive, Dropbox, or DAM link for trafficking.',
+      },
+      {
+        title: 'Measurement / routing',
+        detail: trackingDescription,
+      },
+      {
+        title: 'Targeting & tactics',
+        detail: input.targetingNotes.trim() || 'No targeting notes provided.',
+      },
+    ],
+  }
+
+  const audiences: AudienceBucket[] = includeRef
+    ? [thisOrderBucket, ...bigSmokeReferenceAudienceBuckets]
+    : [thisOrderBucket]
+
   const daily = buildTradeDeskDaily({
     launchDate: flightStart,
     lastDate: asOfDate,
@@ -188,28 +276,15 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
       driveInMarkets: secondaryGeo,
     },
     creative: {
-      environments: 'Scenario preview — desktop + mobile mix assumed from format set.',
+      environments: 'Desktop and mobile; full IAB size coverage (scenario preview).',
       sizes: [...SCENARIO_DEFAULT_FORMATS],
-      assetsFolderUrl: 'https://example.com/scenario-creative-placeholder',
+      assetsFolderUrl: assetsUrl,
     },
     tracking: {
-      description:
-        'Click-through URL not set in scenario mode — wire your landing page when you export a live brief.',
-      clickthroughUrl: 'https://example.com/?utm_source=scenario_lab',
+      description: trackingDescription,
+      clickthroughUrl: input.clickthroughUrl.trim(),
     },
-    audiences: [
-      {
-        id: 'scenario-targeting',
-        label: 'Targeting (from planner)',
-        description: 'What you entered in the scenario form is summarized below for stakeholder decks.',
-        cohorts: [
-          {
-            title: 'Audience & tactic notes',
-            detail: input.targetingNotes.trim() || 'No targeting notes provided.',
-          },
-        ],
-      },
-    ],
+    audiences,
     tradeDesk: {
       meta: {
         reportGeneratedAt: nowIso,
@@ -230,7 +305,7 @@ export function buildScenarioCampaignReport(input: ScenarioPlannerInput): Campai
 }
 
 /** Default form values for quick tests (short flight, round numbers). */
-export function defaultScenarioFormValues(): Record<string, string | number> {
+export function defaultScenarioFormValues(): Record<string, string | number | boolean> {
   const end = new Date()
   const start = new Date(end)
   start.setDate(start.getDate() - 27)
@@ -252,5 +327,12 @@ export function defaultScenarioFormValues(): Record<string, string | number> {
       'Household income $100k+; in-market for luxury spirits; exclude competitors; daypart weekday 6am–11pm ET; frequency cap 5/7 days.',
     supplyPath: 'Open auction + PG PMP with tier-1 news & sports.',
     pctDeliveredOverride: '',
+    clickthroughUrl:
+      'https://www.tixr.com/groups/cabigsmoke/events/big-smoke-florida-175821?utm_source=vrvo&utm_medium=display&utm_campaign=demo_scenario',
+    creativeAssetsFolderUrl:
+      'https://drive.google.com/drive/folders/1x3DaJGM0RWAVpus5Qz-dsi6lbnpGO8Xr?usp=sharing',
+    trackingDescription:
+      'All creative routes to the Tixr event page so users land on ticket purchase, not the marketing site.',
+    includeReferenceCohorts: true,
   }
 }

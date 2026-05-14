@@ -71,57 +71,11 @@ export interface CampaignReport {
   tradeDesk: CampaignTradeDesk
 }
 
-const LAUNCH = '2026-03-27'
-/** As-of date for fixture daily grain (matches stakeholder “still in market” snapshot). */
-const REPORT_AS_OF = '2026-05-01'
-const FLIGHT_PLANNED_DAYS = 41
-
-export const bigSmokeMiamiCampaign: CampaignReport = {
-  id: 'big_smoke_miami_2026',
-  name: 'Big Smoke Miami — Digital Extension',
-  clientFacingName: 'Big Smoke Miami digital extension',
-  flight: {
-    launched: LAUNCH,
-    inMarket: true,
-    summary: 'Launched March 27; still in market.',
-  },
-  delivery: {
-    cpmUsd: 7,
-    impressionsPurchased: 357_000,
-    pctDelivered: 89,
-  },
-  performance: {
-    ctrPct: 1.024,
-    measurementNote:
-      'Campaign measures clickthrough, not on-site conversion — no post-click conversion data.',
-  },
-  geo: {
-    headline: 'South Florida core + historical Big Smoke drive-in markets',
-    primaryMarkets: ['Miami-Dade', 'Broward', 'Palm Beach'],
-    driveInMarkets: ['Tampa', 'Orlando', 'Naples / Fort Myers', 'Jacksonville'],
-  },
-  creative: {
-    environments: 'Desktop and mobile; full IAB size coverage.',
-    sizes: [
-      '970×250 billboard',
-      '728×90 leaderboard',
-      '300×600 half-page',
-      '300×250 medium rectangle',
-      '300×300 mobile square',
-      '320×100 large mobile banner',
-      '320×50 mobile banner',
-      '160×600 wide skyscraper',
-    ],
-    assetsFolderUrl:
-      'https://drive.google.com/drive/folders/1x3DaJGM0RWAVpus5Qz-dsi6lbnpGO8Xr?usp=sharing',
-  },
-  tracking: {
-    description:
-      'All creative routes to the Tixr event page so users land on ticket purchase, not the marketing site.',
-    clickthroughUrl:
-      'https://www.tixr.com/groups/cabigsmoke/events/big-smoke-florida-175821?utm_source=vrvo&utm_medium=display&utm_campaign=big_smoke_miami_2026&utm_content=digital_extension',
-  },
-  audiences: [
+/**
+ * Reference audience cohorts (Big Smoke Miami brief) — reused in the scenario lab so partner
+ * reports show the same depth of audience strategy as the live fixture.
+ */
+export const bigSmokeReferenceAudienceBuckets: AudienceBucket[] = [
     {
       id: 'core',
       label: 'Core cigar enthusiast cohorts',
@@ -185,7 +139,59 @@ export const bigSmokeMiamiCampaign: CampaignReport = {
         },
       ],
     },
-  ],
+  ]
+
+const LAUNCH = '2026-03-27'
+/** As-of date for fixture daily grain (matches stakeholder “still in market” snapshot). */
+const REPORT_AS_OF = '2026-05-01'
+const FLIGHT_PLANNED_DAYS = 41
+
+export const bigSmokeMiamiCampaign: CampaignReport = {
+  id: 'big_smoke_miami_2026',
+  name: 'Big Smoke Miami — Digital Extension',
+  clientFacingName: 'Big Smoke Miami digital extension',
+  flight: {
+    launched: LAUNCH,
+    inMarket: true,
+    summary: 'Launched March 27; still in market.',
+  },
+  delivery: {
+    cpmUsd: 7,
+    impressionsPurchased: 357_000,
+    pctDelivered: 89,
+  },
+  performance: {
+    ctrPct: 1.024,
+    measurementNote:
+      'Campaign measures clickthrough, not on-site conversion — no post-click conversion data.',
+  },
+  geo: {
+    headline: 'South Florida core + historical Big Smoke drive-in markets',
+    primaryMarkets: ['Miami-Dade', 'Broward', 'Palm Beach'],
+    driveInMarkets: ['Tampa', 'Orlando', 'Naples / Fort Myers', 'Jacksonville'],
+  },
+  creative: {
+    environments: 'Desktop and mobile; full IAB size coverage.',
+    sizes: [
+      '970×250 billboard',
+      '728×90 leaderboard',
+      '300×600 half-page',
+      '300×250 medium rectangle',
+      '300×300 mobile square',
+      '320×100 large mobile banner',
+      '320×50 mobile banner',
+      '160×600 wide skyscraper',
+    ],
+    assetsFolderUrl:
+      'https://drive.google.com/drive/folders/1x3DaJGM0RWAVpus5Qz-dsi6lbnpGO8Xr?usp=sharing',
+  },
+  tracking: {
+    description:
+      'All creative routes to the Tixr event page so users land on ticket purchase, not the marketing site.',
+    clickthroughUrl:
+      'https://www.tixr.com/groups/cabigsmoke/events/big-smoke-florida-175821?utm_source=vrvo&utm_medium=display&utm_campaign=big_smoke_miami_2026&utm_content=digital_extension',
+  },
+  audiences: bigSmokeReferenceAudienceBuckets,
   tradeDesk: (() => {
     const deliveredImp = Math.round((357_000 * 89) / 100)
     const meta: TradeDeskMeta = {
