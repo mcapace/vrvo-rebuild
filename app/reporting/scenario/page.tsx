@@ -11,8 +11,8 @@ import { verifyReportingSessionToken } from '@/lib/reportingSession'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Scenario lab | Reporting | Vrvo',
-  description: 'Trade Desk–style scenario inputs with synthetic pacing and dashboard preview.',
+  title: 'New reporting order | Reporting | Vrvo',
+  description: 'Save browser-side orders, pull synthetic pacing dashboards, and export CSV.',
   robots: { index: false, follow: false },
 }
 

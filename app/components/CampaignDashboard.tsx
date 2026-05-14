@@ -272,7 +272,7 @@ export function CampaignDashboard({
               href="/reporting/scenario"
               className="font-medium text-white/95 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white hover:decoration-white/60"
             >
-              Scenario lab
+              New order
             </Link>
             <span className="text-white/40">|</span>
             <span>IO {tradeDesk.meta.ioNumber}</span>

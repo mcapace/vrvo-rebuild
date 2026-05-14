@@ -40,7 +40,7 @@ export default async function ReportingPage() {
               href="/reporting/scenario"
               className="text-xs font-semibold uppercase tracking-wide text-navy underline decoration-navy/25 underline-offset-2 hover:decoration-navy"
             >
-              Scenario lab — Trade Desk–style inputs & synthetic flight
+              New reporting order — enter line item, save order, pull CSV
             </Link>
             <ReportingSignOut />
           </div>

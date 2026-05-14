@@ -2,7 +2,7 @@
 
 import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
 import Link from 'next/link'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CampaignDashboard } from './CampaignDashboard'
 import {
   buildScenarioCampaignReport,
@@ -10,6 +10,14 @@ import {
   validateScenarioInput,
   type ScenarioPlannerInput,
 } from '@/lib/reportingScenario'
+import type { ReportingOrderRecord } from '@/lib/reportingOrdersStorage'
+import {
+  deleteReportingOrder,
+  loadReportingOrders,
+  newReportingOrderId,
+  orderLabelFromInput,
+  saveReportingOrder,
+} from '@/lib/reportingOrdersStorage'
 
 type FormState = {
   accountName: string
@@ -24,6 +32,25 @@ type FormState = {
   targetingNotes: string
   supplyPath: string
   pctDeliveredOverride: string
+}
+
+function inputToFormState(input: ScenarioPlannerInput): FormState {
+  const o = input.pctDeliveredOverride
+  return {
+    accountName: input.accountName,
+    ioNumber: input.ioNumber ?? '',
+    lineItemName: input.lineItemName,
+    impressionsBooked: String(input.impressionsBooked),
+    cpmUsd: String(input.cpmUsd),
+    flightStart: input.flightStart,
+    flightEnd: input.flightEnd,
+    asOfDate: input.asOfDate?.trim() ?? '',
+    targetCtrPct: String(input.targetCtrPct),
+    targetingNotes: input.targetingNotes,
+    supplyPath: input.supplyPath ?? '',
+    pctDeliveredOverride:
+      o != null && Number.isFinite(o) ? String(o) : '',
+  }
 }
 
 function toInput(form: FormState): ScenarioPlannerInput {
@@ -75,12 +102,59 @@ export function ReportingScenarioLab() {
   const [runError, setRunError] = useState<string | null>(null)
   const [scenario, setScenario] = useState<CampaignReport | null>(null)
   const [generatedAt, setGeneratedAt] = useState<string | null>(null)
+  const [savedOrders, setSavedOrders] = useState<ReportingOrderRecord[]>([])
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
+
+  useEffect(() => {
+    setSavedOrders(loadReportingOrders())
+  }, [])
+
+  const refreshOrders = useCallback(() => {
+    setSavedOrders(loadReportingOrders())
+  }, [])
+
+  const applyValidatedInput = useCallback(
+    (input: ScenarioPlannerInput, opts: { persistNewOrder: boolean; orderId?: string | null }) => {
+      setIssues([])
+      setRunError(null)
+      try {
+        const report = buildScenarioCampaignReport(input)
+        const at = new Date().toISOString()
+        setScenario(report)
+        setGeneratedAt(at)
+        setForm(inputToFormState(input))
+
+        if (opts.persistNewOrder) {
+          const orderId = opts.orderId ?? newReportingOrderId()
+          const record: ReportingOrderRecord = {
+            orderId,
+            createdAt: at,
+            label: orderLabelFromInput(input),
+            input,
+          }
+          saveReportingOrder(record)
+          setActiveOrderId(orderId)
+          refreshOrders()
+        } else if (opts.orderId) {
+          setActiveOrderId(opts.orderId)
+        } else {
+          setActiveOrderId(null)
+        }
+      } catch (e) {
+        setScenario(null)
+        setGeneratedAt(null)
+        setRunError(e instanceof Error ? e.message : 'Could not build scenario.')
+      }
+    },
+    [refreshOrders],
+  )
 
   const update = useCallback((key: keyof FormState, value: string) => {
     setForm((f) => ({ ...f, [key]: value }))
   }, [])
 
-  const runScenario = useCallback(() => {
+  /** Validates current form, builds reporting, and saves a new order for later. */
+  const createOrderAndPullReporting = useCallback(() => {
     setRunError(null)
     const input = toInput(form)
     const v = validateScenarioInput(input)
@@ -90,17 +164,61 @@ export function ReportingScenarioLab() {
       setGeneratedAt(null)
       return
     }
-    setIssues([])
-    try {
-      const report = buildScenarioCampaignReport(input)
-      setScenario(report)
-      setGeneratedAt(new Date().toISOString())
-    } catch (e) {
+    applyValidatedInput(input, { persistNewOrder: true })
+  }, [form, applyValidatedInput])
+
+  /** Re-run from form without creating a duplicate order (e.g. after edits). */
+  const refreshReportingFromForm = useCallback(() => {
+    setRunError(null)
+    const input = toInput(form)
+    const v = validateScenarioInput(input)
+    if (v.length) {
+      setIssues(v)
       setScenario(null)
       setGeneratedAt(null)
-      setRunError(e instanceof Error ? e.message : 'Could not build scenario.')
+      return
     }
-  }, [form])
+    applyValidatedInput(input, { persistNewOrder: false, orderId: activeOrderId })
+  }, [form, activeOrderId, applyValidatedInput])
+
+  /** Preview dashboard + CSV without persisting a new order. */
+  const pullReportingPreviewOnly = useCallback(() => {
+    setRunError(null)
+    const input = toInput(form)
+    const v = validateScenarioInput(input)
+    if (v.length) {
+      setIssues(v)
+      setScenario(null)
+      setGeneratedAt(null)
+      return
+    }
+    applyValidatedInput(input, { persistNewOrder: false })
+  }, [form, applyValidatedInput])
+
+  const openSavedOrder = useCallback(
+    (order: ReportingOrderRecord) => {
+      const v = validateScenarioInput(order.input)
+      if (v.length) {
+        setIssues(v)
+        setScenario(null)
+        setGeneratedAt(null)
+        return
+      }
+      applyValidatedInput(order.input, { persistNewOrder: false, orderId: order.orderId })
+    },
+    [applyValidatedInput],
+  )
+
+  const removeSavedOrder = useCallback(
+    (orderId: string) => {
+      deleteReportingOrder(orderId)
+      refreshOrders()
+      if (activeOrderId === orderId) {
+        setActiveOrderId(null)
+      }
+    },
+    [activeOrderId, refreshOrders],
+  )
 
   const fieldError = useCallback((field: string) => issues.find((i) => i.field === field)?.message, [issues])
 
@@ -108,11 +226,13 @@ export function ReportingScenarioLab() {
     <div className="mx-auto max-w-[1400px] px-4 pb-16 pt-6 sm:px-6">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Reporting · test harness</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Scenario lab</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Reporting · orders</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">New reporting order</h1>
           <p className="mt-2 max-w-2xl text-sm text-slate-600">
-            Enter Trade Desk–style line item inputs. We generate synthetic daily delivery, pacing vs plan, clicks from your
-            target CTR, and geo / format splits — same dashboard as the live fixture, for stakeholder tests.
+            Enter line item details like a trade desk order. <span className="font-medium text-slate-800">Create order & pull reporting</span>{' '}
+            saves the order in this browser (localStorage) and opens the dashboard so you can export CSV. Use{' '}
+            <span className="font-medium text-slate-800">Pull reporting</span> on a saved order to reopen the same book, or{' '}
+            <span className="font-medium text-slate-800">Refresh</span> after editing the form while an order is active.
           </p>
         </div>
         <Link
@@ -124,11 +244,12 @@ export function ReportingScenarioLab() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
-        <section className="lg:col-span-5">
+        <section className="space-y-5 lg:col-span-5">
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Planner inputs</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Order entry</h2>
             <p className="mt-2 text-xs text-slate-500">
-              Delivery % defaults to calendar progress (as-of ÷ full flight) unless you override it.
+              Delivery % defaults to calendar progress (report as-of ÷ full flight) unless you override it. Orders are not
+              sent to Vrvo servers — only this device.
             </p>
 
             <div className="mt-5 space-y-4">
@@ -327,11 +448,27 @@ export function ReportingScenarioLab() {
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={runScenario}
+                onClick={createOrderAndPullReporting}
                 className="rounded-md bg-navy px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-navy/90"
               >
-                Run scenario
+                Create order & pull reporting
               </button>
+              <button
+                type="button"
+                onClick={pullReportingPreviewOnly}
+                className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
+              >
+                Preview only (do not save order)
+              </button>
+              {activeOrderId ? (
+                <button
+                  type="button"
+                  onClick={refreshReportingFromForm}
+                  className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
+                >
+                  Refresh reporting (same order)
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => {
@@ -352,29 +489,83 @@ export function ReportingScenarioLab() {
                   })
                   setIssues([])
                   setRunError(null)
+                  setScenario(null)
+                  setGeneratedAt(null)
+                  setActiveOrderId(null)
                 }}
                 className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
               >
-                Reset sample values
+                Start new order (sample values)
               </button>
             </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Saved orders — pull reporting</h2>
+            <p className="mt-2 text-xs text-slate-500">
+              Select an order to reload inputs and regenerate the dashboard and CSV for that book.
+            </p>
+            {savedOrders.length === 0 ? (
+              <p className="mt-4 text-sm text-slate-600">No saved orders yet. Use “Create order & pull reporting” above.</p>
+            ) : (
+              <ul className="mt-4 max-h-[min(52vh,420px)] space-y-2 overflow-y-auto pr-1">
+                {savedOrders.map((o) => (
+                  <li
+                    key={o.orderId}
+                    className={`flex flex-col gap-2 rounded-lg border px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between ${
+                      activeOrderId === o.orderId ? 'border-navy/40 bg-navy/[0.04]' : 'border-slate-100 bg-slate-50/80'
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <p className="font-mono text-[11px] font-semibold text-navy">{o.orderId}</p>
+                      <p className="truncate text-sm font-medium text-slate-900">{o.label}</p>
+                      <p className="text-[10px] text-slate-500">
+                        {new Date(o.createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openSavedOrder(o)}
+                        className="rounded-md bg-navy px-3 py-1.5 text-xs font-semibold text-white hover:bg-navy/90"
+                      >
+                        Pull reporting
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeSavedOrder(o.orderId)}
+                        className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
 
         <div className="lg:col-span-7">
           {!scenario || !generatedAt ? (
             <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50/80 p-8 text-center">
-              <p className="text-sm font-medium text-slate-700">No scenario loaded yet</p>
+              <p className="text-sm font-medium text-slate-700">No reporting pulled yet</p>
               <p className="mt-2 max-w-md text-xs text-slate-500">
-                Fill the planner and click <span className="font-semibold text-slate-700">Run scenario</span>. The full
-                reporting dashboard renders here with synthetic pacing driven by your flight dates and CTR target.
+                Complete order entry, then choose <span className="font-semibold text-slate-700">Create order & pull reporting</span>{' '}
+                or open a saved order. The dashboard and CSV export use synthetic pacing from your flight and CTR inputs.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
               <p className="text-xs text-slate-500">
-                Preview below uses the same components as the password-protected fixture report. CSV export in the ribbon
-                reflects this run.
+                {activeOrderId ? (
+                  <>
+                    Active order <span className="font-mono font-semibold text-slate-800">{activeOrderId}</span> — use the
+                    ribbon <span className="font-medium">Export report</span> for CSV.
+                  </>
+                ) : (
+                  <>Preview run — ribbon <span className="font-medium">Export report</span> downloads CSV for this preview.</>
+                )}
               </p>
               <CampaignDashboard campaign={scenario} generatedAt={generatedAt} />
             </div>
