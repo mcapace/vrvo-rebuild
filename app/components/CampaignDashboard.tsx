@@ -202,10 +202,16 @@ export function CampaignDashboard({
   const funnelTiers = useMemo(() => {
     const booked = delivery.impressionsPurchased
     const delivered = deliveredImp
+    const deliveredBarPct =
+      booked > 0 ? Math.max(12, Math.min(100, Math.round((delivered / booked) * 100))) : 0
+    const clickBarPct =
+      booked > 0
+        ? Math.max(10, Math.min(100, Math.round((totalClicks / booked) * 6_000)))
+        : 0
     return [
       { label: 'Booked reach', value: booked, widthPct: 100 },
-      { label: 'Delivered imps', value: delivered, widthPct: 72 },
-      { label: 'Clicks', value: totalClicks, widthPct: 48 },
+      { label: 'Delivered imps', value: delivered, widthPct: deliveredBarPct },
+      { label: 'Clicks', value: totalClicks, widthPct: clickBarPct },
     ]
   }, [delivery.impressionsPurchased, deliveredImp, totalClicks])
 
@@ -346,7 +352,10 @@ export function CampaignDashboard({
           <OverviewCard
             eyebrow="Objectives"
             headline={`${delivery.pctDelivered}% of booked impressions delivered.`}
-            sub="Awareness + ticket-path display extension."
+            sub={
+              campaign.overviewObjectiveSub ??
+              'Programmatic display delivery against the booked flight and pacing plan.'
+            }
             footer="View flight detail"
             footerAnchorId="reporting-flight-detail"
           >

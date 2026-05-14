@@ -67,6 +67,8 @@ export interface CampaignReport {
     description: string
     clickthroughUrl: string
   }
+  /** Subcopy under the Objectives overview card (per-campaign voice; dashboard default is generic). */
+  overviewObjectiveSub?: string
   audiences: AudienceBucket[]
   tradeDesk: CampaignTradeDesk
 }
@@ -191,6 +193,7 @@ export const bigSmokeMiamiCampaign: CampaignReport = {
     clickthroughUrl:
       'https://www.tixr.com/groups/cabigsmoke/events/big-smoke-florida-175821?utm_source=vrvo&utm_medium=display&utm_campaign=big_smoke_miami_2026&utm_content=digital_extension',
   },
+  overviewObjectiveSub: 'Awareness + ticket-path display extension.',
   audiences: bigSmokeReferenceAudienceBuckets,
   tradeDesk: (() => {
     const deliveredImp = Math.round((357_000 * 89) / 100)

@@ -37,7 +37,8 @@ export default async function ReportingPage({
 
   const resolvedSearchParams = (await searchParams) ?? {}
   const rawCampaign = resolvedSearchParams.campaign
-  const campaignKey = Array.isArray(rawCampaign) ? rawCampaign[0] : rawCampaign
+  const campaignParam = Array.isArray(rawCampaign) ? rawCampaign[0] : rawCampaign
+  const campaignKey = typeof campaignParam === 'string' ? campaignParam.trim().toLowerCase() : ''
   const campaign =
     campaignKey === 'arizona' ? arizonaOfficeOfTourismCampaign : bigSmokeMiamiCampaign
 

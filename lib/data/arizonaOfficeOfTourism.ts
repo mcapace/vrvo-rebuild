@@ -146,6 +146,8 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
       'Creative routes to Visit Arizona campaign landing experiences and partner booking paths as trafficked in the IO.',
     clickthroughUrl: 'https://www.visitarizona.com/?utm_source=vrvo&utm_medium=display&utm_campaign=aot_awareness_2025',
   },
+  overviewObjectiveSub:
+    'Statewide and drive-market display — Visit Arizona consideration and trip planning against booked flight.',
   audiences: arizonaAudienceBuckets,
   tradeDesk: (() => {
     const daily = buildTradeDeskDailyFromMonthlySegments({
