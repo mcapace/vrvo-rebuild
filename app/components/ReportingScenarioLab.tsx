@@ -2,7 +2,7 @@
 
 import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CampaignDashboard } from './CampaignDashboard'
 import {
   buildScenarioCampaignReport,
@@ -10,14 +10,24 @@ import {
   validateScenarioInput,
   type ScenarioPlannerInput,
 } from '@/lib/reportingScenario'
-import type { ReportingOrderRecord } from '@/lib/reportingOrdersStorage'
 import {
   deleteReportingOrder,
+  loadAutoRefreshIntervalMs,
+  loadAutoRunOnLoad,
+  loadLastActiveOrderId,
   loadReportingOrders,
   newReportingOrderId,
   orderLabelFromInput,
+  persistLastActiveOrderId,
+  saveAutoRefreshIntervalMs,
+  saveAutoRunOnLoad,
   saveReportingOrder,
+  updateReportingOrderInput,
+  type ReportingOrderRecord,
 } from '@/lib/reportingOrdersStorage'
+
+/** Avoids double auto-run when React Strict Mode remounts the lab in development. */
+let reportingScenarioLabBootstrapped = false
 
 type FormState = {
   accountName: string
@@ -104,17 +114,17 @@ export function ReportingScenarioLab() {
   const [generatedAt, setGeneratedAt] = useState<string | null>(null)
   const [savedOrders, setSavedOrders] = useState<ReportingOrderRecord[]>([])
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
-
-  useEffect(() => {
-    setSavedOrders(loadReportingOrders())
-  }, [])
+  const [autoRunOnLoad, setAutoRunOnLoad] = useState(true)
+  const [autoRefreshMs, setAutoRefreshMs] = useState(0)
+  const formRef = useRef(form)
+  formRef.current = form
 
   const refreshOrders = useCallback(() => {
     setSavedOrders(loadReportingOrders())
   }, [])
 
   const applyValidatedInput = useCallback(
-    (input: ScenarioPlannerInput, opts: { persistNewOrder: boolean; orderId?: string | null }) => {
+    (input: ScenarioPlannerInput, opts: { persistNewOrder: boolean; orderId?: string | null }): boolean => {
       setIssues([])
       setRunError(null)
       try {
@@ -133,21 +143,70 @@ export function ReportingScenarioLab() {
             input,
           }
           saveReportingOrder(record)
+          persistLastActiveOrderId(orderId)
           setActiveOrderId(orderId)
           refreshOrders()
         } else if (opts.orderId) {
+          persistLastActiveOrderId(opts.orderId)
           setActiveOrderId(opts.orderId)
         } else {
           setActiveOrderId(null)
         }
+        return true
       } catch (e) {
         setScenario(null)
         setGeneratedAt(null)
         setRunError(e instanceof Error ? e.message : 'Could not build scenario.')
+        return false
       }
     },
     [refreshOrders],
   )
+
+  useEffect(() => {
+    if (reportingScenarioLabBootstrapped) return
+    reportingScenarioLabBootstrapped = true
+
+    const orders = loadReportingOrders()
+    setSavedOrders(orders)
+    const runOnLoad = loadAutoRunOnLoad()
+    const refreshMs = loadAutoRefreshIntervalMs()
+    setAutoRunOnLoad(runOnLoad)
+    setAutoRefreshMs(refreshMs)
+
+    const lastId = loadLastActiveOrderId()
+    if (runOnLoad && lastId) {
+      const o = orders.find((x) => x.orderId === lastId)
+      if (o) {
+        const v = validateScenarioInput(o.input)
+        if (v.length) {
+          setIssues(v)
+        } else {
+          applyValidatedInput(o.input, { persistNewOrder: false, orderId: o.orderId })
+        }
+      }
+    }
+  }, [applyValidatedInput])
+
+  useEffect(() => {
+    if (autoRefreshMs <= 0 || !activeOrderId) return
+    const timer = window.setInterval(() => {
+      const input = toInput(formRef.current)
+      if (validateScenarioInput(input).length) return
+      try {
+        const report = buildScenarioCampaignReport(input)
+        const at = new Date().toISOString()
+        setScenario(report)
+        setGeneratedAt(at)
+        setForm(inputToFormState(input))
+        updateReportingOrderInput(activeOrderId, input)
+        refreshOrders()
+      } catch {
+        /* keep last good chart */
+      }
+    }, autoRefreshMs)
+    return () => window.clearInterval(timer)
+  }, [autoRefreshMs, activeOrderId, refreshOrders])
 
   const update = useCallback((key: keyof FormState, value: string) => {
     setForm((f) => ({ ...f, [key]: value }))
@@ -178,8 +237,12 @@ export function ReportingScenarioLab() {
       setGeneratedAt(null)
       return
     }
-    applyValidatedInput(input, { persistNewOrder: false, orderId: activeOrderId })
-  }, [form, activeOrderId, applyValidatedInput])
+    const ok = applyValidatedInput(input, { persistNewOrder: false, orderId: activeOrderId })
+    if (ok && activeOrderId) {
+      updateReportingOrderInput(activeOrderId, input)
+      refreshOrders()
+    }
+  }, [form, activeOrderId, applyValidatedInput, refreshOrders])
 
   /** Preview dashboard + CSV without persisting a new order. */
   const pullReportingPreviewOnly = useCallback(() => {
@@ -215,6 +278,8 @@ export function ReportingScenarioLab() {
       refreshOrders()
       if (activeOrderId === orderId) {
         setActiveOrderId(null)
+        setScenario(null)
+        setGeneratedAt(null)
       }
     },
     [activeOrderId, refreshOrders],
@@ -230,9 +295,10 @@ export function ReportingScenarioLab() {
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">New reporting order</h1>
           <p className="mt-2 max-w-2xl text-sm text-slate-600">
             Enter line item details like a trade desk order. <span className="font-medium text-slate-800">Create order & pull reporting</span>{' '}
-            saves the order in this browser (localStorage) and opens the dashboard so you can export CSV. Use{' '}
-            <span className="font-medium text-slate-800">Pull reporting</span> on a saved order to reopen the same book, or{' '}
-            <span className="font-medium text-slate-800">Refresh</span> after editing the form while an order is active.
+            saves the order in this browser, marks it as your active book, and opens the dashboard (CSV from the ribbon).
+            Turn on <span className="font-medium text-slate-800">auto-run</span> below to reopen this page and have that order
+            report immediately, or <span className="font-medium text-slate-800">auto-refresh</span> to re-run on a timer while
+            you keep the tab open.
           </p>
         </div>
         <Link
@@ -245,6 +311,54 @@ export function ReportingScenarioLab() {
 
       <div className="grid gap-8 lg:grid-cols-12">
         <section className="space-y-5 lg:col-span-5">
+          <div className="rounded-xl border border-slate-200 bg-slate-50/90 p-5 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Run on its own</h2>
+            <p className="mt-2 text-xs text-slate-600">
+              Saved orders and these toggles live in your browser only. Closing the tab stops auto-refresh; unattended
+              schedules in the cloud would need a separate backend job.
+            </p>
+            <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm text-slate-800">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-navy focus:ring-navy"
+                checked={autoRunOnLoad}
+                onChange={(e) => {
+                  const v = e.target.checked
+                  setAutoRunOnLoad(v)
+                  saveAutoRunOnLoad(v)
+                }}
+              />
+              <span>
+                <span className="font-medium">Auto-run last order</span> when I open this page (reloads reporting for the
+                order you last saved or opened — no extra click).
+              </span>
+            </label>
+            <div className="mt-4">
+              <label className={labelClass} htmlFor="sc-auto-refresh">
+                Auto-refresh reporting (active order only)
+              </label>
+              <select
+                id="sc-auto-refresh"
+                className={inputClass}
+                value={autoRefreshMs}
+                onChange={(e) => {
+                  const ms = Number(e.target.value)
+                  setAutoRefreshMs(ms)
+                  saveAutoRefreshIntervalMs(ms)
+                }}
+              >
+                <option value={0}>Off</option>
+                <option value={60000}>Every 1 minute</option>
+                <option value={300000}>Every 5 minutes</option>
+                <option value={900000}>Every 15 minutes</option>
+              </select>
+              <p className="mt-2 text-[10px] leading-snug text-slate-500">
+                Re-runs from the current form while an order is active, updates the saved order definition, and refreshes
+                “Last refresh” each tick.
+              </p>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Order entry</h2>
             <p className="mt-2 text-xs text-slate-500">
