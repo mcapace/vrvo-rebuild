@@ -189,7 +189,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
 
     const meta: TradeDeskMeta = {
       reportGeneratedAt: `${REPORT_AS_OF}T12:00:00.000Z`,
-      ioNumber: 'VRVO-IO-AOT-2025-Q4',
+      ioNumber: 'VRVO-IO-AZTOUR-2025-1144',
       lineItem: 'Visit Arizona — Display awareness',
       dsp: 'Programmatic display (open auction + Arizona travel PMPs)',
       supplyPath: 'SSP stack + state tourism private marketplace',
