@@ -886,6 +886,22 @@ export function ReportingScenarioLab() {
                 or open a saved order. The dashboard and CSV reflect pacing projected from your flight dates and CTR
                 inputs.
               </p>
+              {issues.length > 0 ? (
+                <div className="mt-5 w-full max-w-md rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left text-xs text-amber-950">
+                  <p className="font-semibold text-amber-950">Fix these fields, then pull reporting again</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-4 text-amber-900/95">
+                    {issues.map((i) => (
+                      <li key={i.field}>{i.message}</li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 leading-relaxed text-amber-900/85">
+                    Saved orders from an older version may be missing a click-through URL or audience cohort lines — open
+                    the order in the form, add them, then use <span className="font-medium">Pull reporting</span> or{' '}
+                    <span className="font-medium">Create order & pull reporting</span>.
+                  </p>
+                </div>
+              ) : null}
+              {runError ? <p className="mt-4 max-w-md text-xs text-rose-700">{runError}</p> : null}
             </div>
           ) : reportExpanded ? (
             <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-8 text-center">

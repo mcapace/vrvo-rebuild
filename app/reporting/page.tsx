@@ -35,7 +35,9 @@ export default async function ReportingPage({
     redirect('/reporting/login?from=%2Freporting')
   }
 
-  const { campaign: campaignKey } = await searchParams
+  const resolvedSearchParams = (await searchParams) ?? {}
+  const rawCampaign = resolvedSearchParams.campaign
+  const campaignKey = Array.isArray(rawCampaign) ? rawCampaign[0] : rawCampaign
   const campaign =
     campaignKey === 'arizona' ? arizonaOfficeOfTourismCampaign : bigSmokeMiamiCampaign
 

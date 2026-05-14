@@ -37,7 +37,8 @@ export function middleware(request: NextRequest) {
     if (!looksLikeSessionToken(token)) {
       const url = request.nextUrl.clone()
       url.pathname = '/reporting/login'
-      url.searchParams.set('from', pathname)
+      const fromTarget = `${pathname}${request.nextUrl.search}`
+      url.searchParams.set('from', fromTarget)
       return noStoreHeaders(NextResponse.redirect(url))
     }
     return noStoreHeaders(NextResponse.next())

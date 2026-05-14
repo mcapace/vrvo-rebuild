@@ -23,7 +23,12 @@ function ReportingLoginForm() {
 
   const rawFrom = searchParams.get('from') || '/reporting'
   const redirectTo =
-    rawFrom.startsWith('/') && !rawFrom.startsWith('//') ? rawFrom : '/reporting'
+    rawFrom.startsWith('/reporting') &&
+    !rawFrom.startsWith('//') &&
+    !rawFrom.includes('\n') &&
+    !rawFrom.includes('\r')
+      ? rawFrom
+      : '/reporting'
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
