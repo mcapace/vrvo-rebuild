@@ -1,11 +1,12 @@
 /**
  * Arizona Office of Tourism — display fixture.
  *
- * **Book:** 180,000 impressions (IO cap). **Flight ended** 2026-04-30.
- * **Delivered:** ~183k impressions (~1.7% over book) with daily grain matching that total.
+ * **Book:** 180,000 impressions. **Flight ended** 2026-04-30.
+ * **Net media spend** over the flight dates: **$4,500** — blended **CPM** is derived from
+ * spend ÷ delivered imps (no separate placeholder rate).
  *
- * Monthly **shape** comes from the partner Nov–Apr extract you shared earlier; counts are
- * scaled so delivered lands on the 180k book + light over-delivery (clicks scaled similarly).
+ * **Delivered impressions** use the Nov–Apr partner **shape**, scaled to a **non-round** total
+ * (not a tidy “000s” number); daily grain sums to that total.
  *
  * Open `/reporting?campaign=arizona` (any casing).
  */
@@ -40,8 +41,17 @@ const REF_CLK_SUM = PARTNER_REF.reduce((a, s) => a + s.clk, 0)
 /** IO book — user cap. */
 const IMPRESSIONS_BOOKED = 180_000
 
-/** Slight over-delivery vs book (~1.67%). */
-const DELIVERED_IMP = 183_000
+/**
+ * Delivered impressions after scaling the partner curve (~1.6% over book).
+ * Intentionally not a round thousands figure — months sum exactly here.
+ */
+const DELIVERED_IMP = 182_847
+
+/** Actualized net media spend over Nov–Apr flight (drives blended CPM in the dashboard). */
+const TOTAL_MEDIA_SPEND_USD = 4500
+
+/** Blended CPM from spend and delivered imps: (spend / (imps/1000))). */
+const CPM_USD = (TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP
 
 const TOTAL_CLICKS = Math.max(1, Math.round((DELIVERED_IMP * REF_CLK_SUM) / REF_IMP_SUM))
 const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
@@ -148,16 +158,16 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
   flight: {
     launched: LAUNCH,
     inMarket: false,
-    summary: `Flight ended ${REPORT_AS_OF} · ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked impressions · ${DELIVERED_IMP.toLocaleString('en-US')} delivered (~${((DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100).toFixed(1)}% of book).`,
+    summary: `Flight ended ${REPORT_AS_OF} · ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked · ${DELIVERED_IMP.toLocaleString('en-US')} delivered · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net spend (~${((DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100).toFixed(1)}% of book).`,
   },
   delivery: {
-    cpmUsd: 11.5,
+    cpmUsd: CPM_USD,
     impressionsPurchased: IMPRESSIONS_BOOKED,
     pctDelivered: PCT_DELIVERED,
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote: `180k book through Apr 30, 2026; delivered ${DELIVERED_IMP.toLocaleString('en-US')} imps (${TOTAL_CLICKS.toLocaleString('en-US')} clicks, ~${((TOTAL_CLICKS / DELIVERED_IMP) * 100).toFixed(2)}% CTR). Monthly mix follows the earlier partner Nov–Apr shape, scaled to these totals.`,
+    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media over Nov–Apr flight; ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps ⇒ blended ~$${CPM_USD.toFixed(2)} CPM. ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${((TOTAL_CLICKS / DELIVERED_IMP) * 100).toFixed(2)}% CTR). Monthly mix scaled from the earlier partner extract.`,
   },
   geo: {
     headline: 'Arizona statewide + priority DMAs and drive corridors',
@@ -175,7 +185,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
     clickthroughUrl: 'https://www.visitarizona.com/?utm_source=vrvo&utm_medium=display&utm_campaign=aot_awareness_2025',
   },
   overviewObjectiveSub:
-    '180k booked flight (ended Apr 30) with light over-delivery on impressions; KPIs and daily grain match the scaled partner mix.',
+    '180k book, ended Apr 30; $4,500 net spend on delivered imps (blended CPM from spend ÷ imps). Delivered total is scaled from partner monthly shape, not a round placeholder.',
   audienceActivationMix: [
     { name: 'Search & intent', value: 38 },
     { name: 'Social & online video', value: 28 },
