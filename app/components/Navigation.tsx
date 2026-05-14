@@ -62,12 +62,12 @@ export default function Navigation() {
           <Link 
             href="/reporting" 
             className={`transition-all duration-300 uppercase text-xs tracking-[0.1em] relative group ${
-              pathname === '/reporting' ? 'text-navy' : 'text-gray-600 hover:text-navy'
+              pathname.startsWith('/reporting') ? 'text-navy' : 'text-gray-600 hover:text-navy'
             }`}
           >
             Reporting
             <span className={`absolute bottom-0 left-0 h-0.5 bg-navy transition-all duration-300 ${
-              pathname === '/reporting' ? 'w-full' : 'w-0 group-hover:w-full'
+              pathname.startsWith('/reporting') ? 'w-full' : 'w-0 group-hover:w-full'
             }`}></span>
           </Link>
           <Link 

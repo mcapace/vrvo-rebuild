@@ -47,13 +47,13 @@ export interface TradeDeskMeta {
   currency: string
 }
 
-function addDays(iso: string, delta: number): string {
+export function addDays(iso: string, delta: number): string {
   const [y, m, d] = iso.split('-').map(Number)
   const x = new Date(Date.UTC(y, m - 1, d + delta))
   return x.toISOString().slice(0, 10)
 }
 
-function daysInclusive(start: string, end: string): number {
+export function daysInclusive(start: string, end: string): number {
   const [ys, ms, ds] = start.split('-').map(Number)
   const [ye, me, de] = end.split('-').map(Number)
   const a = Date.UTC(ys, ms - 1, ds)

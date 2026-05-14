@@ -2,6 +2,7 @@
 
 import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
 import { downloadCampaignReportCsv } from '@/lib/reportingExport'
+import Link from 'next/link'
 import { useCallback, useMemo, type ReactNode } from 'react'
 import {
   ResponsiveContainer,
@@ -266,8 +267,15 @@ export function CampaignDashboard({
           >
             Creative
           </button>
-          <span className="ml-auto tabular-nums text-white/70">
-            IO {tradeDesk.meta.ioNumber}
+          <span className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-1 tabular-nums text-white/70">
+            <Link
+              href="/reporting/scenario"
+              className="font-medium text-white/95 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white hover:decoration-white/60"
+            >
+              Scenario lab
+            </Link>
+            <span className="text-white/40">|</span>
+            <span>IO {tradeDesk.meta.ioNumber}</span>
           </span>
         </div>
       </div>
