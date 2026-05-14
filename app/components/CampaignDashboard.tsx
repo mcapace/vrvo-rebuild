@@ -92,6 +92,15 @@ function formatShortDate(iso: string) {
   return `${m}/${day}`
 }
 
+function formatMonthLabel(isoStart: string) {
+  const [y, m] = isoStart.split('-').map(Number)
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(y, m - 1, 1)))
+}
+
 function formatReportTs(iso: string) {
   const d = new Date(iso)
   return new Intl.DateTimeFormat('en-US', {
@@ -133,7 +142,10 @@ export function CampaignDashboard({
   onExpandReport?: () => void
 }) {
   const { delivery, tradeDesk, performance } = campaign
-  const deliveredImp = Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
+  const deliveredImp =
+    typeof delivery.deliveredImpressions === 'number' && Number.isFinite(delivery.deliveredImpressions)
+      ? Math.round(delivery.deliveredImpressions)
+      : Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
   const mediaCost = (deliveredImp / 1000) * delivery.cpmUsd
   const bookedSpend = (delivery.impressionsPurchased / 1000) * delivery.cpmUsd
 
@@ -200,6 +212,15 @@ export function CampaignDashboard({
     const max = Math.max(...rows.map((r) => r.imps), 1)
     return rows.map((r) => ({ ...r, pct: Math.round((r.imps / max) * 100) }))
   }, [tradeDesk.geoDelivery])
+
+  const monthlyRows = useMemo(() => {
+    if (!campaign.monthlyDelivery?.length) return []
+    return campaign.monthlyDelivery.map((seg) => ({
+      ...seg,
+      label: formatMonthLabel(seg.start),
+      ctrPct: seg.impressions > 0 ? (seg.clicks / seg.impressions) * 100 : 0,
+    }))
+  }, [campaign.monthlyDelivery])
 
   const funnelTiers = useMemo(() => {
     const booked = delivery.impressionsPurchased
@@ -282,6 +303,18 @@ export function CampaignDashboard({
           >
             Creative
           </button>
+          {monthlyRows.length > 0 ? (
+            <>
+              <span className="text-white/40">|</span>
+              <button
+                type="button"
+                onClick={() => scrollToReportingSection('reporting-monthly-delivery')}
+                className={RIBBON_ACTION}
+              >
+                Monthly delivery
+              </button>
+            </>
+          ) : null}
           <span className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-1 tabular-nums text-white/70">
             {onExpandReport ? (
               <>
@@ -597,6 +630,42 @@ export function CampaignDashboard({
             <p className="mt-2 text-sm leading-snug text-slate-600">{performance.measurementNote}</p>
           </div>
         </section>
+
+        {monthlyRows.length > 0 ? (
+          <section
+            id="reporting-monthly-delivery"
+            className="mt-6 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
+            <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Monthly delivery
+            </h3>
+            {campaign.monthlyDeliveryNote ? (
+              <p className="mt-2 text-[11px] leading-snug text-slate-500">{campaign.monthlyDeliveryNote}</p>
+            ) : null}
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[420px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                    <th className="py-2 pr-4">Month</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Impressions</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Clicks</th>
+                    <th className="py-2 text-right tabular-nums">CTR</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthlyRows.map((row) => (
+                    <tr key={row.start} className="border-b border-slate-100 text-slate-800">
+                      <td className="py-2 pr-4 font-medium">{row.label}</td>
+                      <td className="py-2 pr-4 text-right tabular-nums">{formatNumber(row.impressions)}</td>
+                      <td className="py-2 pr-4 text-right tabular-nums">{formatNumber(row.clicks)}</td>
+                      <td className="py-2 text-right tabular-nums">{formatPercent(row.ctrPct, 2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
 
         {/* Detailed charts — full width */}
         <section

@@ -30,7 +30,10 @@ export function buildCampaignReportCsv(
   const td = tradeDesk.meta
   const reportGeneratedAt = options?.generatedAt ?? new Date().toISOString()
 
-  const deliveredImp = Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
+  const deliveredImp =
+    typeof delivery.deliveredImpressions === 'number' && Number.isFinite(delivery.deliveredImpressions)
+      ? Math.round(delivery.deliveredImpressions)
+      : Math.round((delivery.impressionsPurchased * delivery.pctDelivered) / 100)
   const mediaCost = (deliveredImp / 1000) * delivery.cpmUsd
   const bookedSpend = (delivery.impressionsPurchased / 1000) * delivery.cpmUsd
   const totalClicks = tradeDesk.daily.reduce((a, r) => a + r.clicks, 0)
@@ -70,6 +73,27 @@ export function buildCampaignReportCsv(
   lines.push(row(['Click-through URL', campaign.tracking.clickthroughUrl]))
   lines.push(row(['Creative assets folder URL', campaign.creative.assetsFolderUrl]))
   lines.push(row(['Tracking / routing description', campaign.tracking.description]))
+
+  if (campaign.monthlyDelivery?.length) {
+    lines.push('')
+    lines.push('Monthly delivery')
+    if (campaign.monthlyDeliveryNote) {
+      lines.push(row(['Note', campaign.monthlyDeliveryNote]))
+    }
+    lines.push(row(['Month start', 'Month end', 'Impressions', 'Clicks', 'CTR %']))
+    for (const seg of campaign.monthlyDelivery) {
+      const ctr = seg.impressions > 0 ? (seg.clicks / seg.impressions) * 100 : 0
+      lines.push(
+        row([
+          seg.start,
+          seg.end,
+          seg.impressions,
+          seg.clicks,
+          Math.round(ctr * 1000) / 1000,
+        ]),
+      )
+    }
+  }
 
   lines.push('')
   lines.push('Daily performance')

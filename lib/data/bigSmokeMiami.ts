@@ -11,6 +11,7 @@ import {
   type DeviceSplitRow,
   type FormatDeliveryRow,
   type GeoDeliveryRow,
+  type MonthlyDeliverySegment,
   type TradeDeskDailyRow,
   type TradeDeskMeta,
 } from './tradeDeskSeries'
@@ -48,6 +49,11 @@ export interface CampaignReport {
     cpmUsd: number
     impressionsPurchased: number
     pctDelivered: number
+    /**
+     * When set, dashboards and CSV exports use this exact delivered count instead of
+     * `impressionsPurchased × pctDelivered / 100` (avoids rounding drift vs monthly grain).
+     */
+    deliveredImpressions?: number
   }
   performance: {
     ctrPct: number
@@ -74,6 +80,13 @@ export interface CampaignReport {
    * When omitted, the dashboard uses the default modeled / purchase / contextual split.
    */
   audienceActivationMix?: { name: string; value: number }[]
+  /**
+   * Optional calendar-month delivery (partner or reconciled grain). When present, the
+   * dashboard renders a “Monthly delivery” section and the CSV includes a matching block.
+   */
+  monthlyDelivery?: MonthlyDeliverySegment[]
+  /** Footnote for the monthly table (e.g. which months are actuals vs estimate). */
+  monthlyDeliveryNote?: string
   audiences: AudienceBucket[]
   tradeDesk: CampaignTradeDesk
 }
