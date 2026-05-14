@@ -104,6 +104,17 @@ const arizonaFormats = [
 
 const ARIZONA_FORMAT_WEIGHTS = [0.11, 0.14, 0.2, 0.16, 0.14, 0.12, 0.09, 0.04]
 
+/** Out-of-state prospecting only — shares sum to 1 (normalized in `buildGeoDelivery` if needed). */
+const ARIZONA_PRIMARY_FEEDER_DMAS = ['Los Angeles', 'Las Vegas', 'Denver'] as const
+const ARIZONA_SECONDARY_FEEDER_DMAS = [
+  'Dallas–Fort Worth',
+  'Salt Lake City',
+  'San Diego',
+  'Seattle',
+] as const
+const ARIZONA_GEO_PRIMARY_SHARES = [0.26, 0.2, 0.14] as const
+const ARIZONA_GEO_SECONDARY_SHARES = [0.12, 0.1, 0.1, 0.08] as const
+
 const arizonaDeviceSplit: DeviceSplitRow[] = [
   { device: 'Mobile', sharePct: 58.6 },
   { device: 'Desktop', sharePct: 34.2 },
@@ -114,22 +125,22 @@ const arizonaAudienceBuckets: AudienceBucket[] = [
   {
     id: 'intent',
     label: 'Travel intent & in-market',
-    description: 'Modeled and behavioral signals for leisure travel to Arizona.',
+    description: 'Modeled and behavioral signals for leisure travel to Arizona from out-of-state origin markets.',
     cohorts: [
       {
-        title: 'State welcome funnel — warm / hot intent',
+        title: 'Destination intent — warm / hot',
         detail:
-          'Users actively researching flights, resorts, and outdoor itineraries in-state; aligned to Visit Arizona seasonal pushes.',
+          'Households outside Arizona actively researching flights, resorts, and outdoor itineraries to Arizona; aligned to Visit Arizona seasonal pushes in feeder DMAs.',
       },
       {
-        title: 'Regional drive markets',
+        title: 'Regional fly & drive feeders',
         detail:
-          'Households in CA, NV, UT, CO, TX with road-trip and long-weekend propensity; daypart weekday + weekend leisure.',
+          'Short-haul flights and weekend drive rings (CA, NV, CO, TX, UT) into Arizona’s core visit corridors — aligned to Visit Arizona feeder-DMA strategy.',
       },
       {
         title: 'Outdoor & national-park affinity',
         detail:
-          'Hiking, scenic drives, and park pass purchasers — indexes toward northern Arizona and Grand Canyon corridor messaging.',
+          'Hiking, scenic drives, and park pass purchasers in origin states — messaging indexes to northern Arizona and Grand Canyon itineraries as the trip destination.',
       },
     ],
   },
@@ -170,9 +181,10 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
     measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media over Nov–Apr flight; ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps ⇒ blended ~$${CPM_USD.toFixed(2)} CPM. ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${((TOTAL_CLICKS / DELIVERED_IMP) * 100).toFixed(2)}% CTR). Monthly mix scaled from the earlier partner extract.`,
   },
   geo: {
-    headline: 'Arizona statewide + priority DMAs and drive corridors',
-    primaryMarkets: ['Phoenix', 'Tucson', 'Scottsdale / East Valley'],
-    driveInMarkets: ['Flagstaff / Grand Canyon gateway', 'Sedona / Verde Valley', 'Yuma / Lake Havasu', 'Las Vegas spillover'],
+    headline:
+      'Prospecting households outside Arizona in priority fly and short-haul drive feeder DMAs (West and Texas); geo delivery is origin-market weighted, not in-state residents.',
+    primaryMarkets: [...ARIZONA_PRIMARY_FEEDER_DMAS],
+    driveInMarkets: [...ARIZONA_SECONDARY_FEEDER_DMAS],
   },
   creative: {
     environments: 'Desktop and mobile; standard display and high-impact units.',
@@ -216,8 +228,12 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
       daily,
       geoDelivery: buildGeoDelivery(
         DELIVERED_IMP,
-        ['Phoenix', 'Tucson', 'Scottsdale / East Valley'],
-        ['Flagstaff / Grand Canyon gateway', 'Sedona / Verde Valley', 'Yuma / Lake Havasu', 'Las Vegas spillover'],
+        [...ARIZONA_PRIMARY_FEEDER_DMAS],
+        [...ARIZONA_SECONDARY_FEEDER_DMAS],
+        {
+          primary: [...ARIZONA_GEO_PRIMARY_SHARES],
+          secondary: [...ARIZONA_GEO_SECONDARY_SHARES],
+        },
       ),
       formatDelivery: buildFormatDelivery([...arizonaFormats], DELIVERED_IMP, [...ARIZONA_FORMAT_WEIGHTS]),
       deviceSplit: arizonaDeviceSplit,

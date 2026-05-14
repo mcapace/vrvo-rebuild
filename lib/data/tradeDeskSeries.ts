@@ -245,28 +245,55 @@ export function buildTradeDeskDailyFromMonthlySegments(params: {
   return rows
 }
 
+/** Optional impression shares for `buildGeoDelivery` (normalized to sum to 1 if slightly off). */
+export type GeoDeliveryShareTemplate = {
+  primary: number[]
+  secondary: number[]
+}
+
 export function buildGeoDelivery(
   deliveredImp: number,
   primary: string[],
   secondary: string[],
+  shares?: GeoDeliveryShareTemplate,
 ): GeoDeliveryRow[] {
-  const sharesPrimary = [0.34, 0.22, 0.18]
-  const sharesSecondary = [0.09, 0.08, 0.05, 0.04]
+  const defaultPrimary = [0.34, 0.22, 0.18]
+  const defaultSecondary = [0.09, 0.08, 0.05, 0.04]
+  const rawPrimary = shares?.primary ?? defaultPrimary
+  const rawSecondary = shares?.secondary ?? defaultSecondary
+
+  if (rawPrimary.length !== primary.length) {
+    throw new Error(
+      `buildGeoDelivery: primary regions (${primary.length}) must match primary shares (${rawPrimary.length})`,
+    )
+  }
+  if (rawSecondary.length !== secondary.length) {
+    throw new Error(
+      `buildGeoDelivery: secondary regions (${secondary.length}) must match secondary shares (${rawSecondary.length})`,
+    )
+  }
+
+  const rawSum =
+    rawPrimary.reduce((a, b) => a + b, 0) + rawSecondary.reduce((a, b) => a + b, 0)
+  const scale = rawSum > 0 ? 1 / rawSum : 1
+  const sharesPrimary = rawPrimary.map((x) => x * scale)
+  const sharesSecondary = rawSecondary.map((x) => x * scale)
+
   const rows: GeoDeliveryRow[] = []
   primary.forEach((region, i) => {
-    const sharePct = sharesPrimary[i] ?? 0
+    const share = sharesPrimary[i] ?? 0
     rows.push({
       region,
-      impressions: Math.round(deliveredImp * sharePct),
-      sharePct: sharePct * 100,
+      impressions: Math.round(deliveredImp * share),
+      sharePct: share * 100,
     })
   })
   secondary.forEach((region, i) => {
-    const sharePct = sharesSecondary[i] ?? 0
+    const share = sharesSecondary[i] ?? 0
     rows.push({
       region,
-      impressions: Math.round(deliveredImp * sharePct),
-      sharePct: sharePct * 100,
+      impressions: Math.round(deliveredImp * share),
+      sharePct: share * 100,
     })
   })
   const sumImp = rows.reduce((a, r) => a + r.impressions, 0)
