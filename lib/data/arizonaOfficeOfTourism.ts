@@ -1,21 +1,13 @@
 /**
- * Arizona Office of Tourism — display fixture built from **partner monthly actuals**
- * (Nov 2025–Mar 2026) plus **Apr 2026 projected** row for continuity.
+ * Arizona Office of Tourism — display fixture.
  *
- * Booked / delivered in the app match **399,052 impressions** and **5,012 clicks** (sum of months below).
- * Device mix, format mix, and activation pie are **Arizona-specific** (not shared with other fixtures).
+ * **Book:** 180,000 impressions (IO cap). **Flight ended** 2026-04-30.
+ * **Delivered:** ~183k impressions (~1.7% over book) with daily grain matching that total.
  *
- * | Month    | Impressions | CTR   | Clicks |
- * |----------|------------:|------:|-------:|
- * | Nov 2025 |      28,450 | 1.05% |    299 |
- * | Dec 2025 |      54,120 | 1.14% |    617 |
- * | Jan 2026 |      64,890 | 1.22% |    792 |
- * | Feb 2026 |      72,315 | 1.28% |    926 |
- * | Mar 2026 |      83,477 | 1.31% |  1,094 |
- * | Apr 2026 |      95,800 | 1.34% |  1,284 |  ← projected
- * | **Total**| **399,052** | 1.26% | **5,012** |
+ * Monthly **shape** comes from the partner Nov–Apr extract you shared earlier; counts are
+ * scaled so delivered lands on the 180k book + light over-delivery (clicks scaled similarly).
  *
- * Open `/reporting?campaign=arizona` (any casing) to view.
+ * Open `/reporting?campaign=arizona` (any casing).
  */
 
 import type { AudienceBucket, CampaignReport } from './bigSmokeMiami'
@@ -25,31 +17,70 @@ import {
   buildTradeDeskDailyFromMonthlySegments,
   daysInclusive,
   type DeviceSplitRow,
+  type MonthlyDeliverySegment,
   type TradeDeskMeta,
 } from './tradeDeskSeries'
 
 const LAUNCH = '2025-11-01'
 const REPORT_AS_OF = '2026-04-30'
 
-const APRIL_2026 = { impressions: 95_800, clicks: 1_284 }
-
-const MONTHLY_SEGMENTS = [
-  { start: '2025-11-01', end: '2025-11-30', impressions: 28_450, clicks: 299 },
-  { start: '2025-12-01', end: '2025-12-31', impressions: 54_120, clicks: 617 },
-  { start: '2026-01-01', end: '2026-01-31', impressions: 64_890, clicks: 792 },
-  { start: '2026-02-01', end: '2026-02-29', impressions: 72_315, clicks: 926 },
-  { start: '2026-03-01', end: '2026-03-31', impressions: 83_477, clicks: 1_094 },
-  { start: '2026-04-01', end: '2026-04-30', impressions: APRIL_2026.impressions, clicks: APRIL_2026.clicks },
+/** Partner-reported shape (Nov–Apr); magnitudes used only as ratios for scaling. */
+const PARTNER_REF = [
+  { start: '2025-11-01', end: '2025-11-30', imp: 28_450, clk: 299 },
+  { start: '2025-12-01', end: '2025-12-31', imp: 54_120, clk: 617 },
+  { start: '2026-01-01', end: '2026-01-31', imp: 64_890, clk: 792 },
+  { start: '2026-02-01', end: '2026-02-29', imp: 72_315, clk: 926 },
+  { start: '2026-03-01', end: '2026-03-31', imp: 83_477, clk: 1_094 },
+  { start: '2026-04-01', end: '2026-04-30', imp: 95_800, clk: 1_284 },
 ] as const
 
-const DELIVERED_IMP = MONTHLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0)
-const TOTAL_CLICKS = MONTHLY_SEGMENTS.reduce((a, s) => a + s.clicks, 0)
-const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
+const REF_IMP_SUM = PARTNER_REF.reduce((a, s) => a + s.imp, 0)
+const REF_CLK_SUM = PARTNER_REF.reduce((a, s) => a + s.clk, 0)
 
-/** Booked = delivered YTD so KPIs match partner totals (no placeholder IO cap). */
-const IMPRESSIONS_BOOKED = DELIVERED_IMP
-const PCT_DELIVERED = 100
+/** IO book — user cap. */
+const IMPRESSIONS_BOOKED = 180_000
+
+/** Slight over-delivery vs book (~1.67%). */
+const DELIVERED_IMP = 183_000
+
+const TOTAL_CLICKS = Math.max(1, Math.round((DELIVERED_IMP * REF_CLK_SUM) / REF_IMP_SUM))
+const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
+const PCT_DELIVERED = (DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100
+
 const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, REPORT_AS_OF)
+
+function scaleMonthlyToTargets(
+  targetImp: number,
+  targetClk: number,
+): MonthlyDeliverySegment[] {
+  const imps = PARTNER_REF.map((x) => Math.round((x.imp * targetImp) / REF_IMP_SUM))
+  let impDrift = targetImp - imps.reduce((a, b) => a + b, 0)
+  imps[imps.length - 1] += impDrift
+
+  const clks = PARTNER_REF.map((x, i) => {
+    if (x.imp <= 0) return 0
+    return Math.max(0, Math.round((x.clk * imps[i]) / x.imp))
+  })
+  let clkDrift = targetClk - clks.reduce((a, b) => a + b, 0)
+  let ix = clks.length - 1
+  while (clkDrift !== 0 && ix >= 0) {
+    const adj = clkDrift > 0 ? 1 : -1
+    if (clks[ix] + adj >= 0) {
+      clks[ix] += adj
+      clkDrift -= adj
+    }
+    ix -= 1
+  }
+
+  return PARTNER_REF.map((x, i) => ({
+    start: x.start,
+    end: x.end,
+    impressions: imps[i],
+    clicks: clks[i],
+  }))
+}
+
+const MONTHLY_SEGMENTS = scaleMonthlyToTargets(DELIVERED_IMP, TOTAL_CLICKS)
 
 const arizonaFormats = [
   '970×250 billboard',
@@ -61,7 +92,6 @@ const arizonaFormats = [
   '160×600 wide skyscraper',
 ]
 
-/** Distinct from other fixtures — travel skew, more mobile / video-friendly units. */
 const ARIZONA_FORMAT_WEIGHTS = [0.11, 0.14, 0.2, 0.16, 0.14, 0.12, 0.09, 0.04]
 
 const arizonaDeviceSplit: DeviceSplitRow[] = [
@@ -117,8 +147,8 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
   clientFacingName: 'Arizona Office of Tourism',
   flight: {
     launched: LAUNCH,
-    inMarket: true,
-    summary: `Partner-reported delivery Nov 2025–Mar 2026 plus projected Apr 2026 · ${DELIVERED_IMP.toLocaleString('en-US')} impressions and ${TOTAL_CLICKS.toLocaleString('en-US')} clicks through ${REPORT_AS_OF} (daily grain sums to these totals).`,
+    inMarket: false,
+    summary: `Flight ended ${REPORT_AS_OF} · ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked impressions · ${DELIVERED_IMP.toLocaleString('en-US')} delivered (~${((DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100).toFixed(1)}% of book).`,
   },
   delivery: {
     cpmUsd: 11.5,
@@ -127,7 +157,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote: `Partner totals: Nov 28,450 imps / 299 clk; Dec 54,120 / 617; Jan 64,890 / 792; Feb 72,315 / 926; Mar 83,477 / 1,094; Apr 95,800 / 1,284 (projected). Blended CTR ${((TOTAL_CLICKS / DELIVERED_IMP) * 100).toFixed(2)}% from ${DELIVERED_IMP.toLocaleString('en-US')} imps and ${TOTAL_CLICKS.toLocaleString('en-US')} clicks.`,
+    measurementNote: `180k book through Apr 30, 2026; delivered ${DELIVERED_IMP.toLocaleString('en-US')} imps (${TOTAL_CLICKS.toLocaleString('en-US')} clicks, ~${((TOTAL_CLICKS / DELIVERED_IMP) * 100).toFixed(2)}% CTR). Monthly mix follows the earlier partner Nov–Apr shape, scaled to these totals.`,
   },
   geo: {
     headline: 'Arizona statewide + priority DMAs and drive corridors',
@@ -145,7 +175,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
     clickthroughUrl: 'https://www.visitarizona.com/?utm_source=vrvo&utm_medium=display&utm_campaign=aot_awareness_2025',
   },
   overviewObjectiveSub:
-    'Statewide and drive-market display — Visit Arizona consideration and trip planning; KPIs match partner monthly rollups in the measurement note.',
+    '180k booked flight (ended Apr 30) with light over-delivery on impressions; KPIs and daily grain match the scaled partner mix.',
   audienceActivationMix: [
     { name: 'Search & intent', value: 38 },
     { name: 'Social & online video', value: 28 },
@@ -155,7 +185,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
   audiences: arizonaAudienceBuckets,
   tradeDesk: (() => {
     const daily = buildTradeDeskDailyFromMonthlySegments({
-      segments: [...MONTHLY_SEGMENTS],
+      segments: MONTHLY_SEGMENTS,
       impressionsBooked: IMPRESSIONS_BOOKED,
       flightPlannedDays: FLIGHT_PLANNED_DAYS,
     })
