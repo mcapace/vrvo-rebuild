@@ -280,12 +280,17 @@ export function buildGeoDelivery(
 export function buildFormatDelivery(
   formats: string[],
   deliveredImp: number,
+  /** Optional share weights (must sum to ~1; same length as formats or padded). */
+  weightTemplate?: number[],
 ): FormatDeliveryRow[] {
-  const template = [0.18, 0.16, 0.14, 0.13, 0.12, 0.1, 0.09, 0.08]
+  const base = weightTemplate ?? [0.18, 0.16, 0.14, 0.13, 0.12, 0.1, 0.09, 0.08]
+  const t = formats.map((_, i) => base[i] ?? 0.08)
+  const sumT = t.reduce((a, b) => a + b, 0)
+  const norm = t.map((w) => w / sumT)
   const rows: FormatDeliveryRow[] = formats.map((format, i) => {
-    const t = template[i] ?? 0.08
-    const imp = Math.round(deliveredImp * t)
-    return { format, impressions: imp, sharePct: t * 100 }
+    const w = norm[i] ?? 0
+    const imp = Math.round(deliveredImp * w)
+    return { format, impressions: imp, sharePct: Math.round(w * 10000) / 100 }
   })
   const sumImp = rows.reduce((a, r) => a + r.impressions, 0)
   const drift = deliveredImp - sumImp

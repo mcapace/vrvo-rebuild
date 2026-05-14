@@ -180,12 +180,14 @@ export function CampaignDashboard({
     value: d.sharePct,
   }))
 
-  /** Modeled vs deterministic vs contextual — illustrative split for the overview card. */
-  const dataActivationPie = [
-    { name: 'Modeled / scale', value: 52 },
-    { name: 'Purchase / POS', value: 31 },
-    { name: 'Contextual / lifestyle', value: 17 },
-  ]
+  const dataActivationPie = useMemo(() => {
+    if (campaign.audienceActivationMix?.length) return campaign.audienceActivationMix
+    return [
+      { name: 'Modeled / scale', value: 52 },
+      { name: 'Purchase / POS', value: 31 },
+      { name: 'Contextual / lifestyle', value: 17 },
+    ]
+  }, [campaign.audienceActivationMix, campaign.id])
 
   const channelBars = useMemo(() => {
     const rows = [...tradeDesk.geoDelivery]

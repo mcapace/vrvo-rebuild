@@ -69,6 +69,11 @@ export interface CampaignReport {
   }
   /** Subcopy under the Objectives overview card (per-campaign voice; dashboard default is generic). */
   overviewObjectiveSub?: string
+  /**
+   * Optional “data activation” pie for the Audience overview card.
+   * When omitted, the dashboard uses the default modeled / purchase / contextual split.
+   */
+  audienceActivationMix?: { name: string; value: number }[]
   audiences: AudienceBucket[]
   tradeDesk: CampaignTradeDesk
 }

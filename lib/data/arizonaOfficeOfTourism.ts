@@ -1,7 +1,9 @@
 /**
- * Sample campaign: Arizona Office of Tourism — display performance snapshot.
+ * Arizona Office of Tourism — display fixture built from **partner monthly actuals**
+ * (Nov 2025–Mar 2026) plus **Apr 2026 projected** row for continuity.
  *
- * Partner-reported monthly delivery (exact imps & clicks):
+ * Booked / delivered in the app match **399,052 impressions** and **5,012 clicks** (sum of months below).
+ * Device mix, format mix, and activation pie are **Arizona-specific** (not shared with other fixtures).
  *
  * | Month    | Impressions | CTR   | Clicks |
  * |----------|------------:|------:|-------:|
@@ -10,30 +12,25 @@
  * | Jan 2026 |      64,890 | 1.22% |    792 |
  * | Feb 2026 |      72,315 | 1.28% |    926 |
  * | Mar 2026 |      83,477 | 1.31% |  1,094 |
- * | Apr 2026 |      95,800 | 1.34% |  1,284 |  ← projected (not in original extract)
+ * | Apr 2026 |      95,800 | 1.34% |  1,284 |  ← projected
  * | **Total**| **399,052** | 1.26% | **5,012** |
  *
- * Open `/reporting?campaign=arizona` to view in the app.
+ * Open `/reporting?campaign=arizona` (any casing) to view.
  */
 
 import type { AudienceBucket, CampaignReport } from './bigSmokeMiami'
 import {
-  buildDeviceSplit,
   buildFormatDelivery,
   buildGeoDelivery,
   buildTradeDeskDailyFromMonthlySegments,
   daysInclusive,
+  type DeviceSplitRow,
   type TradeDeskMeta,
 } from './tradeDeskSeries'
 
 const LAUNCH = '2025-11-01'
-/** Last day included in daily grain (April 2026 projection). */
 const REPORT_AS_OF = '2026-04-30'
 
-/**
- * April 2026 not in original extract — projected for planning continuity.
- * Impressions ~15% above March; CTR 1.34%; clicks rounded to match.
- */
 const APRIL_2026 = { impressions: 95_800, clicks: 1_284 }
 
 const MONTHLY_SEGMENTS = [
@@ -42,24 +39,17 @@ const MONTHLY_SEGMENTS = [
   { start: '2026-01-01', end: '2026-01-31', impressions: 64_890, clicks: 792 },
   { start: '2026-02-01', end: '2026-02-29', impressions: 72_315, clicks: 926 },
   { start: '2026-03-01', end: '2026-03-31', impressions: 83_477, clicks: 1_094 },
-  {
-    start: '2026-04-01',
-    end: '2026-04-30',
-    impressions: APRIL_2026.impressions,
-    clicks: APRIL_2026.clicks,
-  },
+  { start: '2026-04-01', end: '2026-04-30', impressions: APRIL_2026.impressions, clicks: APRIL_2026.clicks },
 ] as const
 
 const DELIVERED_IMP = MONTHLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0)
 const TOTAL_CLICKS = MONTHLY_SEGMENTS.reduce((a, s) => a + s.clicks, 0)
 const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
 
-/** Full-flight book (through summer); daily actuals sum to `DELIVERED_IMP` through Apr 30. */
-const IMPRESSIONS_BOOKED = 500_000
-const FLIGHT_END_PLAN = '2026-08-31'
-const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, FLIGHT_END_PLAN)
-/** Precise % so dashboard delivered imps match daily grain (399,052). */
-const PCT_DELIVERED = (DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100
+/** Booked = delivered YTD so KPIs match partner totals (no placeholder IO cap). */
+const IMPRESSIONS_BOOKED = DELIVERED_IMP
+const PCT_DELIVERED = 100
+const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, REPORT_AS_OF)
 
 const arizonaFormats = [
   '970×250 billboard',
@@ -69,6 +59,15 @@ const arizonaFormats = [
   '320×100 large mobile banner',
   '320×50 mobile banner',
   '160×600 wide skyscraper',
+]
+
+/** Distinct from other fixtures — travel skew, more mobile / video-friendly units. */
+const ARIZONA_FORMAT_WEIGHTS = [0.11, 0.14, 0.2, 0.16, 0.14, 0.12, 0.09, 0.04]
+
+const arizonaDeviceSplit: DeviceSplitRow[] = [
+  { device: 'Mobile', sharePct: 58.6 },
+  { device: 'Desktop', sharePct: 34.2 },
+  { device: 'Tablet', sharePct: 7.2 },
 ]
 
 const arizonaAudienceBuckets: AudienceBucket[] = [
@@ -119,7 +118,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
   flight: {
     launched: LAUNCH,
     inMarket: true,
-    summary: `In market since Nov 2025 · delivery through ${REPORT_AS_OF} (${DELIVERED_IMP.toLocaleString('en-US')} imps YTD vs ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked through ${FLIGHT_END_PLAN.slice(0, 7)}).`,
+    summary: `Partner-reported delivery Nov 2025–Mar 2026 plus projected Apr 2026 · ${DELIVERED_IMP.toLocaleString('en-US')} impressions and ${TOTAL_CLICKS.toLocaleString('en-US')} clicks through ${REPORT_AS_OF} (daily grain sums to these totals).`,
   },
   delivery: {
     cpmUsd: 11.5,
@@ -128,8 +127,7 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote:
-      'Click-based display reporting through April 2026; April figures are projected from trend. No attributed bookings in this view.',
+    measurementNote: `Partner totals: Nov 28,450 imps / 299 clk; Dec 54,120 / 617; Jan 64,890 / 792; Feb 72,315 / 926; Mar 83,477 / 1,094; Apr 95,800 / 1,284 (projected). Blended CTR ${((TOTAL_CLICKS / DELIVERED_IMP) * 100).toFixed(2)}% from ${DELIVERED_IMP.toLocaleString('en-US')} imps and ${TOTAL_CLICKS.toLocaleString('en-US')} clicks.`,
   },
   geo: {
     headline: 'Arizona statewide + priority DMAs and drive corridors',
@@ -147,7 +145,13 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
     clickthroughUrl: 'https://www.visitarizona.com/?utm_source=vrvo&utm_medium=display&utm_campaign=aot_awareness_2025',
   },
   overviewObjectiveSub:
-    'Statewide and drive-market display — Visit Arizona consideration and trip planning against booked flight.',
+    'Statewide and drive-market display — Visit Arizona consideration and trip planning; KPIs match partner monthly rollups in the measurement note.',
+  audienceActivationMix: [
+    { name: 'Search & intent', value: 38 },
+    { name: 'Social & online video', value: 28 },
+    { name: 'Publisher / PMP', value: 22 },
+    { name: 'Contextual / endemic', value: 12 },
+  ],
   audiences: arizonaAudienceBuckets,
   tradeDesk: (() => {
     const daily = buildTradeDeskDailyFromMonthlySegments({
@@ -155,7 +159,6 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
       impressionsBooked: IMPRESSIONS_BOOKED,
       flightPlannedDays: FLIGHT_PLANNED_DAYS,
     })
-    const deliveredForGeo = Math.round((IMPRESSIONS_BOOKED * PCT_DELIVERED) / 100)
 
     const meta: TradeDeskMeta = {
       reportGeneratedAt: `${REPORT_AS_OF}T12:00:00.000Z`,
@@ -172,12 +175,12 @@ export const arizonaOfficeOfTourismCampaign: CampaignReport = {
       meta,
       daily,
       geoDelivery: buildGeoDelivery(
-        deliveredForGeo,
+        DELIVERED_IMP,
         ['Phoenix', 'Tucson', 'Scottsdale / East Valley'],
         ['Flagstaff / Grand Canyon gateway', 'Sedona / Verde Valley', 'Yuma / Lake Havasu', 'Las Vegas spillover'],
       ),
-      formatDelivery: buildFormatDelivery([...arizonaFormats], deliveredForGeo),
-      deviceSplit: buildDeviceSplit(),
+      formatDelivery: buildFormatDelivery([...arizonaFormats], DELIVERED_IMP, [...ARIZONA_FORMAT_WEIGHTS]),
+      deviceSplit: arizonaDeviceSplit,
     }
   })(),
 }
