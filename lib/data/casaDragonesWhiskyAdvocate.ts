@@ -4,7 +4,7 @@
  * **Brief:** May 4–Jun 4 flight · creative production **$1,916** · headline below ·
  * click-through https://casadragones.whiskyadvocate.com/
  *
- * **Book:** 250,000 impressions (IO). **Flight ended** 2026-06-04 · **100% delivered in full.**
+ * **Book:** 250,000 impressions (IO). **Flight ended** 2026-06-04 · **~101.2% delivered** (slight over-delivery).
  * **Net media spend** over the flight: **$1,916** — blended **CPM** = spend ÷ delivered imps
  * (same formula as Arizona: `(TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP`).
  *
@@ -12,9 +12,9 @@
  *
  * | Month    | Impressions | CTR¹   | Clicks |
  * |----------|--------------:|--------|-------:|
- * | May 2026 |       218,750 | 1.04%  |  2,275 |
- * | Jun 2026 |        31,250 | 1.08%  |    338 |
- * | **Total**|   **250,000** | 1.05%  | **2,613** |
+ * | May 2026 |       221,266 | 1.04%  |  2,301 |
+ * | Jun 2026 |        31,609 | 1.08%  |    341 |
+ * | **Total**|   **252,875** | 1.04%  | **2,642** |
  *
  * ¹ CTR = clicks ÷ impressions for that month. May = partial (launch May 4); Jun = partial (close Jun 4).
  *
@@ -45,13 +45,13 @@ const HEADLINE = 'Explore the craft behind Casa Dragones Tequila.'
 const CLICKTHROUGH_URL =
   'https://casadragones.whiskyadvocate.com/?utm_source=vrvo&utm_medium=display&utm_campaign=casa_dragones_display_2026'
 
-/** May 4–31 + Jun 1–4 — full book delivered by flight close. */
+/** May 4–31 + Jun 1–4 — slight over-delivery vs IO book by flight close. */
 const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = [
-  { start: '2026-05-04', end: '2026-05-31', impressions: 218_750, clicks: 2_275 },
-  { start: '2026-06-01', end: '2026-06-04', impressions: 31_250, clicks: 338 },
+  { start: '2026-05-04', end: '2026-05-31', impressions: 221_266, clicks: 2_301 },
+  { start: '2026-06-01', end: '2026-06-04', impressions: 31_609, clicks: 341 },
 ]
 
-/** IO book — equals delivered flight total (order delivered in full). */
+/** IO book — delivered total runs slightly over cap (partner make-good / rounding). */
 const IMPRESSIONS_BOOKED = 250_000
 
 const DELIVERED_IMP = MONTHLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0)
@@ -61,7 +61,7 @@ const TOTAL_CLICKS = Math.max(1, MONTHLY_SEGMENTS.reduce((a, s) => a + s.clicks,
 const CPM_USD = (TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP
 
 const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
-const PCT_DELIVERED = 100
+const PCT_DELIVERED = (DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100
 
 const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, REPORT_AS_OF)
 
@@ -137,7 +137,7 @@ export const casaDragonesWhiskyAdvocateCampaign: CampaignReport = {
   flight: {
     launched: LAUNCH,
     inMarket: false,
-    summary: `Flight ended ${REPORT_AS_OF} · ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked · ${DELIVERED_IMP.toLocaleString('en-US')} delivered · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net spend (100% of book delivered in full).`,
+    summary: `Flight ended ${REPORT_AS_OF} · ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked · ${DELIVERED_IMP.toLocaleString('en-US')} delivered · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net spend (~${PCT_DELIVERED.toFixed(1)}% of book — slight over-delivery).`,
   },
   delivery: {
     cpmUsd: CPM_USD,
@@ -147,7 +147,7 @@ export const casaDragonesWhiskyAdvocateCampaign: CampaignReport = {
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media over May 4–Jun 4 flight; ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (100% of book) ⇒ blended ~$${CPM_USD.toFixed(2)} CPM. ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR). Creative production $${CREATIVE_PRODUCTION_USD.toLocaleString('en-US')} per client brief.`,
+    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media over May 4–Jun 4 flight; ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book) ⇒ blended ~$${CPM_USD.toFixed(2)} CPM. ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR). Creative production $${CREATIVE_PRODUCTION_USD.toLocaleString('en-US')} per client brief.`,
   },
   geo: {
     headline:
@@ -165,10 +165,10 @@ export const casaDragonesWhiskyAdvocateCampaign: CampaignReport = {
       `${HEADLINE} Creative routes to the Whisky Advocate partner landing experience as trafficked in the IO.`,
     clickthroughUrl: CLICKTHROUGH_URL,
   },
-  overviewObjectiveSub: `${Math.round(IMPRESSIONS_BOOKED / 1000)}k book, ended Jun 4; $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net spend on ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps — 100% of book delivered in full (blended CPM from spend ÷ imps).`,
+  overviewObjectiveSub: `${Math.round(IMPRESSIONS_BOOKED / 1000)}k book, ended Jun 4; $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net spend on ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book — slight over-delivery; blended CPM from spend ÷ imps).`,
   monthlyDelivery: [...MONTHLY_SEGMENTS],
   monthlyDeliveryNote:
-    'May–Jun 2026: flight-close delivery at month boundaries (May 4 launch, Jun 4 close). Full IO delivered by end of flight.',
+    'May–Jun 2026: flight-close delivery at month boundaries (May 4 launch, Jun 4 close). Delivered volume runs slightly over IO book at flight close.',
   audienceActivationMix: [
     { name: 'Whisky Advocate endemic', value: 42 },
     { name: 'Modeled luxury spirits', value: 28 },
