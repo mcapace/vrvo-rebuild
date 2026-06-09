@@ -7,8 +7,10 @@ import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 import { ReportingSignOut } from '../components/ReportingSignOut'
 import { CampaignDashboard } from '../components/CampaignDashboard'
-import { arizonaOfficeOfTourismCampaign } from '@/lib/data/arizonaOfficeOfTourism'
-import { bigSmokeMiamiCampaign } from '@/lib/data/bigSmokeMiami'
+import {
+  REPORTING_CAMPAIGN_NAV,
+  resolveReportingCampaign,
+} from '@/lib/data/reportingCampaigns'
 import { REPORTING_SESSION_COOKIE } from '@/lib/reportingSession.constants'
 import { verifyReportingSessionToken } from '@/lib/reportingSession'
 
@@ -38,9 +40,7 @@ export default async function ReportingPage({
   const resolvedSearchParams = (await searchParams) ?? {}
   const rawCampaign = resolvedSearchParams.campaign
   const campaignParam = Array.isArray(rawCampaign) ? rawCampaign[0] : rawCampaign
-  const campaignKey = typeof campaignParam === 'string' ? campaignParam.trim().toLowerCase() : ''
-  const campaign =
-    campaignKey === 'arizona' ? arizonaOfficeOfTourismCampaign : bigSmokeMiamiCampaign
+  const { campaign, activeNavKey } = resolveReportingCampaign(campaignParam)
 
   const generatedAt = new Date().toISOString()
 
@@ -62,25 +62,25 @@ export default async function ReportingPage({
                 />
               </Link>
               <nav className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold uppercase tracking-wide">
-                <Link
-                  href="/reporting"
-                  className={`transition-colors hover:text-navy ${
-                    campaignKey !== 'arizona' ? 'text-navy' : 'text-slate-500 underline decoration-slate-300 underline-offset-2'
-                  }`}
-                >
-                  Big Smoke Miami
-                </Link>
-                <span className="hidden text-slate-300 sm:inline" aria-hidden>
-                  |
-                </span>
-                <Link
-                  href="/reporting?campaign=arizona"
-                  className={`transition-colors hover:text-navy ${
-                    campaignKey === 'arizona' ? 'text-navy' : 'text-slate-500 underline decoration-slate-300 underline-offset-2'
-                  }`}
-                >
-                  Arizona Office of Tourism
-                </Link>
+                {REPORTING_CAMPAIGN_NAV.map((item, index) => (
+                  <span key={item.key} className="contents">
+                    {index > 0 ? (
+                      <span className="hidden text-slate-300 sm:inline" aria-hidden>
+                        |
+                      </span>
+                    ) : null}
+                    <Link
+                      href={item.href}
+                      className={`transition-colors hover:text-navy ${
+                        activeNavKey === item.key
+                          ? 'text-navy'
+                          : 'text-slate-500 underline decoration-slate-300 underline-offset-2'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </span>
+                ))}
                 <span className="hidden text-slate-300 sm:inline" aria-hidden>
                   |
                 </span>
