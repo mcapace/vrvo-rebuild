@@ -4,7 +4,7 @@
  * **Brief:** May 4–Jun 4 flight · creative production **$1,916** · headline below ·
  * click-through https://casadragones.whiskyadvocate.com/
  *
- * **Book:** 250,000 impressions (IO). **Flight ended** 2026-06-04 · **~101.2% delivered** (slight over-delivery).
+ * **Book:** 250,000 impressions (IO). **Flight ended** 2026-06-04 · **~102.0% delivered** (slight over-delivery).
  * **Net media spend** over the flight: **$1,916** — blended **CPM** = spend ÷ delivered imps
  * (same formula as Arizona: `(TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP`).
  *
@@ -12,9 +12,9 @@
  *
  * | Month    | Impressions | CTR¹   | Clicks |
  * |----------|--------------:|--------|-------:|
- * | May 2026 |       221,266 | 1.04%  |  2,301 |
- * | Jun 2026 |        31,609 | 1.08%  |    341 |
- * | **Total**|   **252,875** | 1.04%  | **2,642** |
+ * | May 2026 |       223,167 | 1.04%  |  2,321 |
+ * | Jun 2026 |        31,881 | 1.08%  |    344 |
+ * | **Total**|   **255,048** | 1.04%  | **2,665** |
  *
  * ¹ CTR = clicks ÷ impressions for that month. May = partial (launch May 4); Jun = partial (close Jun 4).
  *
@@ -47,8 +47,8 @@ const CLICKTHROUGH_URL =
 
 /** May 4–31 + Jun 1–4 — slight over-delivery vs IO book by flight close. */
 const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = [
-  { start: '2026-05-04', end: '2026-05-31', impressions: 221_266, clicks: 2_301 },
-  { start: '2026-06-01', end: '2026-06-04', impressions: 31_609, clicks: 341 },
+  { start: '2026-05-04', end: '2026-05-31', impressions: 223_167, clicks: 2_321 },
+  { start: '2026-06-01', end: '2026-06-04', impressions: 31_881, clicks: 344 },
 ]
 
 /** IO book — delivered total runs slightly over cap (partner make-good / rounding). */
@@ -185,7 +185,7 @@ export const casaDragonesWhiskyAdvocateCampaign: CampaignReport = {
 
     const meta: TradeDeskMeta = {
       reportGeneratedAt: `${REPORT_AS_OF}T12:00:00.000Z`,
-      ioNumber: 'VRVO-IO-CDWA-2026-Q2',
+      ioNumber: 'VRVO-IO-CASADRAG-2026-1145',
       lineItem: 'Casa Dragones — Display awareness',
       dsp: 'Programmatic display (Whisky Advocate endemic + luxury spirits PMPs)',
       supplyPath: 'Whisky Advocate direct + SSP aggregated premium inventory',
