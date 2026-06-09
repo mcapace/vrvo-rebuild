@@ -24,7 +24,7 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
 export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'big-smoke', label: 'Big Smoke Miami', href: '/reporting?campaign=big-smoke' },
   { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
-  { key: 'casa-dragones', label: 'Casa Dragones', href: '/reporting?campaign=casa-dragones' },
+  { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'random', label: 'QA random', href: '/reporting?campaign=random' },
 ]
 
