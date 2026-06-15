@@ -50,6 +50,12 @@ export function buildCampaignReportCsv(
   lines.push(row(['Client-facing name', campaign.clientFacingName]))
   lines.push(row(['Flight launched', flight.launched]))
   lines.push(row(['In market', flight.inMarket ? 'Yes' : 'No']))
+  if (flight.prebookedPending) {
+    lines.push(row(['Prebooked pending flight', 'Yes']))
+    if (flight.scheduledWindow) {
+      lines.push(row(['Scheduled window (invoice)', flight.scheduledWindow]))
+    }
+  }
   lines.push(row(['Flight summary', flight.summary]))
   lines.push(row(['IO number', td.ioNumber]))
   lines.push(row(['Line item', td.lineItem]))

@@ -2,6 +2,7 @@
 
 import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
 import { downloadCampaignReportCsv } from '@/lib/reportingExport'
+import { PrebookedCampaignDashboard } from './PrebookedCampaignDashboard'
 import Link from 'next/link'
 import { useCallback, useMemo, type ReactNode } from 'react'
 import {
@@ -141,6 +142,16 @@ export function CampaignDashboard({
   generatedAt: string
   onExpandReport?: () => void
 }) {
+  if (campaign.flight.prebookedPending) {
+    return (
+      <PrebookedCampaignDashboard
+        campaign={campaign}
+        generatedAt={generatedAt}
+        onExpandReport={onExpandReport}
+      />
+    )
+  }
+
   const { delivery, tradeDesk, performance } = campaign
   const deliveredImp =
     typeof delivery.deliveredImpressions === 'number' && Number.isFinite(delivery.deliveredImpressions)
@@ -976,7 +987,14 @@ export function CampaignDashboard({
                 </tr>
               </thead>
               <tbody className="text-slate-800">
-                {tradeDesk.daily.map((row) => {
+                {tradeDesk.daily.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-3 py-8 text-center text-sm text-slate-500">
+                      No daily rows in this export.
+                    </td>
+                  </tr>
+                ) : (
+                  tradeDesk.daily.map((row) => {
                   const delta = row.actualImp - row.plannedImp
                   return (
                     <tr key={row.date} className="border-b border-slate-100 hover:bg-slate-50/90">
@@ -1004,7 +1022,8 @@ export function CampaignDashboard({
                       </td>
                     </tr>
                   )
-                })}
+                  })
+                )}
               </tbody>
             </table>
           </div>

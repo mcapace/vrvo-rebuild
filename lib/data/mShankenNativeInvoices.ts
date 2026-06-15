@@ -65,9 +65,14 @@ export type NativeInvoiceSpec = {
   lineItem: string
   invoiceLine: string
   spendUsd: number
-  launch: string
-  flightEnd: string
+  /** Omit when `prebookedPending` — flight dates not set yet. */
+  launch?: string
+  flightEnd?: string
   reportAsOf: string
+  /** Prebooked IO — list booked inventory only; no delivery grain until flight is trafficked. */
+  prebookedPending?: boolean
+  /** Planning window from invoice while launch/end are TBD (e.g. “June 2026”). */
+  scheduledWindow?: string
   publisher: MShankenPublisher
   clickthroughUrl: string
   assetsFolderUrl: string
@@ -222,12 +227,101 @@ export function buildNativeInvoiceCampaign(spec: NativeInvoiceSpec): CampaignRep
     targetCtrPct: targetCtrInput,
     impressionsBookedOverride,
     flightCompleteOverdeliveryPct = 102,
+    prebookedPending = false,
+    scheduledWindow,
   } = spec
 
   const bookedCpmUsd = bookedCpmInput ?? publisherBookedCpm(publisher)
   const targetCtrPct = targetCtrInput ?? REPORTING_DEFAULT_CTR_PCT
   const impressionsBooked =
     impressionsBookedOverride ?? impressionsFromMediaSpend(spendUsd, bookedCpmUsd)
+
+  if (prebookedPending) {
+    const windowLabel = scheduledWindow ?? 'dates pending'
+    const formats = publisher === 'podcast' ? PODCAST_FORMATS : NATIVE_FORMATS
+    const deviceSplit = publisher === 'podcast' ? podcastDeviceSplit : displayDeviceSplit
+
+    const meta: TradeDeskMeta = {
+      reportGeneratedAt: `${reportAsOf}T12:00:00.000Z`,
+      ioNumber: orderId,
+      lineItem,
+      dsp: 'Direct publisher (prebooked native)',
+      supplyPath: publisherEnvironments(publisher),
+      flightPlannedDays: 0,
+      lastDataDate: reportAsOf,
+      currency: 'USD',
+    }
+
+    const tradeDesk: CampaignTradeDesk = {
+      meta,
+      daily: [],
+      geoDelivery: [],
+      formatDelivery: [],
+      deviceSplit,
+    }
+
+    const flightStatus = `Prebooked inventory — flight dates pending (${windowLabel}).`
+
+    return {
+      id,
+      name,
+      clientFacingName,
+      flight: {
+        launched: reportAsOf,
+        inMarket: false,
+        prebookedPending: true,
+        scheduledWindow: windowLabel,
+        summary: `${invoiceLine} · ${flightStatus}`,
+      },
+      delivery: {
+        cpmUsd: Math.round(bookedCpmUsd * 100) / 100,
+        impressionsPurchased: impressionsBooked,
+        pctDelivered: 0,
+        deliveredImpressions: 0,
+      },
+      performance: {
+        ctrPct: 0,
+        measurementNote: `$${spendUsd.toLocaleString('en-US')} invoice (${orderId}); ${impressionsBooked.toLocaleString('en-US')} booked imps at $${bookedCpmUsd.toFixed(2)} planning CPM. Delivery has not started — prebooked pending flight dates (${windowLabel}). Native extension — clickthrough only.`,
+      },
+      geo: {
+        headline: publisherGeoHeadline(publisher),
+        primaryMarkets: [...DEFAULT_PRIMARY],
+        driveInMarkets: [...DEFAULT_SECONDARY],
+      },
+      creative: {
+        environments: publisherEnvironments(publisher),
+        sizes: formats,
+        assetsFolderUrl,
+      },
+      tracking: {
+        description: `Invoice line: ${invoiceLine}. Native units route to the trafficked sponsor destination once flight dates are confirmed.`,
+        clickthroughUrl,
+      },
+      overviewObjectiveSub: `$${spendUsd.toLocaleString('en-US')} invoice · order ${orderId} · prebooked ${windowLabel} · flight dates pending · ${Math.round(impressionsBooked / 1000)}k book @ $${bookedCpmUsd.toFixed(2)} CPM.`,
+      monthlyDeliveryNote: `Prebooked inventory — delivery has not started. Booked imps = invoice ÷ $${bookedCpmUsd.toFixed(2)} planning CPM (shared reporting defaults).`,
+      audienceActivationMix:
+        audienceActivationMix ??
+        (publisher === 'podcast'
+          ? [
+              { name: 'Podcast native', value: 48 },
+              { name: 'Digital site native', value: 32 },
+              { name: 'Newsletter native', value: 20 },
+            ]
+          : [
+              { name: 'Endemic site native', value: 46 },
+              { name: 'Newsletter native', value: 24 },
+              { name: 'Modeled extension', value: 18 },
+              { name: 'Retargeting', value: 12 },
+            ]),
+      audiences,
+      tradeDesk,
+    }
+  }
+
+  if (!launch || !flightEnd) {
+    throw new Error(`buildNativeInvoiceCampaign: launch and flightEnd required for ${orderId}`)
+  }
+
   const flightPlannedDays = daysInclusive(launch, flightEnd)
   const inMarket = reportAsOf < flightEnd
 
@@ -432,8 +526,8 @@ export const glenmorangieNativeCampaign = buildNativeInvoiceCampaign({
   lineItem: 'Glenmorangie Native Extension — Whisky Advocate May/June 2026',
   invoiceLine: 'Glenmorangie Native Extension - Whisky Advocate May/June 2026',
   spendUsd: 1875,
-  launch: '2026-05-01',
-  flightEnd: '2026-06-30',
+  prebookedPending: true,
+  scheduledWindow: 'May/June 2026',
   reportAsOf: REPORT_AS_OF,
   publisher: 'wa.com',
   clickthroughUrl:
@@ -504,8 +598,8 @@ export const pereladaWsNativeCampaign = buildNativeInvoiceCampaign({
   lineItem: 'Perelada Native Extension — WS.com June 2026',
   invoiceLine: 'Perelada - Native Extension - WS.com - June 2026',
   spendUsd: 1900,
-  launch: '2026-06-01',
-  flightEnd: '2026-06-30',
+  prebookedPending: true,
+  scheduledWindow: 'June 2026',
   reportAsOf: REPORT_AS_OF,
   publisher: 'ws.com',
   clickthroughUrl:

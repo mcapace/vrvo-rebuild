@@ -69,11 +69,11 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
 
 export const M_SHANKEN_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'pernod-90-club', label: 'Pernod · 90 Club', href: '/reporting?campaign=pernod-90-club' },
-  { key: 'glenmorangie-native', label: 'Glenmorangie WA', href: '/reporting?campaign=glenmorangie-native' },
+  { key: 'glenmorangie-native', label: 'Glenmorangie WA · prebooked', href: '/reporting?campaign=glenmorangie-native' },
   { key: 'davidoff-ca', label: 'Davidoff CA', href: '/reporting?campaign=davidoff-ca' },
   { key: 'la-aurora-ca', label: 'La Aurora CA', href: '/reporting?campaign=la-aurora-ca' },
   { key: 'bib-tucker-wa', label: 'Bib & Tucker WA', href: '/reporting?campaign=bib-tucker-wa' },
-  { key: 'perelada-ws', label: 'Perelada WS', href: '/reporting?campaign=perelada-ws' },
+  { key: 'perelada-ws', label: 'Perelada WS · prebooked', href: '/reporting?campaign=perelada-ws' },
   { key: 'ca-podcast', label: 'CA Podcast', href: '/reporting?campaign=ca-podcast' },
 ]
 

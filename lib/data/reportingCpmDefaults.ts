@@ -15,8 +15,8 @@ export const REPORTING_PLANNING_CPM = {
   endemicNative: 12,
   /** Premium member / 90 Club endemic native. */
   premiumNative: 15,
-  /** In-house podcast native packages. */
-  podcastNative: 25,
+  /** In-house podcast extension packages (CA Podcast in-house native). */
+  podcastNative: 7,
 } as const
 
 /** Scenario lab default blended CTR target (%). */

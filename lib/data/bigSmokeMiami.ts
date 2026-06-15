@@ -44,6 +44,10 @@ export interface CampaignReport {
     launched: string
     inMarket: boolean
     summary: string
+    /** IO booked but trafficking / flight dates not set — delivery has not started. */
+    prebookedPending?: boolean
+    /** Invoice or planning window while exact flight dates are TBD (e.g. “May/June 2026”). */
+    scheduledWindow?: string
   }
   delivery: {
     cpmUsd: number
