@@ -2,6 +2,7 @@ import type { CampaignReport } from './bigSmokeMiami'
 import { arizonaOfficeOfTourismCampaign } from './arizonaOfficeOfTourism'
 import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
+import { cigarAficionadoPodcastCampaign } from './cigarAficionadoPodcast'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
 
@@ -17,6 +18,10 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
   'casa-dragones': casaDragonesWhiskyAdvocateCampaign,
   casa: casaDragonesWhiskyAdvocateCampaign,
   dragones: casaDragonesWhiskyAdvocateCampaign,
+  'cigar-aficionado': cigarAficionadoPodcastCampaign,
+  cigar: cigarAficionadoPodcastCampaign,
+  'ca-podcast': cigarAficionadoPodcastCampaign,
+  '3g7viwill-7284': cigarAficionadoPodcastCampaign,
   duckhorn: duckhornWineSpectatorCampaign,
   'duckhorn-ws': duckhornWineSpectatorCampaign,
   'wine-spectator': duckhornWineSpectatorCampaign,
@@ -27,6 +32,7 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
 
 export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'big-smoke', label: 'Big Smoke Miami', href: '/reporting?campaign=big-smoke' },
+  { key: 'cigar-aficionado', label: 'Cigar Aficionado Podcast', href: '/reporting?campaign=cigar-aficionado' },
   { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
   { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'duckhorn', label: 'Duckhorn — Wine Spectator', href: '/reporting?campaign=duckhorn' },
@@ -47,6 +53,14 @@ export function resolveReportingCampaign(campaignParam: string | undefined): {
   }
   if (campaignKey === 'casa-dragones' || campaignKey === 'casa' || campaignKey === 'dragones') {
     return { campaign: casaDragonesWhiskyAdvocateCampaign, activeNavKey: 'casa-dragones' }
+  }
+  if (
+    campaignKey === 'cigar-aficionado' ||
+    campaignKey === 'cigar' ||
+    campaignKey === 'ca-podcast' ||
+    campaignKey === '3g7viwill-7284'
+  ) {
+    return { campaign: cigarAficionadoPodcastCampaign, activeNavKey: 'cigar-aficionado' }
   }
   if (
     campaignKey === 'duckhorn' ||
