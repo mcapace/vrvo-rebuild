@@ -1,10 +1,14 @@
 /**
  * Builds native-extension reporting fixtures from M Shanken / Vrvo invoice lines.
- * Impression book derived from Casa Dragones reference (~130.5 booked imps per $1 media);
- * podcast order uses explicit book aligned to $5k at $25 CPM.
+ * Booked impressions = invoice amount × 1,000 ÷ planning CPM (`reportingCpmDefaults`).
  */
 
 import type { AudienceBucket, CampaignReport, CampaignTradeDesk } from './bigSmokeMiami'
+import {
+  impressionsFromMediaSpend,
+  REPORTING_DEFAULT_CTR_PCT,
+  REPORTING_PLANNING_CPM,
+} from './reportingCpmDefaults'
 import {
   buildFormatDelivery,
   buildGeoDelivery,
@@ -16,9 +20,6 @@ import {
   type MonthlyDeliverySegment,
   type TradeDeskMeta,
 } from './tradeDeskSeries'
-
-/** Casa Dragones IO: $1,916 → 250k booked imps. */
-const BOOKED_IMPS_PER_USD = 250_000 / 1916
 
 const NATIVE_FORMATS = [
   'Article feed native card',
@@ -72,9 +73,24 @@ export type NativeInvoiceSpec = {
   assetsFolderUrl: string
   audiences: AudienceBucket[]
   audienceActivationMix?: { name: string; value: number }[]
+  /** Planning CPM for book math; defaults by publisher from `REPORTING_PLANNING_CPM`. */
+  bookedCpmUsd?: number
+  /** Blended CTR target for daily grain (default scenario lab CTR). */
+  targetCtrPct?: number
   impressionsBookedOverride?: number
   /** When flight is complete, delivered runs ~2% over book (partner grain). */
   flightCompleteOverdeliveryPct?: number
+}
+
+function publisherBookedCpm(publisher: MShankenPublisher): number {
+  switch (publisher) {
+    case '90-club':
+      return REPORTING_PLANNING_CPM.premiumNative
+    case 'podcast':
+      return REPORTING_PLANNING_CPM.podcastNative
+    default:
+      return REPORTING_PLANNING_CPM.endemicNative
+  }
 }
 
 function monthKey(iso: string): string {
@@ -202,12 +218,16 @@ export function buildNativeInvoiceCampaign(spec: NativeInvoiceSpec): CampaignRep
     assetsFolderUrl,
     audiences,
     audienceActivationMix,
+    bookedCpmUsd: bookedCpmInput,
+    targetCtrPct: targetCtrInput,
     impressionsBookedOverride,
     flightCompleteOverdeliveryPct = 102,
   } = spec
 
+  const bookedCpmUsd = bookedCpmInput ?? publisherBookedCpm(publisher)
+  const targetCtrPct = targetCtrInput ?? REPORTING_DEFAULT_CTR_PCT
   const impressionsBooked =
-    impressionsBookedOverride ?? Math.round(spendUsd * BOOKED_IMPS_PER_USD)
+    impressionsBookedOverride ?? impressionsFromMediaSpend(spendUsd, bookedCpmUsd)
   const flightPlannedDays = daysInclusive(launch, flightEnd)
   const inMarket = reportAsOf < flightEnd
 
@@ -224,9 +244,10 @@ export function buildNativeInvoiceCampaign(spec: NativeInvoiceSpec): CampaignRep
     pctDelivered = Math.round((deliveredImp / impressionsBooked) * 1000) / 10
   }
 
-  const totalClicks = Math.max(1, Math.round((deliveredImp * 1.05) / 100))
-  const cpmUsd = (spendUsd * 1000) / deliveredImp
-  const blendedCtrPct = (totalClicks / deliveredImp) * 100
+  const totalClicks = Math.max(1, Math.round((deliveredImp * targetCtrPct) / 100))
+  const blendedCtrPct =
+    deliveredImp > 0 ? (totalClicks / deliveredImp) * 100 : targetCtrPct
+  const deliveredSpendUsd = Math.round(((deliveredImp / 1000) * bookedCpmUsd) * 100) / 100
 
   const monthlyDelivery = splitDeliveredAcrossMonths(launch, reportAsOf, deliveredImp, totalClicks)
   const formats = publisher === 'podcast' ? PODCAST_FORMATS : NATIVE_FORMATS
@@ -255,7 +276,7 @@ export function buildNativeInvoiceCampaign(spec: NativeInvoiceSpec): CampaignRep
           lastDate: reportAsOf,
           impressionsBooked,
           pctDelivered,
-          overallCtrPct: blendedCtrPct,
+          overallCtrPct: targetCtrPct,
           flightPlannedDays,
         })
 
@@ -286,14 +307,14 @@ export function buildNativeInvoiceCampaign(spec: NativeInvoiceSpec): CampaignRep
       summary: `${invoiceLine} · ${flightStatus}`,
     },
     delivery: {
-      cpmUsd: Math.round(cpmUsd * 100) / 100,
+      cpmUsd: Math.round(bookedCpmUsd * 100) / 100,
       impressionsPurchased: impressionsBooked,
       pctDelivered: Math.round(pctDelivered * 10) / 10,
       deliveredImpressions: deliveredImp,
     },
     performance: {
       ctrPct: Math.round(blendedCtrPct * 1000) / 1000,
-      measurementNote: `$${spendUsd.toLocaleString('en-US')} invoice (${orderId}); ${deliveredImp.toLocaleString('en-US')} delivered imps ⇒ blended ~$${cpmUsd.toFixed(2)} CPM. ${totalClicks.toLocaleString('en-US')} clicks (~${blendedCtrPct.toFixed(2)}% CTR). Native extension — clickthrough only.`,
+      measurementNote: `$${spendUsd.toLocaleString('en-US')} invoice (${orderId}); ${impressionsBooked.toLocaleString('en-US')} booked imps at $${bookedCpmUsd.toFixed(2)} planning CPM; ${deliveredImp.toLocaleString('en-US')} delivered (~$${deliveredSpendUsd.toLocaleString('en-US')} media). ${totalClicks.toLocaleString('en-US')} clicks (~${blendedCtrPct.toFixed(2)}% CTR). Native extension — clickthrough only.`,
     },
     geo: {
       headline: publisherGeoHeadline(publisher),
@@ -309,11 +330,11 @@ export function buildNativeInvoiceCampaign(spec: NativeInvoiceSpec): CampaignRep
       description: `Invoice line: ${invoiceLine}. Native units route to the trafficked sponsor destination.`,
       clickthroughUrl,
     },
-    overviewObjectiveSub: `$${spendUsd.toLocaleString('en-US')} invoice · order ${orderId} · ${launch}–${flightEnd}.`,
+    overviewObjectiveSub: `$${spendUsd.toLocaleString('en-US')} invoice · order ${orderId} · ${launch}–${flightEnd} · ${Math.round(impressionsBooked / 1000)}k book @ $${bookedCpmUsd.toFixed(2)} CPM.`,
     monthlyDelivery,
     monthlyDeliveryNote: inMarket
-      ? `Delivery through ${reportAsOf}; flight still in market. Impression book projected from invoice amount (Casa Dragones IO reference).`
-      : `Flight-close delivery through ${reportAsOf}. Impression book projected from invoice amount (Casa Dragones IO reference).`,
+      ? `Delivery through ${reportAsOf}; flight still in market. Booked imps = invoice ÷ $${bookedCpmUsd.toFixed(2)} planning CPM (shared reporting defaults).`
+      : `Flight-close delivery through ${reportAsOf}. Booked imps = invoice ÷ $${bookedCpmUsd.toFixed(2)} planning CPM (shared reporting defaults).`,
     audienceActivationMix:
       audienceActivationMix ??
       (publisher === 'podcast'
@@ -505,7 +526,6 @@ export const cigarAficionadoPodcastCampaign = buildNativeInvoiceCampaign({
   flightEnd: '2026-06-30',
   reportAsOf: REPORT_AS_OF,
   publisher: 'podcast',
-  impressionsBookedOverride: 200_000,
   clickthroughUrl:
     'https://www.cigaraficionado.com/?utm_source=vrvo&utm_medium=native&utm_campaign=ca_podcast_laura_zandi&utm_content=invoice_7284',
   assetsFolderUrl: 'https://www.cigaraficionado.com/',

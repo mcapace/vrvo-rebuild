@@ -1,5 +1,9 @@
 import type { AudienceBucket, AudienceCohort, CampaignReport } from '@/lib/data/bigSmokeMiami'
 import {
+  REPORTING_DEFAULT_CTR_PCT,
+  REPORTING_PLANNING_CPM,
+} from '@/lib/data/reportingCpmDefaults'
+import {
   buildDeviceSplit,
   buildFormatDelivery,
   buildGeoDelivery,
@@ -398,11 +402,11 @@ export function defaultScenarioFormValues(): Record<string, string | number | bo
     ioNumber: 'VRVO-IO-DEMO-001',
     lineItemName: 'Display awareness — test flight',
     impressionsBooked: 2_500_000,
-    cpmUsd: 8.5,
+    cpmUsd: REPORTING_PLANNING_CPM.displayStandard,
     flightStart: iso(start),
     flightEnd: iso(end),
     asOfDate: iso(end),
-    targetCtrPct: 0.95,
+    targetCtrPct: REPORTING_DEFAULT_CTR_PCT,
     targetingNotes:
       'Household income $100k+; in-market for luxury spirits; exclude competitors; daypart weekday 6am–11pm ET; frequency cap 5/7 days.',
     supplyPath: 'Open auction + PG PMP with tier-1 news & sports.',

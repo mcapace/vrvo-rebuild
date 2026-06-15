@@ -6,6 +6,7 @@
  */
 
 import type { AudienceBucket, CampaignReport } from './bigSmokeMiami'
+import { REPORTING_PLANNING_CPM } from './reportingCpmDefaults'
 import {
   buildDeviceSplit,
   buildFormatDelivery,
@@ -23,7 +24,7 @@ const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, FLIGHT_END)
 
 const IMPRESSIONS_BOOKED = 412_750
 const PCT_DELIVERED = 73.6
-const CPM_USD = 8.15
+const CPM_USD = REPORTING_PLANNING_CPM.displayStandard
 const CTR_PCT = 0.987
 
 const qaFormats = [
