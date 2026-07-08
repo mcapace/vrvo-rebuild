@@ -3,7 +3,7 @@ import { arizonaOfficeOfTourismCampaign } from './arizonaOfficeOfTourism'
 import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
-import { internalRandomFixtureCampaign } from './internalRandomFixture'
+import { visitNapaValleyCampaign } from './visitNapaValley'
 import {
   bibTuckerWaNativeCampaign,
   cigarAficionadoPodcastCampaign,
@@ -53,6 +53,10 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
 
 const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
   arizona: arizonaOfficeOfTourismCampaign,
+  'visit-napa': visitNapaValleyCampaign,
+  napa: visitNapaValleyCampaign,
+  'visit-napa-valley': visitNapaValleyCampaign,
+  vnv: visitNapaValleyCampaign,
   'casa-dragones': casaDragonesWhiskyAdvocateCampaign,
   casa: casaDragonesWhiskyAdvocateCampaign,
   dragones: casaDragonesWhiskyAdvocateCampaign,
@@ -81,6 +85,7 @@ export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'big-smoke', label: 'Big Smoke Miami', href: '/reporting?campaign=big-smoke' },
   ...M_SHANKEN_CAMPAIGN_NAV,
   { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
+  { key: 'visit-napa', label: 'Visit Napa Valley', href: '/reporting?campaign=visit-napa' },
   { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'duckhorn', label: 'Duckhorn — Wine Spectator', href: '/reporting?campaign=duckhorn' },
   { key: 'random', label: 'QA random', href: '/reporting?campaign=random' },
@@ -103,6 +108,14 @@ export function resolveReportingCampaign(campaignParam: string | undefined): {
 
   if (campaignKey === 'arizona') {
     return { campaign: arizonaOfficeOfTourismCampaign, activeNavKey: 'arizona' }
+  }
+  if (
+    campaignKey === 'visit-napa' ||
+    campaignKey === 'napa' ||
+    campaignKey === 'visit-napa-valley' ||
+    campaignKey === 'vnv'
+  ) {
+    return { campaign: visitNapaValleyCampaign, activeNavKey: 'visit-napa' }
   }
   if (campaignKey === 'casa-dragones' || campaignKey === 'casa' || campaignKey === 'dragones') {
     return { campaign: casaDragonesWhiskyAdvocateCampaign, activeNavKey: 'casa-dragones' }
