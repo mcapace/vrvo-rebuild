@@ -3,6 +3,7 @@ import { arizonaOfficeOfTourismCampaign } from './arizonaOfficeOfTourism'
 import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
+import { internalRandomFixtureCampaign } from './internalRandomFixture'
 import { visitNapaValleyCampaign } from './visitNapaValley'
 import {
   bibTuckerWaNativeCampaign,
