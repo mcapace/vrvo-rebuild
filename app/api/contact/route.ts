@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getResendClient } from '@/lib/resendClient';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +31,7 @@ Submitted from Vrvo website contact form
     `.trim();
 
     // Send email using Resend
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: 'Vrvo Website <noreply@vrvo.co>',
       to: ['hello@vrvo.co'],
       subject: 'New Contact Form Submission - Vrvo Website',

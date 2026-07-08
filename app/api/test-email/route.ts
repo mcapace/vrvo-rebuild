@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getResendClient } from '@/lib/resendClient';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +8,7 @@ export async function GET(request: NextRequest) {
     console.log('RESEND_API_KEY starts with re_:', process.env.RESEND_API_KEY?.startsWith('re_'));
 
     // Test sending a simple email
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: 'Vrvo Test <noreply@vrvo.co>',
       to: ['hello@vrvo.co'],
       subject: 'Test Email from Vrvo API',
