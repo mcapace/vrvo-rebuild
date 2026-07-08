@@ -1,17 +1,17 @@
 /**
  * Visit Napa Valley — display awareness fixture.
  *
- * **Flight:** Apr 20–Jun 30, 2026 · **Net media spend:** **$3,900**
+ * **Flight:** Apr 20–Jun 30, 2026 · **Net media spend:** **$3,888**
  * **Book:** derived at **$11.00** planning CPM.
  *
  * Monthly delivery (Apr partial launch through flight close):
  *
  * | Month    | Impressions | CTR¹   | Clicks |
  * |----------|--------------:|--------|-------:|
- * | Apr 2026 |        79,400 | 1.10%  |    873 |
- * | May 2026 |       144,400 | 1.20%  |  1,733 |
- * | Jun 2026 |       137,126 | 1.25%  |  1,714 |
- * | **Total**|   **360,926** | 1.20%  | **4,320** |
+ * | Apr 2026 |        79,151 | 1.10%  |    870 |
+ * | May 2026 |       143,955 | 1.20%  |  1,728 |
+ * | Jun 2026 |       136,711 | 1.25%  |  1,709 |
+ * | **Total**|   **359,817** | 1.20%  | **4,307** |
  *
  * ¹ CTR = clicks ÷ impressions for that month. Apr = partial (launch Apr 20).
  *
@@ -36,13 +36,13 @@ const LAUNCH = '2026-04-20'
 const FLIGHT_END = '2026-06-30'
 const REPORT_AS_OF = FLIGHT_END
 
-const TOTAL_MEDIA_SPEND_USD = 3900
+const TOTAL_MEDIA_SPEND_USD = 3888
 const BOOKED_CPM_USD = 11
 
 const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = [
-  { start: '2026-04-20', end: '2026-04-30', impressions: 79_400, clicks: 873 },
-  { start: '2026-05-01', end: '2026-05-31', impressions: 144_400, clicks: 1_733 },
-  { start: '2026-06-01', end: '2026-06-30', impressions: 137_126, clicks: 1_714 },
+  { start: '2026-04-20', end: '2026-04-30', impressions: 79_151, clicks: 870 },
+  { start: '2026-05-01', end: '2026-05-31', impressions: 143_955, clicks: 1_728 },
+  { start: '2026-06-01', end: '2026-06-30', impressions: 136_711, clicks: 1_709 },
 ]
 
 const IMPRESSIONS_BOOKED = impressionsFromMediaSpend(TOTAL_MEDIA_SPEND_USD, BOOKED_CPM_USD)
