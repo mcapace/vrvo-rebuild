@@ -4,7 +4,10 @@
  * **Flight:** 2025-10-15 → **2026-03-01** · **$3,489.75 × 4 billing periods** = **$13,959** net media.
  * **Book:** $12.00 endemic native planning CPM.
  *
- * Creative rotated on WA.com endemic (House of Suntory Oct–Dec; Top Whisky Bars from Jan 17).
+ * **One IO** · **$3,489.75 × 4** = **$13,959** net media (Oct 15 → Mar 1, 2026).
+ * Two **creative activations** on the same budget — not separate orders:
+ *   1. House of Suntory (launch Oct 15)
+ *   2. America's Top Whisky Bars 2025 (in-market from Jan 17, same period-4 budget)
  *
  * | Billing period | Dates | Prod |
  * |----------------|-------|------|
@@ -107,43 +110,44 @@ const beamDeviceSplit: DeviceSplitRow[] = [
 
 const beamAudiences: AudienceBucket[] = [
   {
-    id: 'house-of-suntory',
-    label: 'House of Suntory · Japanese whisky',
+    id: 'activation-house-of-suntory',
+    label: 'Activation 1 · House of Suntory',
     description:
-      'Premium Japanese whisky storytelling on Whisky Advocate endemic inventory — Oct 2025 through Mar 1, 2026.',
+      'First creative rotation on the single WA.com native IO — Oct 15 through mid-January, billed at $3,489.75 per period.',
     cohorts: [
       {
         title: 'Japanese & world whisky enthusiasts',
         detail:
-          'Modeled and endemic readers aligned to Yamazaki, Hibiki, and Toki — “Crafted in Japan. Revered Around the World.”',
+          '“Crafted in Japan. Revered Around the World.” — Yamazaki, Hibiki, and Toki on endemic WA.com + newsletter.',
       },
       {
         title: 'WA.com article native',
-        detail: 'Editorial native on reviews, culture, and luxury spirits coverage during monthly flight windows.',
+        detail: 'Article feed and embed units against the shared monthly $3,489.75 production allocation.',
       },
       {
-        title: 'Member newsletter native',
-        detail: 'Subscriber newsletter blocks on each $3,489.75 monthly extension.',
+        title: 'Click-through',
+        detail: 'suntory.whiskyadvocate.com/house-of-suntory.html',
       },
     ],
   },
   {
-    id: 'whisky-bars',
-    label: "America's Top Whisky Bars 2025",
-    description: 'Secondary native creative — bar culture hub (from Jan 17 within period 4).',
+    id: 'activation-whisky-bars',
+    label: "Activation 2 · America's Top Whisky Bars 2025",
+    description:
+      'Second creative rotation on the same order — swapped in Jan 17 for the balance of period 4 (through Mar 1). No incremental IO; same $3,489.75/mo budget.',
     cohorts: [
       {
         title: 'On-premise & bar culture intent',
         detail:
-          'Readers indexing on whisky bars, cocktail culture, and venue discovery — “Discover America’s Top Whisky Bars 2025.”',
+          '“Discover America’s Top Whisky Bars 2025” — venue discovery and bar-culture messaging on the same endemic package.',
       },
       {
         title: 'Geo-weighted metro bar scene',
-        detail: 'Delivery weighted to major whisky-bar DMAs and on-premise enthusiast cohorts.',
+        detail: 'Delivery weighted to major whisky-bar DMAs within the existing flight book.',
       },
       {
-        title: 'Sequential retargeting',
-        detail: 'WA.com native retargeting from Top Whisky Bars hub engagement during Jan–Mar flight.',
+        title: 'Click-through',
+        detail: 'whiskybars.whiskyadvocate.com',
       },
     ],
   },
@@ -152,11 +156,11 @@ const beamAudiences: AudienceBucket[] = [
 export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
   id: 'beam_suntory_wa_native_2025_2026',
   name: 'Beam Suntory — Whisky Advocate Native Extension',
-  clientFacingName: 'Beam Suntory · WA.com (multi-program)',
+  clientFacingName: 'Beam Suntory · WA.com native (one IO · two activations)',
   flight: {
     launched: LAUNCH,
     inMarket: false,
-    summary: `Flight ended ${REPORT_AS_OF} · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media ($3,489.75 × 4) · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book).`,
+    summary: `Flight ended ${REPORT_AS_OF} · one IO · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} ($3,489.75 × 4) · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book).`,
   },
   delivery: {
     cpmUsd: CPM_USD,
@@ -166,7 +170,7 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media ($3,489.75 × 4 billing periods, Oct–Mar 1) · ${DELIVERED_IMP.toLocaleString('en-US')} delivered @ ~$${CPM_USD.toFixed(2)} blended CPM · ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR). Native extension — clickthrough only.`,
+    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media on one IO ($3,489.75 × 4, Oct–Mar 1). Two creative activations (House of Suntory, then Top Whisky Bars Jan 17+) share the same budget — not separate orders. ${DELIVERED_IMP.toLocaleString('en-US')} delivered @ ~$${CPM_USD.toFixed(2)} blended CPM · ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR).`,
   },
   geo: {
     headline:
@@ -175,20 +179,21 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
     driveInMarkets: [...BEAM_SECONDARY],
   },
   creative: {
-    environments: 'Whisky Advocate endemic — article feed, newsletter, and homepage native units.',
+    environments:
+      'One WA.com native IO — two creative swaps on the same $3,489.75/mo production: House of Suntory, then Top Whisky Bars (Jan 17).',
     sizes: [...NATIVE_FORMATS],
     assetsFolderUrl: 'https://www.whiskyadvocate.com/',
   },
   tracking: {
     description:
-      'Native extensions on WA.com — House of Suntory (Oct–Dec) and Top Whisky Bars (from Jan 17). Four monthly production periods at $3,489.75 through Mar 1.',
+      'Single native extension order. Activation 1: House of Suntory → suntory.whiskyadvocate.com/house-of-suntory.html. Activation 2 (from Jan 17): Top Whisky Bars → whiskybars.whiskyadvocate.com. Both run against the same $3,489.75 × 4 budget.',
     clickthroughUrl:
-      'https://suntory.whiskyadvocate.com/house-of-suntory.html?utm_source=vrvo&utm_medium=native&utm_campaign=beam_house_of_suntory',
+      'https://whiskybars.whiskyadvocate.com/?utm_source=vrvo&utm_medium=native&utm_campaign=beam_whisky_bars_2025',
   },
-  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} total ($3,489.75 × 4) · Oct 15–Mar 1 · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM.`,
+  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} on one IO ($3,489.75 × 4) · two activations · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM · Oct 15–Mar 1.`,
   monthlyDelivery: [...MONTHLY_SEGMENTS],
   monthlyDeliveryNote:
-    'Four billing periods at $3,489.75 each ($13,959 total). Period 1 = Oct 15 launch; period 4 = Jan 1 through Mar 1 flight close. Top Whisky Bars creative added in-market Jan 17.',
+    'Each row = one $3,489.75 billing period on the same IO. Periods 1–3: House of Suntory creative. Period 4 (Jan–Mar 1): Top Whisky Bars swapped in Jan 17 — same budget allocation, new activation.',
   audienceActivationMix: [
     { name: 'Endemic site native', value: 44 },
     { name: 'Newsletter native', value: 26 },
@@ -206,7 +211,7 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
     const meta: TradeDeskMeta = {
       reportGeneratedAt: `${REPORT_AS_OF}T12:00:00.000Z`,
       ioNumber: 'VRVO-IO-BEAM-WA-2025',
-      lineItem: 'Beam Suntory — WA.com native extension ($3,489.75 × 4)',
+      lineItem: 'Beam Suntory — WA.com native IO ($3,489.75 × 4 · 2 activations)',
       dsp: 'Direct publisher (M Shanken native extension)',
       supplyPath: 'Whisky Advocate endemic — WA.com + member newsletter',
       flightPlannedDays: FLIGHT_PLANNED_DAYS,
