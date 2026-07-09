@@ -1,16 +1,17 @@
 /**
- * Beam Suntory × Whisky Advocate — combined native extension fixture.
+ * Beam Suntory × Whisky Advocate — native extension fixture.
  *
- * Two concurrent WA.com native programs through **2026-03-01**:
+ * **Flight:** 2025-10-15 → **2026-03-01** · **$3,489.75 × 4 billing periods** = **$13,959** net media.
+ * **Book:** $12.00 endemic native planning CPM.
  *
- * | Program | Flight | Prod / month |
- * |---------|--------|--------------|
- * | **House of Suntory** | 2025-10-15 → 2026-03-01 | $3,489 (Oct–Nov) then $3,489.75/mo (Dec–Feb) |
- * | **America's Top Whisky Bars 2025** | 2026-01-17 → 2026-03-01 | $3,489 |
+ * Creative rotated on WA.com endemic (House of Suntory Oct–Dec; Top Whisky Bars from Jan 17).
  *
- * **Total net media:** **$17,447.25** · **Book:** $12.00 endemic native planning CPM.
- *
- * Monthly table = combined delivery grain (both line items in-market where dates overlap).
+ * | Billing period | Dates | Prod |
+ * |----------------|-------|------|
+ * | 1 | Oct 15 – Oct 31 | $3,489.75 |
+ * | 2 | Nov 2025 | $3,489.75 |
+ * | 3 | Dec 2025 | $3,489.75 |
+ * | 4 | Jan 1 – Mar 1 | $3,489.75 |
  *
  * Open `/reporting?campaign=beam-suntory` (also `?campaign=beam` or `?campaign=suntory`).
  */
@@ -18,7 +19,6 @@
 import type { AudienceBucket, CampaignReport } from './bigSmokeMiami'
 import {
   impressionsFromMediaSpend,
-  REPORTING_DEFAULT_CTR_PCT,
   REPORTING_PLANNING_CPM,
 } from './reportingCpmDefaults'
 import {
@@ -37,71 +37,41 @@ const REPORT_AS_OF = FLIGHT_END
 
 const BOOKED_CPM_USD = REPORTING_PLANNING_CPM.endemicNative
 
-/** House of Suntory Oct 15–Nov 15 */
-const HOUSE_OCT_NOV_USD = 3489
-/** House of Suntory Dec / Jan / Feb */
-const HOUSE_MONTHLY_USD = 3489.75
-/** America's Top Whisky Bars Jan 17–Mar 1 */
-const WHISKY_BARS_USD = 3489
+const PERIOD_SPEND_USD = 3489.75
+const BILLING_PERIODS = 4
+const TOTAL_MEDIA_SPEND_USD = Math.round(PERIOD_SPEND_USD * BILLING_PERIODS * 100) / 100
 
-const TOTAL_MEDIA_SPEND_USD =
-  Math.round((HOUSE_OCT_NOV_USD + HOUSE_MONTHLY_USD * 3 + WHISKY_BARS_USD) * 100) / 100
-
-const HOUSE_OCT_NOV_IMP = impressionsFromMediaSpend(HOUSE_OCT_NOV_USD, BOOKED_CPM_USD)
-const HOUSE_MONTHLY_IMP = impressionsFromMediaSpend(HOUSE_MONTHLY_USD, BOOKED_CPM_USD)
-const WHISKY_BARS_IMP = impressionsFromMediaSpend(WHISKY_BARS_USD, BOOKED_CPM_USD)
-
-/** First IO: Oct 15–Nov 15 (32 days). */
-const HOUSE_OCT_IMP = Math.round((HOUSE_OCT_NOV_IMP * 17) / 32)
-const HOUSE_NOV_IMP = HOUSE_OCT_NOV_IMP - HOUSE_OCT_IMP
-
-/** Whisky Bars: Jan 17–Mar 1 (44 days). */
-const WHISKY_BARS_DAYS = daysInclusive('2026-01-17', FLIGHT_END)
-const WHISKY_BARS_JAN_IMP = Math.round((WHISKY_BARS_IMP * 15) / WHISKY_BARS_DAYS)
-const WHISKY_BARS_FEB_IMP = Math.round((WHISKY_BARS_IMP * 28) / WHISKY_BARS_DAYS)
-const WHISKY_BARS_MAR_IMP =
-  WHISKY_BARS_IMP - WHISKY_BARS_JAN_IMP - WHISKY_BARS_FEB_IMP
+const PERIOD_IMP = impressionsFromMediaSpend(PERIOD_SPEND_USD, BOOKED_CPM_USD)
 
 function clicksForImps(imps: number, ctrPct: number): number {
   return Math.max(0, Math.round((imps * ctrPct) / 100))
 }
 
+/** Four equal billing periods — Oct launch through Mar 1 close. */
 const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = [
   {
     start: '2025-10-15',
     end: '2025-10-31',
-    impressions: HOUSE_OCT_IMP,
-    clicks: clicksForImps(HOUSE_OCT_IMP, 0.98),
+    impressions: PERIOD_IMP,
+    clicks: clicksForImps(PERIOD_IMP, 0.98),
   },
   {
     start: '2025-11-01',
-    end: '2025-11-15',
-    impressions: HOUSE_NOV_IMP,
-    clicks: clicksForImps(HOUSE_NOV_IMP, 1.0),
+    end: '2025-11-30',
+    impressions: PERIOD_IMP,
+    clicks: clicksForImps(PERIOD_IMP, 1.0),
   },
   {
     start: '2025-12-01',
     end: '2025-12-31',
-    impressions: HOUSE_MONTHLY_IMP,
-    clicks: clicksForImps(HOUSE_MONTHLY_IMP, 1.02),
+    impressions: PERIOD_IMP,
+    clicks: clicksForImps(PERIOD_IMP, 1.02),
   },
   {
     start: '2026-01-01',
-    end: '2026-01-31',
-    impressions: HOUSE_MONTHLY_IMP + WHISKY_BARS_JAN_IMP,
-    clicks: clicksForImps(HOUSE_MONTHLY_IMP + WHISKY_BARS_JAN_IMP, 1.01),
-  },
-  {
-    start: '2026-02-01',
-    end: '2026-02-28',
-    impressions: HOUSE_MONTHLY_IMP + WHISKY_BARS_FEB_IMP,
-    clicks: clicksForImps(HOUSE_MONTHLY_IMP + WHISKY_BARS_FEB_IMP, 1.03),
-  },
-  {
-    start: '2026-03-01',
     end: '2026-03-01',
-    impressions: WHISKY_BARS_MAR_IMP,
-    clicks: clicksForImps(WHISKY_BARS_MAR_IMP, 1.05),
+    impressions: PERIOD_IMP,
+    clicks: clicksForImps(PERIOD_IMP, 1.03),
   },
 ]
 
@@ -153,14 +123,14 @@ const beamAudiences: AudienceBucket[] = [
       },
       {
         title: 'Member newsletter native',
-        detail: 'Subscriber newsletter blocks timed to monthly $3,489.75 extensions (Dec–Feb).',
+        detail: 'Subscriber newsletter blocks on each $3,489.75 monthly extension.',
       },
     ],
   },
   {
     id: 'whisky-bars',
     label: "America's Top Whisky Bars 2025",
-    description: 'Secondary native line — bar culture and venue discovery (Jan 17–Mar 1, 2026).',
+    description: 'Secondary native creative — bar culture hub (from Jan 17 within period 4).',
     cohorts: [
       {
         title: 'On-premise & bar culture intent',
@@ -186,7 +156,7 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
   flight: {
     launched: LAUNCH,
     inMarket: false,
-    summary: `Programs ended ${REPORT_AS_OF} · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book) · House of Suntory + America's Top Whisky Bars.`,
+    summary: `Flight ended ${REPORT_AS_OF} · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media ($3,489.75 × 4) · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book).`,
   },
   delivery: {
     cpmUsd: CPM_USD,
@@ -196,7 +166,7 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media (House of Suntory $${(HOUSE_OCT_NOV_USD + HOUSE_MONTHLY_USD * 3).toLocaleString('en-US')} + Top Whisky Bars $${WHISKY_BARS_USD.toLocaleString('en-US')}) · ${DELIVERED_IMP.toLocaleString('en-US')} delivered @ ~$${CPM_USD.toFixed(2)} blended CPM · ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR). Native extension — clickthrough only.`,
+    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} net media ($3,489.75 × 4 billing periods, Oct–Mar 1) · ${DELIVERED_IMP.toLocaleString('en-US')} delivered @ ~$${CPM_USD.toFixed(2)} blended CPM · ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR). Native extension — clickthrough only.`,
   },
   geo: {
     headline:
@@ -211,14 +181,14 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
   },
   tracking: {
     description:
-      'Two native line items: (1) House of Suntory → suntory.whiskyadvocate.com/house-of-suntory.html · (2) Top Whisky Bars → whiskybars.whiskyadvocate.com. Monthly billing per M Shanken production schedule.',
+      'Native extensions on WA.com — House of Suntory (Oct–Dec) and Top Whisky Bars (from Jan 17). Four monthly production periods at $3,489.75 through Mar 1.',
     clickthroughUrl:
       'https://suntory.whiskyadvocate.com/house-of-suntory.html?utm_source=vrvo&utm_medium=native&utm_campaign=beam_house_of_suntory',
   },
-  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} total · House of Suntory Oct 15–Mar 1 + Top Whisky Bars Jan 17–Mar 1 · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM · combined monthly grain below.`,
+  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} total ($3,489.75 × 4) · Oct 15–Mar 1 · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM.`,
   monthlyDelivery: [...MONTHLY_SEGMENTS],
   monthlyDeliveryNote:
-    'Combined calendar-month delivery. House of Suntory: $3,489 (Oct 15–Nov 15) + $3,489.75/mo (Dec–Feb). Top Whisky Bars: $3,489 (Jan 17–Mar 1). Jan–Feb rows include both programs where flights overlap.',
+    'Four billing periods at $3,489.75 each ($13,959 total). Period 1 = Oct 15 launch; period 4 = Jan 1 through Mar 1 flight close. Top Whisky Bars creative added in-market Jan 17.',
   audienceActivationMix: [
     { name: 'Endemic site native', value: 44 },
     { name: 'Newsletter native', value: 26 },
@@ -236,7 +206,7 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
     const meta: TradeDeskMeta = {
       reportGeneratedAt: `${REPORT_AS_OF}T12:00:00.000Z`,
       ioNumber: 'VRVO-IO-BEAM-WA-2025',
-      lineItem: 'Beam Suntory — WA.com native (House of Suntory + Top Whisky Bars)',
+      lineItem: 'Beam Suntory — WA.com native extension ($3,489.75 × 4)',
       dsp: 'Direct publisher (M Shanken native extension)',
       supplyPath: 'Whisky Advocate endemic — WA.com + member newsletter',
       flightPlannedDays: FLIGHT_PLANNED_DAYS,
