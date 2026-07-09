@@ -1,6 +1,7 @@
 import type { CampaignReport } from './bigSmokeMiami'
 import { arizonaOfficeOfTourismCampaign } from './arizonaOfficeOfTourism'
 import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
+import { beamSuntoryWhiskyAdvocateCampaign } from './beamSuntoryWhiskyAdvocate'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
@@ -58,6 +59,11 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
   napa: visitNapaValleyCampaign,
   'visit-napa-valley': visitNapaValleyCampaign,
   vnv: visitNapaValleyCampaign,
+  'beam-suntory': beamSuntoryWhiskyAdvocateCampaign,
+  beam: beamSuntoryWhiskyAdvocateCampaign,
+  suntory: beamSuntoryWhiskyAdvocateCampaign,
+  'house-of-suntory': beamSuntoryWhiskyAdvocateCampaign,
+  'whisky-bars': beamSuntoryWhiskyAdvocateCampaign,
   'casa-dragones': casaDragonesWhiskyAdvocateCampaign,
   casa: casaDragonesWhiskyAdvocateCampaign,
   dragones: casaDragonesWhiskyAdvocateCampaign,
@@ -87,6 +93,7 @@ export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   ...M_SHANKEN_CAMPAIGN_NAV,
   { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
   { key: 'visit-napa', label: 'Visit Napa Valley', href: '/reporting?campaign=visit-napa' },
+  { key: 'beam-suntory', label: 'Beam Suntory WA', href: '/reporting?campaign=beam-suntory' },
   { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'duckhorn', label: 'Duckhorn — Wine Spectator', href: '/reporting?campaign=duckhorn' },
   { key: 'random', label: 'QA random', href: '/reporting?campaign=random' },
@@ -117,6 +124,15 @@ export function resolveReportingCampaign(campaignParam: string | undefined): {
     campaignKey === 'vnv'
   ) {
     return { campaign: visitNapaValleyCampaign, activeNavKey: 'visit-napa' }
+  }
+  if (
+    campaignKey === 'beam-suntory' ||
+    campaignKey === 'beam' ||
+    campaignKey === 'suntory' ||
+    campaignKey === 'house-of-suntory' ||
+    campaignKey === 'whisky-bars'
+  ) {
+    return { campaign: beamSuntoryWhiskyAdvocateCampaign, activeNavKey: 'beam-suntory' }
   }
   if (campaignKey === 'casa-dragones' || campaignKey === 'casa' || campaignKey === 'dragones') {
     return { campaign: casaDragonesWhiskyAdvocateCampaign, activeNavKey: 'casa-dragones' }
