@@ -74,6 +74,12 @@ export function buildCampaignReportCsv(
   lines.push(row(['Total clicks', totalClicks]))
   lines.push(row(['Blended CTR %', Math.round(blendedCtr * 1000) / 1000]))
   lines.push(row(['CPC (USD)', Math.round(cpc * 1000) / 1000]))
+  if (typeof performance.pmpSharePct === 'number') {
+    lines.push(row(['PMP / endemic share %', performance.pmpSharePct]))
+  }
+  if (typeof performance.vcrPct === 'number') {
+    lines.push(row(['VCR % (video complete)', performance.vcrPct]))
+  }
   lines.push(row(['Measurement note', performance.measurementNote]))
   lines.push(row(['Geo headline', campaign.geo.headline]))
   lines.push(row(['Click-through URL', campaign.tracking.clickthroughUrl]))
@@ -98,6 +104,62 @@ export function buildCampaignReportCsv(
           Math.round(ctr * 1000) / 1000,
         ]),
       )
+    }
+  }
+
+  if (campaign.creativeLines?.length) {
+    lines.push('')
+    lines.push('Creative lines')
+    lines.push(
+      row([
+        'Line ID',
+        'Label',
+        'Kind',
+        'Booked imps',
+        'Delivered imps',
+        'CTR %',
+        'VCR %',
+        'PMP share %',
+        'CPM (USD)',
+        'Click-through URL',
+        'Pixel URL',
+      ]),
+    )
+    for (const line of campaign.creativeLines) {
+      const lineDel =
+        typeof line.delivery.deliveredImpressions === 'number'
+          ? line.delivery.deliveredImpressions
+          : Math.round((line.delivery.impressionsPurchased * line.delivery.pctDelivered) / 100)
+      lines.push(
+        row([
+          line.id,
+          line.label,
+          line.kind,
+          line.delivery.impressionsPurchased,
+          lineDel,
+          line.performance.ctrPct,
+          line.performance.vcrPct ?? '',
+          line.performance.pmpSharePct ?? '',
+          Math.round(line.delivery.cpmUsd * 100) / 100,
+          line.tracking.clickthroughUrl,
+          line.tracking.pixelUrl ?? '',
+        ]),
+      )
+      if (line.monthlyDelivery?.length) {
+        lines.push(row([`${line.label} — period start`, 'Period end', 'Impressions', 'Clicks', 'CTR %']))
+        for (const seg of line.monthlyDelivery) {
+          const ctr = seg.impressions > 0 ? (seg.clicks / seg.impressions) * 100 : 0
+          lines.push(
+            row([
+              seg.start,
+              seg.end,
+              seg.impressions,
+              seg.clicks,
+              Math.round(ctr * 1000) / 1000,
+            ]),
+          )
+        }
+      }
     }
   }
 

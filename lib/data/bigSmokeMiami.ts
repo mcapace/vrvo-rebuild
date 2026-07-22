@@ -36,6 +36,27 @@ export interface CampaignTradeDesk {
   deviceSplit: DeviceSplitRow[]
 }
 
+/**
+ * Optional creative / product line within one IO (e.g. Native vs Pre-roll).
+ * When present, the dashboard shows tabs so each line’s delivery can be reviewed separately.
+ */
+export interface CampaignCreativeLine {
+  id: string
+  label: string
+  kind: 'native' | 'preroll' | 'display' | 'video' | 'other'
+  delivery: CampaignReport['delivery']
+  performance: CampaignReport['performance']
+  monthlyDelivery?: MonthlyDeliverySegment[]
+  monthlyDeliveryNote?: string
+  creative: CampaignReport['creative']
+  tracking: CampaignReport['tracking'] & {
+    /** Optional 1×1 / tourism pixel URL for this line. */
+    pixelUrl?: string
+  }
+  tradeDesk: CampaignTradeDesk
+  overviewObjectiveSub?: string
+}
+
 export interface CampaignReport {
   id: string
   name: string
@@ -62,6 +83,16 @@ export interface CampaignReport {
   performance: {
     ctrPct: number
     measurementNote: string
+    /**
+     * Optional video completion rate % (pre-roll / video). Display-only — does not
+     * change delivered impressions, clicks, or spend.
+     */
+    vcrPct?: number
+    /**
+     * Optional share of delivered impressions on PMP / private marketplace.
+     * Display-only quality / supply signal.
+     */
+    pmpSharePct?: number
   }
   geo: {
     headline: string
@@ -91,6 +122,11 @@ export interface CampaignReport {
   monthlyDelivery?: MonthlyDeliverySegment[]
   /** Footnote for the monthly table (e.g. which months are actuals vs estimate). */
   monthlyDeliveryNote?: string
+  /**
+   * When set, dashboard shows Combined / per-line tabs (e.g. Native vs Pre-roll).
+   * Parent `delivery` / `tradeDesk` remain the combined roll-up.
+   */
+  creativeLines?: CampaignCreativeLine[]
   audiences: AudienceBucket[]
   tradeDesk: CampaignTradeDesk
 }

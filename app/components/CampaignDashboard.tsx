@@ -4,7 +4,7 @@ import type { CampaignReport } from '@/lib/data/bigSmokeMiami'
 import { downloadCampaignReportCsv } from '@/lib/reportingExport'
 import { PrebookedCampaignDashboard } from './PrebookedCampaignDashboard'
 import Link from 'next/link'
-import { useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -93,13 +93,40 @@ function formatShortDate(iso: string) {
   return `${m}/${day}`
 }
 
-function formatMonthLabel(isoStart: string) {
-  const [y, m] = isoStart.split('-').map(Number)
-  return new Intl.DateTimeFormat('en-US', {
+/** Full calendar month → "May 2026"; partial / multi-week slice → "May 5–11, 2026". */
+function formatDeliveryPeriodLabel(isoStart: string, isoEnd: string) {
+  const [ys, ms, ds] = isoStart.split('-').map(Number)
+  const [ye, me, de] = isoEnd.split('-').map(Number)
+  const start = new Date(Date.UTC(ys, ms - 1, ds))
+  const end = new Date(Date.UTC(ye, me - 1, de))
+  const lastDayOfStartMonth = new Date(Date.UTC(ys, ms, 0)).getUTCDate()
+  const isFullCalendarMonth =
+    ys === ye && ms === me && ds === 1 && de === lastDayOfStartMonth
+
+  if (isFullCalendarMonth) {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }).format(start)
+  }
+
+  const sameMonthYear = ys === ye && ms === me
+  if (sameMonthYear) {
+    const month = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      timeZone: 'UTC',
+    }).format(start)
+    return `${month} ${ds}–${de}, ${ys}`
+  }
+
+  const fmt = new Intl.DateTimeFormat('en-US', {
     month: 'short',
+    day: 'numeric',
     year: 'numeric',
     timeZone: 'UTC',
-  }).format(new Date(Date.UTC(y, m - 1, 1)))
+  })
+  return `${fmt.format(start)} – ${fmt.format(end)}`
 }
 
 function formatReportTs(iso: string) {
@@ -142,17 +169,24 @@ export function CampaignDashboard({
   generatedAt: string
   onExpandReport?: () => void
 }) {
-  if (campaign.flight.prebookedPending) {
-    return (
-      <PrebookedCampaignDashboard
-        campaign={campaign}
-        generatedAt={generatedAt}
-        onExpandReport={onExpandReport}
-      />
-    )
-  }
+  const creativeLines = campaign.creativeLines ?? []
+  const hasCreativeLines = creativeLines.length > 0
+  const [activeLineId, setActiveLineId] = useState<string>('all')
 
-  const { delivery, tradeDesk, performance } = campaign
+  const activeLine = useMemo(
+    () => (activeLineId === 'all' ? null : creativeLines.find((l) => l.id === activeLineId) ?? null),
+    [activeLineId, creativeLines],
+  )
+
+  const delivery = activeLine?.delivery ?? campaign.delivery
+  const tradeDesk = activeLine?.tradeDesk ?? campaign.tradeDesk
+  const performance = activeLine?.performance ?? campaign.performance
+  const monthlyDelivery = activeLine?.monthlyDelivery ?? campaign.monthlyDelivery
+  const monthlyDeliveryNote = activeLine?.monthlyDeliveryNote ?? campaign.monthlyDeliveryNote
+  const creative = activeLine?.creative ?? campaign.creative
+  const tracking = activeLine?.tracking ?? campaign.tracking
+  const overviewObjectiveSub = activeLine?.overviewObjectiveSub ?? campaign.overviewObjectiveSub
+
   const deliveredImp =
     typeof delivery.deliveredImpressions === 'number' && Number.isFinite(delivery.deliveredImpressions)
       ? Math.round(delivery.deliveredImpressions)
@@ -225,13 +259,13 @@ export function CampaignDashboard({
   }, [tradeDesk.geoDelivery])
 
   const monthlyRows = useMemo(() => {
-    if (!campaign.monthlyDelivery?.length) return []
-    return campaign.monthlyDelivery.map((seg) => ({
+    if (!monthlyDelivery?.length) return []
+    return monthlyDelivery.map((seg) => ({
       ...seg,
-      label: formatMonthLabel(seg.start),
+      label: formatDeliveryPeriodLabel(seg.start, seg.end),
       ctrPct: seg.impressions > 0 ? (seg.clicks / seg.impressions) * 100 : 0,
     }))
-  }, [campaign.monthlyDelivery])
+  }, [monthlyDelivery])
 
   const funnelTiers = useMemo(() => {
     const booked = delivery.impressionsPurchased
@@ -273,6 +307,23 @@ export function CampaignDashboard({
   const handleExportReport = useCallback(() => {
     downloadCampaignReportCsv(campaign, { generatedAt })
   }, [campaign, generatedAt])
+
+  const lineTabClass = (id: string) =>
+    `rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+      activeLineId === id
+        ? 'bg-navy text-white shadow-sm'
+        : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 hover:text-navy'
+    }`
+
+  if (campaign.flight.prebookedPending) {
+    return (
+      <PrebookedCampaignDashboard
+        campaign={campaign}
+        generatedAt={generatedAt}
+        onExpandReport={onExpandReport}
+      />
+    )
+  }
 
   return (
     <div
@@ -385,21 +436,81 @@ export function CampaignDashboard({
             <SnapshotCell label="Clicks" value={formatNumber(totalClicks)} />
             <SnapshotCell label="CPC" value={`$${cpc.toFixed(3)}`} />
           </div>
+
+          {hasCreativeLines ? (
+            <div
+              className="mt-5 flex flex-wrap items-center gap-2"
+              role="tablist"
+              aria-label="Creative line"
+            >
+              <span className="mr-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                Creative
+              </span>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeLineId === 'all'}
+                className={lineTabClass('all')}
+                onClick={() => setActiveLineId('all')}
+              >
+                Combined
+              </button>
+              {creativeLines.map((line) => (
+                <button
+                  key={line.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeLineId === line.id}
+                  className={lineTabClass(line.id)}
+                  onClick={() => setActiveLineId(line.id)}
+                >
+                  {line.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {typeof performance.pmpSharePct === 'number' || typeof performance.vcrPct === 'number' ? (
+            <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:max-w-md">
+              {typeof performance.pmpSharePct === 'number' ? (
+                <SnapshotCell
+                  label="PMP / endemic share"
+                  value={formatPercent(performance.pmpSharePct, 1)}
+                  accent
+                />
+              ) : null}
+              {typeof performance.vcrPct === 'number' ? (
+                <SnapshotCell
+                  label={activeLine?.kind === 'native' ? 'VCR (n/a)' : 'VCR (video complete)'}
+                  value={
+                    activeLine?.kind === 'native'
+                      ? '—'
+                      : formatPercent(performance.vcrPct, 1)
+                  }
+                />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
 
       <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
         <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
           Campaign overview
+          {activeLine ? (
+            <span className="ml-2 font-semibold normal-case tracking-normal text-navy">
+              · {activeLine.label}
+            </span>
+          ) : null}
         </h2>
 
         {/* Four overview cards — Trade Desk–style */}
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <OverviewCard
             eyebrow="Objectives"
-            headline={`${delivery.pctDelivered}% of booked impressions delivered.`}
+            headline={`${delivery.pctDelivered.toFixed(1)}% of booked impressions delivered.`}
             sub={
-              campaign.overviewObjectiveSub ??
+              overviewObjectiveSub ??
               'Programmatic display delivery against the booked flight and pacing plan.'
             }
             footer="View flight detail"
@@ -612,7 +723,13 @@ export function CampaignDashboard({
         </section>
 
         {/* Secondary metrics */}
-        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+        <section
+          className={`mt-6 grid gap-4 ${
+            typeof performance.pmpSharePct === 'number' || typeof performance.vcrPct === 'number'
+              ? 'lg:grid-cols-2 xl:grid-cols-4'
+              : 'lg:grid-cols-3'
+          }`}
+        >
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Trailing 7-day pace</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
@@ -636,6 +753,28 @@ export function CampaignDashboard({
               </span>
             </p>
           </div>
+          {typeof performance.pmpSharePct === 'number' ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">PMP / endemic share</p>
+              <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
+                {formatPercent(performance.pmpSharePct, 1)}
+              </p>
+              <p className="mt-2 text-xs text-slate-600">
+                Share of delivered imps on private marketplace / endemic deals — supply mix only; does not change booked or delivered totals.
+              </p>
+            </div>
+          ) : null}
+          {typeof performance.vcrPct === 'number' && activeLine?.kind !== 'native' ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">VCR (video complete)</p>
+              <p className="mt-2 text-2xl font-semibold tabular-nums text-slate-900">
+                {formatPercent(performance.vcrPct, 1)}
+              </p>
+              <p className="mt-2 text-xs text-slate-600">
+                Completes ÷ starts on pre-roll. Separate from click CTR; does not change impression or click totals.
+              </p>
+            </div>
+          ) : null}
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Measurement</p>
             <p className="mt-2 text-sm leading-snug text-slate-600">{performance.measurementNote}</p>
@@ -650,14 +789,14 @@ export function CampaignDashboard({
             <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
               Monthly delivery
             </h3>
-            {campaign.monthlyDeliveryNote ? (
-              <p className="mt-2 text-[11px] leading-snug text-slate-500">{campaign.monthlyDeliveryNote}</p>
+            {monthlyDeliveryNote ? (
+              <p className="mt-2 text-[11px] leading-snug text-slate-500">{monthlyDeliveryNote}</p>
             ) : null}
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[420px] border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                    <th className="py-2 pr-4">Month</th>
+                    <th className="py-2 pr-4">Period</th>
                     <th className="py-2 pr-4 text-right tabular-nums">Impressions</th>
                     <th className="py-2 pr-4 text-right tabular-nums">Clicks</th>
                     <th className="py-2 text-right tabular-nums">CTR</th>
@@ -862,7 +1001,7 @@ export function CampaignDashboard({
             <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
               Format mix
             </h3>
-            <p className="mt-2 text-[11px] text-slate-500">{campaign.creative.environments}</p>
+            <p className="mt-2 text-[11px] text-slate-500">{creative.environments}</p>
             <div className="mt-4 h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={tradeDesk.formatDelivery} margin={{ top: 12, right: 14, left: 10, bottom: 52 }}>
@@ -1033,15 +1172,32 @@ export function CampaignDashboard({
           id="reporting-creative"
           className="mt-8 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
         >
-          <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Click-through & assets</h3>
-          <p className="mt-2 text-sm text-slate-600">{campaign.tracking.description}</p>
+          <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+            Click-through & assets
+            {activeLine ? (
+              <span className="ml-2 font-semibold normal-case tracking-normal text-navy">
+                · {activeLine.label}
+              </span>
+            ) : null}
+          </h3>
+          <p className="mt-2 text-sm text-slate-600">{tracking.description}</p>
           <p className="mt-3 break-all rounded-lg bg-slate-50 p-3 text-xs text-navy underline">
-            <a href={campaign.tracking.clickthroughUrl} target="_blank" rel="noreferrer">
-              {campaign.tracking.clickthroughUrl}
+            <a href={tracking.clickthroughUrl} target="_blank" rel="noreferrer">
+              {tracking.clickthroughUrl}
             </a>
           </p>
+          {'pixelUrl' in tracking && tracking.pixelUrl ? (
+            <div className="mt-4">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                Tourism Economic / 1×1 pixel
+              </p>
+              <p className="mt-2 break-all rounded-lg bg-slate-50 p-3 text-xs text-slate-700">
+                {tracking.pixelUrl}
+              </p>
+            </div>
+          ) : null}
           <p className="mt-4 text-sm font-medium text-navy">
-            <a href={campaign.creative.assetsFolderUrl} target="_blank" rel="noreferrer">
+            <a href={creative.assetsFolderUrl} target="_blank" rel="noreferrer">
               Creative assets folder →
             </a>
           </p>

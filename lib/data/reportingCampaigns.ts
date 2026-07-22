@@ -5,6 +5,7 @@ import { beamSuntoryWhiskyAdvocateCampaign } from './beamSuntoryWhiskyAdvocate'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
+import { laAuroraPmpExtensionCampaign } from './laAuroraPmpExtension'
 import { visitNapaValleyCampaign } from './visitNapaValley'
 import {
   bibTuckerWaNativeCampaign,
@@ -38,7 +39,6 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   davidoff: { campaign: davidoffCaNativeCampaign, navKey: 'davidoff-ca' },
   'davidoff-ca': { campaign: davidoffCaNativeCampaign, navKey: 'davidoff-ca' },
   '3g7viwill-7280': { campaign: davidoffCaNativeCampaign, navKey: 'davidoff-ca' },
-  'la-aurora': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
   'la-aurora-ca': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
   '3g7viwill-7281': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
   'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
@@ -59,6 +59,7 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
   napa: visitNapaValleyCampaign,
   'visit-napa-valley': visitNapaValleyCampaign,
   vnv: visitNapaValleyCampaign,
+  'napa-valley': visitNapaValleyCampaign,
   'beam-suntory': beamSuntoryWhiskyAdvocateCampaign,
   beam: beamSuntoryWhiskyAdvocateCampaign,
   suntory: beamSuntoryWhiskyAdvocateCampaign,
@@ -70,6 +71,11 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
   duckhorn: duckhornWineSpectatorCampaign,
   'duckhorn-ws': duckhornWineSpectatorCampaign,
   'wine-spectator': duckhornWineSpectatorCampaign,
+  'la-aurora': laAuroraPmpExtensionCampaign,
+  'la-aurora-pmp': laAuroraPmpExtensionCampaign,
+  aurora: laAuroraPmpExtensionCampaign,
+  laaurora: laAuroraPmpExtensionCampaign,
+  ws36031: laAuroraPmpExtensionCampaign,
   random: internalRandomFixtureCampaign,
   test: internalRandomFixtureCampaign,
   qa: internalRandomFixtureCampaign,
@@ -92,10 +98,15 @@ export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'big-smoke', label: 'Big Smoke Miami', href: '/reporting?campaign=big-smoke' },
   ...M_SHANKEN_CAMPAIGN_NAV,
   { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
-  { key: 'visit-napa', label: 'Visit Napa Valley', href: '/reporting?campaign=visit-napa' },
+  {
+    key: 'visit-napa',
+    label: 'Visit Napa Valley — Native + Pre-roll',
+    href: '/reporting?campaign=visit-napa',
+  },
   { key: 'beam-suntory', label: 'Beam Suntory WA', href: '/reporting?campaign=beam-suntory' },
   { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'duckhorn', label: 'Duckhorn — Wine Spectator', href: '/reporting?campaign=duckhorn' },
+  { key: 'la-aurora', label: 'La Aurora — PMP Extension', href: '/reporting?campaign=la-aurora' },
   { key: 'random', label: 'QA random', href: '/reporting?campaign=random' },
 ]
 
@@ -121,6 +132,7 @@ export function resolveReportingCampaign(campaignParam: string | undefined): {
     campaignKey === 'visit-napa' ||
     campaignKey === 'napa' ||
     campaignKey === 'visit-napa-valley' ||
+    campaignKey === 'napa-valley' ||
     campaignKey === 'vnv'
   ) {
     return { campaign: visitNapaValleyCampaign, activeNavKey: 'visit-napa' }
@@ -143,6 +155,15 @@ export function resolveReportingCampaign(campaignParam: string | undefined): {
     campaignKey === 'wine-spectator'
   ) {
     return { campaign: duckhornWineSpectatorCampaign, activeNavKey: 'duckhorn' }
+  }
+  if (
+    campaignKey === 'la-aurora' ||
+    campaignKey === 'la-aurora-pmp' ||
+    campaignKey === 'aurora' ||
+    campaignKey === 'laaurora' ||
+    campaignKey === 'ws36031'
+  ) {
+    return { campaign: laAuroraPmpExtensionCampaign, activeNavKey: 'la-aurora' }
   }
   if (campaignKey === 'random' || campaignKey === 'test' || campaignKey === 'qa') {
     return { campaign: internalRandomFixtureCampaign, activeNavKey: 'random' }
