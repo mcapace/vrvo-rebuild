@@ -457,8 +457,14 @@ export function CampaignDashboard({
             </div>
           </div>
 
-          {/* KPI strip */}
-          <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-4 lg:grid-cols-8">
+          {/* KPI strip — includes optional PMP / VCR when present */}
+          <div
+            className={`mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-4 ${
+              typeof performance.pmpSharePct === 'number' || typeof performance.vcrPct === 'number'
+                ? 'lg:grid-cols-5'
+                : 'lg:grid-cols-8'
+            }`}
+          >
             <SnapshotCell label="Booked imps" value={formatNumber(delivery.impressionsPurchased)} />
             <SnapshotCell label="Delivered imps" value={formatNumber(deliveredImp)} accent />
             <SnapshotCell label="Flight completion" value={formatPercent(delivery.pctDelivered, 0)} />
@@ -467,6 +473,23 @@ export function CampaignDashboard({
             <SnapshotCell label="CTR" value={formatPercent(blendedCtr, 3)} />
             <SnapshotCell label="Clicks" value={formatNumber(totalClicks)} />
             <SnapshotCell label="CPC" value={`$${cpc.toFixed(3)}`} />
+            {typeof performance.pmpSharePct === 'number' ? (
+              <SnapshotCell
+                label="PMP / endemic share"
+                value={formatPercent(performance.pmpSharePct, 1)}
+                accent
+              />
+            ) : null}
+            {typeof performance.vcrPct === 'number' ? (
+              <SnapshotCell
+                label={activeLine?.kind === 'native' ? 'VCR (n/a)' : 'VCR (video complete)'}
+                value={
+                  activeLine?.kind === 'native'
+                    ? '—'
+                    : formatPercent(performance.vcrPct, 1)
+                }
+              />
+            ) : null}
           </div>
 
           {hasCreativeLines ? (
@@ -518,28 +541,6 @@ export function CampaignDashboard({
                   </button>
                 ))}
               </div>
-            </div>
-          ) : null}
-
-          {typeof performance.pmpSharePct === 'number' || typeof performance.vcrPct === 'number' ? (
-            <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:max-w-md">
-              {typeof performance.pmpSharePct === 'number' ? (
-                <SnapshotCell
-                  label="PMP / endemic share"
-                  value={formatPercent(performance.pmpSharePct, 1)}
-                  accent
-                />
-              ) : null}
-              {typeof performance.vcrPct === 'number' ? (
-                <SnapshotCell
-                  label={activeLine?.kind === 'native' ? 'VCR (n/a)' : 'VCR (video complete)'}
-                  value={
-                    activeLine?.kind === 'native'
-                      ? '—'
-                      : formatPercent(performance.vcrPct, 1)
-                  }
-                />
-              ) : null}
             </div>
           ) : null}
         </div>
