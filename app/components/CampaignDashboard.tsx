@@ -347,13 +347,6 @@ export function CampaignDashboard({
     })
   }, [])
 
-  const lineTabClass = (id: string) =>
-    `rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
-      activeLineId === id
-        ? 'bg-navy text-white shadow-sm'
-        : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 hover:text-navy'
-    }`
-
   if (campaign.flight.prebookedPending) {
     return (
       <PrebookedCampaignDashboard
@@ -477,23 +470,33 @@ export function CampaignDashboard({
           </div>
 
           {hasCreativeLines ? (
-            <div className="mt-5 space-y-3">
+            <div className="mt-5 rounded-lg border-2 border-navy/30 bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-900">
+                Choose a line to view
+              </p>
+              <p className="mt-1 text-xs text-slate-600">
+                Native and pre-roll share one IO — pick a line to filter KPIs, pacing, and daily delivery.
+              </p>
               <div
-                className="flex flex-wrap items-center gap-2"
+                className="mt-3 grid gap-2 sm:grid-cols-3"
                 role="tablist"
                 aria-label="Creative line"
               >
-                <span className="mr-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                  View
-                </span>
                 <button
                   type="button"
                   role="tab"
                   aria-selected={activeLineId === 'all'}
-                  className={lineTabClass('all')}
+                  className={`rounded-lg px-4 py-3 text-left text-sm font-semibold transition-colors ${
+                    activeLineId === 'all'
+                      ? 'bg-navy text-white shadow-md'
+                      : 'bg-white text-navy ring-1 ring-slate-300 hover:bg-slate-100'
+                  }`}
                   onClick={() => selectCreativeLine('all')}
                 >
                   Combined IO
+                  <span className={`mt-1 block text-[11px] font-normal ${activeLineId === 'all' ? 'text-white/80' : 'text-slate-500'}`}>
+                    Full flight totals
+                  </span>
                 </button>
                 {creativeLines.map((line) => (
                   <button
@@ -501,16 +504,20 @@ export function CampaignDashboard({
                     type="button"
                     role="tab"
                     aria-selected={activeLineId === line.id}
-                    className={lineTabClass(line.id)}
+                    className={`rounded-lg px-4 py-3 text-left text-sm font-semibold transition-colors ${
+                      activeLineId === line.id
+                        ? 'bg-navy text-white shadow-md'
+                        : 'bg-white text-navy ring-1 ring-slate-300 hover:bg-slate-100'
+                    }`}
                     onClick={() => selectCreativeLine(line.id)}
                   >
-                    {line.label}
+                    View {line.label}
+                    <span className={`mt-1 block text-[11px] font-normal ${activeLineId === line.id ? 'text-white/80' : 'text-slate-500'}`}>
+                      {line.kind === 'preroll' ? 'Includes VCR' : 'Native extension'}
+                    </span>
                   </button>
                 ))}
               </div>
-              <p className="text-[11px] text-slate-500">
-                Drill into a line below — KPIs, pacing, and daily grain update to that creative.
-              </p>
             </div>
           ) : null}
 
@@ -542,144 +549,62 @@ export function CampaignDashboard({
         {hasCreativeLines ? (
           <section
             id="reporting-line-items"
-            className="mb-8 scroll-mt-8 rounded-xl border border-navy/20 bg-white p-5 shadow-sm ring-1 ring-navy/5"
+            className="mb-8 scroll-mt-8 rounded-xl border-2 border-navy/25 bg-white p-5 shadow-sm"
           >
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  Line items — drill down
+                <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-navy">
+                  Line items
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Native extension and pre-roll under one IO. Select a row to filter the report to that line.
+                  Tap a card to open that creative’s reporting. Active:{' '}
+                  <span className="font-semibold text-navy">
+                    {activeLine?.label ?? 'Combined IO'}
+                  </span>
                 </p>
               </div>
-              <p className="text-[11px] text-slate-500">
-                Active view:{' '}
-                <span className="font-semibold text-navy">
-                  {activeLine?.label ?? 'Combined IO'}
-                </span>
-              </p>
             </div>
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[720px] border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                    <th className="py-2 pr-3">Line item</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">Booked</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">Delivered</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">Clicks</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">CTR</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">Est. spend</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">PMP</th>
-                    <th className="py-2 pr-3 text-right tabular-nums">VCR</th>
-                    <th className="py-2 text-right"> </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    className={`border-b border-slate-100 ${
-                      activeLineId === 'all' ? 'bg-teal-50/60' : 'hover:bg-slate-50'
-                    }`}
-                  >
-                    <td className="py-2.5 pr-3 font-medium text-slate-900">
-                      Combined IO
-                      <span className="mt-0.5 block text-[11px] font-normal text-slate-500">
-                        {campaign.tradeDesk.meta.lineItem}
-                      </span>
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums">
-                      {formatNumber(campaign.delivery.impressionsPurchased)}
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums font-medium">
-                      {formatNumber(resolveDelivered(campaign.delivery))}
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums">
-                      {formatNumber(
-                        campaign.tradeDesk.daily.reduce((a, r) => a + r.clicks, 0),
-                      )}
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums">
-                      {formatPercent(campaign.performance.ctrPct, 2)}
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums">
-                      $
-                      {formatNumber(
-                        Math.round(
-                          (resolveDelivered(campaign.delivery) / 1000) *
-                            campaign.delivery.cpmUsd *
-                            100,
-                        ) / 100,
-                      )}
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums">
-                      {typeof campaign.performance.pmpSharePct === 'number'
-                        ? formatPercent(campaign.performance.pmpSharePct, 1)
-                        : '—'}
-                    </td>
-                    <td className="py-2.5 pr-3 text-right tabular-nums">
-                      {typeof campaign.performance.vcrPct === 'number'
-                        ? formatPercent(campaign.performance.vcrPct, 1)
-                        : '—'}
-                    </td>
-                    <td className="py-2.5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => selectCreativeLine('all')}
-                        className="rounded-md bg-navy px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-navy/90"
-                      >
-                        {activeLineId === 'all' ? 'Viewing' : 'View'}
-                      </button>
-                    </td>
-                  </tr>
-                  {creativeLineRows.map((row) => (
-                    <tr
-                      key={row.id}
-                      className={`border-b border-slate-100 ${
-                        activeLineId === row.id ? 'bg-teal-50/60' : 'hover:bg-slate-50'
-                      }`}
-                    >
-                      <td className="py-2.5 pr-3 font-medium text-slate-900">
-                        {row.label}
-                        <span className="mt-0.5 block text-[11px] font-normal text-slate-500">
-                          {row.lineItem}
-                        </span>
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">
-                        {formatNumber(row.booked)}
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums font-medium">
-                        {formatNumber(row.delivered)}
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">
-                        {formatNumber(row.clicks)}
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">
-                        {formatPercent(row.ctr, 2)}
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">
-                        ${formatNumber(Math.round(row.spend * 100) / 100)}
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">
-                        {typeof row.pmpSharePct === 'number'
-                          ? formatPercent(row.pmpSharePct, 1)
-                          : '—'}
-                      </td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">
-                        {typeof row.vcrPct === 'number' ? formatPercent(row.vcrPct, 1) : '—'}
-                      </td>
-                      <td className="py-2.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => selectCreativeLine(row.id)}
-                          className="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-navy hover:bg-slate-50"
-                        >
-                          {activeLineId === row.id ? 'Viewing' : 'View'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <button
+                type="button"
+                onClick={() => selectCreativeLine('all')}
+                className={`rounded-xl border p-4 text-left transition-shadow hover:shadow-md ${
+                  activeLineId === 'all'
+                    ? 'border-navy bg-navy text-white'
+                    : 'border-slate-200 bg-slate-50 text-slate-900'
+                }`}
+              >
+                <p className="text-base font-semibold">Combined IO</p>
+                <p className={`mt-1 text-xs ${activeLineId === 'all' ? 'text-white/75' : 'text-slate-500'}`}>
+                  {formatNumber(resolveDelivered(campaign.delivery))} imps ·{' '}
+                  {formatPercent(campaign.performance.ctrPct, 2)} CTR
+                </p>
+                <p className={`mt-3 text-sm font-bold underline ${activeLineId === 'all' ? 'text-white' : 'text-navy'}`}>
+                  {activeLineId === 'all' ? 'Viewing now' : 'View combined →'}
+                </p>
+              </button>
+              {creativeLineRows.map((row) => (
+                <button
+                  key={row.id}
+                  type="button"
+                  onClick={() => selectCreativeLine(row.id)}
+                  className={`rounded-xl border p-4 text-left transition-shadow hover:shadow-md ${
+                    activeLineId === row.id
+                      ? 'border-navy bg-navy text-white'
+                      : 'border-slate-200 bg-slate-50 text-slate-900'
+                  }`}
+                >
+                  <p className="text-base font-semibold">{row.label}</p>
+                  <p className={`mt-1 text-xs ${activeLineId === row.id ? 'text-white/75' : 'text-slate-500'}`}>
+                    {formatNumber(row.delivered)} imps · {formatPercent(row.ctr, 2)} CTR
+                    {typeof row.vcrPct === 'number' ? ` · ${formatPercent(row.vcrPct, 1)} VCR` : ''}
+                    {typeof row.pmpSharePct === 'number' ? ` · ${formatPercent(row.pmpSharePct, 0)} PMP` : ''}
+                  </p>
+                  <p className={`mt-3 text-sm font-bold underline ${activeLineId === row.id ? 'text-white' : 'text-navy'}`}>
+                    {activeLineId === row.id ? 'Viewing now' : `View ${row.label} →`}
+                  </p>
+                </button>
+              ))}
             </div>
           </section>
         ) : null}
@@ -1387,13 +1312,13 @@ export function CampaignDashboard({
               {tracking.clickthroughUrl}
             </a>
           </p>
-          {'pixelUrl' in tracking && tracking.pixelUrl ? (
+          {activeLine?.tracking.pixelUrl ? (
             <div className="mt-4">
               <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
                 Tourism Economic / 1×1 pixel
               </p>
               <p className="mt-2 break-all rounded-lg bg-slate-50 p-3 text-xs text-slate-700">
-                {tracking.pixelUrl}
+                {activeLine.tracking.pixelUrl}
               </p>
             </div>
           ) : null}
