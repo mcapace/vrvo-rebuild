@@ -96,17 +96,17 @@ export const M_SHANKEN_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
 
 export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'big-smoke', label: 'Big Smoke Miami', href: '/reporting?campaign=big-smoke' },
-  ...M_SHANKEN_CAMPAIGN_NAV,
-  { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
   {
     key: 'visit-napa',
-    label: 'Visit Napa Valley — Native + Pre-roll',
+    label: 'Visit Napa Valley',
     href: '/reporting?campaign=visit-napa',
   },
+  { key: 'arizona', label: 'Arizona Office of Tourism', href: '/reporting?campaign=arizona' },
   { key: 'beam-suntory', label: 'Beam Suntory WA', href: '/reporting?campaign=beam-suntory' },
   { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'duckhorn', label: 'Duckhorn — Wine Spectator', href: '/reporting?campaign=duckhorn' },
   { key: 'la-aurora', label: 'La Aurora — PMP Extension', href: '/reporting?campaign=la-aurora' },
+  ...M_SHANKEN_CAMPAIGN_NAV,
   { key: 'random', label: 'QA random', href: '/reporting?campaign=random' },
 ]
 
