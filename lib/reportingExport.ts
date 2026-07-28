@@ -86,7 +86,42 @@ export function buildCampaignReportCsv(
   lines.push(row(['Creative assets folder URL', campaign.creative.assetsFolderUrl]))
   lines.push(row(['Tracking / routing description', campaign.tracking.description]))
 
-  if (campaign.monthlyDelivery?.length) {
+  if (campaign.billingPeriods?.length) {
+    lines.push('')
+    lines.push('Billing and delivery by period')
+    if (campaign.monthlyDeliveryNote) {
+      lines.push(row(['Note', campaign.monthlyDeliveryNote]))
+    }
+    lines.push(
+      row([
+        'Period',
+        'Start',
+        'End',
+        'Production USD',
+        'Creative',
+        'Placements',
+        'Impressions',
+        'Clicks',
+        'CTR %',
+      ]),
+    )
+    for (const bp of campaign.billingPeriods) {
+      const ctr = bp.impressions > 0 ? (bp.clicks / bp.impressions) * 100 : 0
+      lines.push(
+        row([
+          bp.period,
+          bp.start,
+          bp.end,
+          bp.spendUsd,
+          bp.creativeLabel,
+          bp.placements,
+          bp.impressions,
+          bp.clicks,
+          Math.round(ctr * 1000) / 1000,
+        ]),
+      )
+    }
+  } else if (campaign.monthlyDelivery?.length) {
     lines.push('')
     lines.push('Monthly delivery')
     if (campaign.monthlyDeliveryNote) {
@@ -160,6 +195,35 @@ export function buildCampaignReportCsv(
           )
         }
       }
+    }
+  }
+
+  if (campaign.creativeTraffickingLog?.length) {
+    lines.push('')
+    lines.push('Creative trafficking log')
+    lines.push(
+      row([
+        'Date',
+        'Action',
+        'Creative',
+        'Headline',
+        'Destination URL',
+        'Placements updated',
+        'Notes',
+      ]),
+    )
+    for (const ev of campaign.creativeTraffickingLog) {
+      lines.push(
+        row([
+          ev.date,
+          ev.action,
+          ev.creativeName,
+          ev.headline ?? '',
+          ev.destinationUrl ?? '',
+          ev.placementsUpdated,
+          ev.notes ?? '',
+        ]),
+      )
     }
   }
 

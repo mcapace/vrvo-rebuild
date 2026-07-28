@@ -57,6 +57,29 @@ export interface CampaignCreativeLine {
   overviewObjectiveSub?: string
 }
 
+/** Partner billing period with spend, creative, and placement context (native IO reports). */
+export interface BillingPeriodRow {
+  period: string
+  start: string
+  end: string
+  spendUsd: number
+  impressions: number
+  clicks: number
+  creativeLabel: string
+  placements: string
+}
+
+/** Trafficking / creative update log — when units were launched, swapped, or refreshed. */
+export interface CreativeTraffickingEvent {
+  date: string
+  action: 'launch' | 'swap' | 'refresh' | 'close'
+  creativeName: string
+  headline?: string
+  destinationUrl?: string
+  placementsUpdated: string
+  notes?: string
+}
+
 export interface CampaignReport {
   id: string
   name: string
@@ -127,6 +150,13 @@ export interface CampaignReport {
    * Parent `delivery` / `tradeDesk` remain the combined roll-up.
    */
   creativeLines?: CampaignCreativeLine[]
+  /**
+   * Rich billing-period table (spend, creative, placements). When present, the dashboard
+   * renders this instead of the simple monthly table and CSV export includes the extra columns.
+   */
+  billingPeriods?: BillingPeriodRow[]
+  /** Creative launch / swap / refresh log for partner trafficking transparency. */
+  creativeTraffickingLog?: CreativeTraffickingEvent[]
   audiences: AudienceBucket[]
   tradeDesk: CampaignTradeDesk
 }

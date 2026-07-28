@@ -129,6 +129,38 @@ function formatDeliveryPeriodLabel(isoStart: string, isoEnd: string) {
   return `${fmt.format(start)} – ${fmt.format(end)}`
 }
 
+function formatPeriodDateRange(start: string, end: string) {
+  const startDate = new Date(`${start}T12:00:00.000Z`)
+  const endDate = new Date(`${end}T12:00:00.000Z`)
+  const sameYear = start.slice(0, 4) === end.slice(0, 4)
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: sameYear ? undefined : 'numeric',
+    timeZone: 'UTC',
+  })
+  const endFmt = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+  return `${fmt.format(startDate)} – ${endFmt.format(endDate)}`
+}
+
+function traffickingActionLabel(action: 'launch' | 'swap' | 'refresh' | 'close') {
+  switch (action) {
+    case 'launch':
+      return 'Launch'
+    case 'swap':
+      return 'Swap'
+    case 'refresh':
+      return 'Refresh'
+    case 'close':
+      return 'Close'
+  }
+}
+
 function formatReportTs(iso: string) {
   const d = new Date(iso)
   return new Intl.DateTimeFormat('en-US', {
@@ -267,6 +299,18 @@ export function CampaignDashboard({
     }))
   }, [monthlyDelivery])
 
+  const billingPeriodRows = useMemo(() => {
+    if (!campaign.billingPeriods?.length) return []
+    return campaign.billingPeriods.map((row) => ({
+      ...row,
+      dateLabel: formatPeriodDateRange(row.start, row.end),
+      ctrPct: row.impressions > 0 ? (row.clicks / row.impressions) * 100 : 0,
+    }))
+  }, [campaign.billingPeriods])
+
+  const showBillingTable = billingPeriodRows.length > 0
+  const showMonthlyTable = monthlyRows.length > 0 && !showBillingTable
+
   const funnelTiers = useMemo(() => {
     const booked = delivery.impressionsPurchased
     const delivered = deliveredImp
@@ -397,7 +441,7 @@ export function CampaignDashboard({
           >
             Creative
           </button>
-          {monthlyRows.length > 0 ? (
+          {showBillingTable || showMonthlyTable ? (
             <>
               <span className="text-white/40">|</span>
               <button
@@ -405,7 +449,19 @@ export function CampaignDashboard({
                 onClick={() => scrollToReportingSection('reporting-monthly-delivery')}
                 className={RIBBON_ACTION}
               >
-                Monthly delivery
+                {showBillingTable ? 'Billing periods' : 'Monthly delivery'}
+              </button>
+            </>
+          ) : null}
+          {campaign.creativeTraffickingLog?.length ? (
+            <>
+              <span className="text-white/40">|</span>
+              <button
+                type="button"
+                onClick={() => scrollToReportingSection('reporting-trafficking-log')}
+                className={RIBBON_ACTION}
+              >
+                Trafficking log
               </button>
             </>
           ) : null}
@@ -899,7 +955,81 @@ export function CampaignDashboard({
           </div>
         </section>
 
-        {monthlyRows.length > 0 ? (
+        {showBillingTable ? (
+          <section
+            id="reporting-monthly-delivery"
+            className="mt-6 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
+            <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Billing & delivery by period
+            </h3>
+            {campaign.monthlyDeliveryNote ? (
+              <p className="mt-2 text-[11px] leading-snug text-slate-500">{campaign.monthlyDeliveryNote}</p>
+            ) : null}
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[720px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                    <th className="py-2 pr-4">Period</th>
+                    <th className="py-2 pr-4">Dates</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Prod $</th>
+                    <th className="py-2 pr-4">Creative</th>
+                    <th className="py-2 pr-4">Placements</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Impressions</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Clicks</th>
+                    <th className="py-2 text-right tabular-nums">CTR</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {billingPeriodRows.map((row) => (
+                    <tr key={row.period} className="border-b border-slate-100 text-slate-800">
+                      <td className="py-2.5 pr-4 font-medium">{row.period}</td>
+                      <td className="py-2.5 pr-4 whitespace-nowrap text-slate-600">{row.dateLabel}</td>
+                      <td className="py-2.5 pr-4 text-right tabular-nums">
+                        ${row.spendUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+                      <td className="py-2.5 pr-4 font-medium">{row.creativeLabel}</td>
+                      <td className="py-2.5 pr-4 max-w-[220px] text-xs leading-snug text-slate-600">
+                        {row.placements}
+                      </td>
+                      <td className="py-2.5 pr-4 text-right tabular-nums">{formatNumber(row.impressions)}</td>
+                      <td className="py-2.5 pr-4 text-right tabular-nums">{formatNumber(row.clicks)}</td>
+                      <td className="py-2.5 text-right tabular-nums">{formatPercent(row.ctrPct, 2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-slate-200 bg-slate-50/80 text-slate-900">
+                    <td className="py-2.5 pr-4 font-semibold" colSpan={2}>
+                      Flight total
+                    </td>
+                    <td className="py-2.5 pr-4 text-right tabular-nums font-semibold">
+                      $
+                      {billingPeriodRows
+                        .reduce((sum, row) => sum + row.spendUsd, 0)
+                        .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td className="py-2.5 pr-4" colSpan={2} />
+                    <td className="py-2.5 pr-4 text-right tabular-nums font-semibold">
+                      {formatNumber(billingPeriodRows.reduce((sum, row) => sum + row.impressions, 0))}
+                    </td>
+                    <td className="py-2.5 pr-4 text-right tabular-nums font-semibold">
+                      {formatNumber(billingPeriodRows.reduce((sum, row) => sum + row.clicks, 0))}
+                    </td>
+                    <td className="py-2.5 text-right tabular-nums font-semibold">
+                      {formatPercent(
+                        (billingPeriodRows.reduce((sum, row) => sum + row.clicks, 0) /
+                          Math.max(1, billingPeriodRows.reduce((sum, row) => sum + row.impressions, 0))) *
+                          100,
+                        2,
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </section>
+        ) : showMonthlyTable ? (
           <section
             id="reporting-monthly-delivery"
             className="mt-6 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -927,6 +1057,75 @@ export function CampaignDashboard({
                       <td className="py-2 pr-4 text-right tabular-nums">{formatNumber(row.impressions)}</td>
                       <td className="py-2 pr-4 text-right tabular-nums">{formatNumber(row.clicks)}</td>
                       <td className="py-2 text-right tabular-nums">{formatPercent(row.ctrPct, 2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
+
+        {campaign.creativeTraffickingLog?.length ? (
+          <section
+            id="reporting-trafficking-log"
+            className="mt-6 scroll-mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
+            <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Creative trafficking log
+            </h3>
+            <p className="mt-2 text-[11px] leading-snug text-slate-500">
+              Where tags were launched, refreshed, or swapped during the flight — partner reconciliation grain.
+            </p>
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[680px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                    <th className="py-2 pr-4">Date</th>
+                    <th className="py-2 pr-4">Event</th>
+                    <th className="py-2 pr-4">Creative</th>
+                    <th className="py-2 pr-4">Placements updated</th>
+                    <th className="py-2">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {campaign.creativeTraffickingLog.map((entry) => (
+                    <tr key={`${entry.date}-${entry.action}-${entry.creativeName}`} className="border-b border-slate-100 text-slate-800">
+                      <td className="py-2.5 pr-4 whitespace-nowrap tabular-nums text-slate-600">{entry.date}</td>
+                      <td className="py-2.5 pr-4">
+                        <span
+                          className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                            entry.action === 'launch'
+                              ? 'bg-emerald-50 text-emerald-800'
+                              : entry.action === 'swap'
+                                ? 'bg-violet-50 text-violet-800'
+                                : entry.action === 'close'
+                                  ? 'bg-slate-100 text-slate-600'
+                                  : 'bg-sky-50 text-sky-800'
+                          }`}
+                        >
+                          {traffickingActionLabel(entry.action)}
+                        </span>
+                      </td>
+                      <td className="py-2.5 pr-4">
+                        <p className="font-medium">{entry.creativeName}</p>
+                        {entry.headline ? (
+                          <p className="mt-0.5 text-xs leading-snug text-slate-600">{entry.headline}</p>
+                        ) : null}
+                        {entry.destinationUrl ? (
+                          <a
+                            href={entry.destinationUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-1 block max-w-[240px] truncate text-xs text-navy underline"
+                          >
+                            {entry.destinationUrl.replace(/^https?:\/\//, '')}
+                          </a>
+                        ) : null}
+                      </td>
+                      <td className="py-2.5 pr-4 max-w-[240px] text-xs leading-snug text-slate-600">
+                        {entry.placementsUpdated}
+                      </td>
+                      <td className="py-2.5 text-xs leading-snug text-slate-600">{entry.notes ?? '—'}</td>
                     </tr>
                   ))}
                 </tbody>

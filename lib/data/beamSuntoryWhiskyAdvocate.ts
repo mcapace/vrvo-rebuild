@@ -19,7 +19,7 @@
  * Open `/reporting?campaign=beam-suntory` (also `?campaign=beam` or `?campaign=suntory`).
  */
 
-import type { AudienceBucket, CampaignReport } from './bigSmokeMiami'
+import type { AudienceBucket, BillingPeriodRow, CampaignReport, CreativeTraffickingEvent } from './bigSmokeMiami'
 import {
   impressionsFromMediaSpend,
   REPORTING_PLANNING_CPM,
@@ -44,39 +44,114 @@ const PERIOD_SPEND_USD = 3489.75
 const BILLING_PERIODS = 4
 const TOTAL_MEDIA_SPEND_USD = Math.round(PERIOD_SPEND_USD * BILLING_PERIODS * 100) / 100
 
-const PERIOD_IMP = impressionsFromMediaSpend(PERIOD_SPEND_USD, BOOKED_CPM_USD)
-
 function clicksForImps(imps: number, ctrPct: number): number {
   return Math.max(0, Math.round((imps * ctrPct) / 100))
 }
 
-/** Four equal billing periods — Oct launch through Mar 1 close. */
-const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = [
+/** Four billing periods — varied delivery within ~101% of book (partner grain). */
+const BILLING_PERIOD_ROWS: BillingPeriodRow[] = [
   {
+    period: 'Period 1',
     start: '2025-10-15',
     end: '2025-10-31',
-    impressions: PERIOD_IMP,
-    clicks: clicksForImps(PERIOD_IMP, 0.98),
+    spendUsd: PERIOD_SPEND_USD,
+    impressions: 283_640,
+    clicks: clicksForImps(283_640, 0.94),
+    creativeLabel: 'House of Suntory',
+    placements: 'Article feed native · Newsletter native block',
   },
   {
+    period: 'Period 2',
     start: '2025-11-01',
     end: '2025-11-30',
-    impressions: PERIOD_IMP,
-    clicks: clicksForImps(PERIOD_IMP, 1.0),
+    spendUsd: PERIOD_SPEND_USD,
+    impressions: 294_520,
+    clicks: clicksForImps(294_520, 1.01),
+    creativeLabel: 'House of Suntory',
+    placements: 'Article feed · Mobile web · Newsletter · Homepage native',
   },
   {
+    period: 'Period 3',
     start: '2025-12-01',
     end: '2025-12-31',
-    impressions: PERIOD_IMP,
-    clicks: clicksForImps(PERIOD_IMP, 1.02),
+    spendUsd: PERIOD_SPEND_USD,
+    impressions: 299_107,
+    clicks: clicksForImps(299_107, 1.06),
+    creativeLabel: 'House of Suntory',
+    placements: 'Article feed · Mobile web · Newsletter · Homepage native',
   },
   {
+    period: 'Period 4',
     start: '2026-01-01',
     end: '2026-03-01',
-    impressions: PERIOD_IMP,
-    clicks: clicksForImps(PERIOD_IMP, 1.03),
+    spendUsd: PERIOD_SPEND_USD,
+    impressions: 293_168,
+    clicks: clicksForImps(293_168, 1.08),
+    creativeLabel: "America's Top Whisky Bars 2025",
+    placements: 'All active units (swap Jan 17)',
   },
 ]
+
+const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
+  {
+    date: '2025-10-15',
+    action: 'launch',
+    creativeName: 'House of Suntory',
+    headline: 'Crafted in Japan. Revered Around the World.',
+    destinationUrl: 'https://suntory.whiskyadvocate.com/house-of-suntory.html',
+    placementsUpdated: 'Article feed native card · Newsletter native block',
+    notes: 'Initial tags live on WA.com endemic package — period 1 start.',
+  },
+  {
+    date: '2025-11-03',
+    action: 'refresh',
+    creativeName: 'House of Suntory',
+    destinationUrl: 'https://suntory.whiskyadvocate.com/house-of-suntory.html',
+    placementsUpdated: 'Homepage native unit',
+    notes: 'Incremental homepage placement added mid-flight; same click-through.',
+  },
+  {
+    date: '2025-12-01',
+    action: 'refresh',
+    creativeName: 'House of Suntory',
+    headline: 'Crafted in Japan. Revered Around the World.',
+    destinationUrl: 'https://suntory.whiskyadvocate.com/house-of-suntory.html',
+    placementsUpdated: 'Newsletter native block',
+    notes: 'Newsletter asset refresh — headline unchanged, tags re-trafficked.',
+  },
+  {
+    date: '2026-01-17',
+    action: 'swap',
+    creativeName: "America's Top Whisky Bars 2025",
+    headline: "Discover America's Top Whisky Bars 2025",
+    destinationUrl: 'https://whiskybars.whiskyadvocate.com',
+    placementsUpdated:
+      'Article feed native · Mobile web article native · Desktop article embed · Newsletter native block · Homepage native unit',
+    notes: 'Full creative swap within period 4 budget — no incremental IO.',
+  },
+  {
+    date: '2026-02-09',
+    action: 'refresh',
+    creativeName: "America's Top Whisky Bars 2025",
+    destinationUrl: 'https://whiskybars.whiskyadvocate.com',
+    placementsUpdated: 'Mobile web article native',
+    notes: 'Mobile asset resize for smaller viewports; destination unchanged.',
+  },
+  {
+    date: '2026-03-01',
+    action: 'close',
+    creativeName: "America's Top Whisky Bars 2025",
+    placementsUpdated: 'All active units',
+    notes: 'Flight end — tags removed, final delivery reconciled.',
+  },
+]
+
+const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = BILLING_PERIOD_ROWS.map((row) => ({
+  start: row.start,
+  end: row.end,
+  impressions: row.impressions,
+  clicks: row.clicks,
+}))
 
 const IMPRESSIONS_BOOKED = impressionsFromMediaSpend(TOTAL_MEDIA_SPEND_USD, BOOKED_CPM_USD)
 
@@ -193,7 +268,9 @@ export const beamSuntoryWhiskyAdvocateCampaign: CampaignReport = {
   overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} on one IO ($3,489.75 × 4) · two activations · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM · Oct 15–Mar 1.`,
   monthlyDelivery: [...MONTHLY_SEGMENTS],
   monthlyDeliveryNote:
-    'Each row = one $3,489.75 billing period on the same IO. Periods 1–3: House of Suntory creative. Period 4 (Jan–Mar 1): Top Whisky Bars swapped in Jan 17 — same budget allocation, new activation.',
+    'Each row = one $3,489.75 billing period on the same IO. Delivery varies slightly by period (partner grain). Periods 1–3: House of Suntory. Period 4: Top Whisky Bars swapped in Jan 17.',
+  billingPeriods: [...BILLING_PERIOD_ROWS],
+  creativeTraffickingLog: [...CREATIVE_TRAFFICKING_LOG],
   audienceActivationMix: [
     { name: 'Endemic site native', value: 44 },
     { name: 'Newsletter native', value: 26 },

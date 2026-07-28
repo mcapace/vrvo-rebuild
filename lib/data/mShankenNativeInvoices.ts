@@ -4,6 +4,7 @@
  */
 
 import type { AudienceBucket, CampaignReport, CampaignTradeDesk } from './bigSmokeMiami'
+import { davidoffAvoExpresivoCampaign as davidoffCaNativeCampaign } from './davidoffAvoExpresivo'
 import {
   impressionsFromMediaSpend,
   REPORTING_DEFAULT_CTR_PCT,
@@ -536,23 +537,8 @@ export const glenmorangieNativeCampaign = buildNativeInvoiceCampaign({
   audiences: sharedWaAudiences,
 })
 
-export const davidoffCaNativeCampaign = buildNativeInvoiceCampaign({
-  orderId: '3G7VIWLL-7280',
-  id: 'davidoff_ca_native_2026',
-  name: 'Davidoff — Cigar Aficionado Native Extension',
-  clientFacingName: 'Davidoff · CA.com',
-  lineItem: 'Davidoff Native Extension — CA.com May 2026',
-  invoiceLine: 'Davidoff Native Extension - CA.com - May 2026',
-  spendUsd: 2000,
-  launch: '2026-05-01',
-  flightEnd: '2026-05-31',
-  reportAsOf: '2026-05-31',
-  publisher: 'ca.com',
-  clickthroughUrl:
-    'https://www.cigaraficionado.com/?utm_source=vrvo&utm_medium=native&utm_campaign=davidoff_ca_native&utm_content=invoice_7280',
-  assetsFolderUrl: 'https://www.cigaraficionado.com/',
-  audiences: sharedCigarAudiences,
-})
+/** July AVO Expresivo flight — see `davidoffAvoExpresivo.ts`. */
+export { davidoffCaNativeCampaign }
 
 export const laAuroraCaNativeCampaign = buildNativeInvoiceCampaign({
   orderId: '3G7VIWLL-7281',
