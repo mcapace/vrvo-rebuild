@@ -3,6 +3,7 @@
  *
  * **Flight:** 2026-07-01 → **2026-07-31** · **Production:** **$2,000**
  * **Book:** $12.00 endemic native planning CPM → **166,667** impressions.
+ * **Snapshot:** **2026-07-28** — still in market (3 days remaining).
  *
  * Creative: *AVO Continues Burn Brighter Celebration with New EXPRESIVO Line*
  * CTA: Find Out More
@@ -19,6 +20,7 @@ import type {
 } from './bigSmokeMiami'
 import {
   impressionsFromMediaSpend,
+  mediaSpendForImpressions,
   REPORTING_PLANNING_CPM,
 } from './reportingCpmDefaults'
 import {
@@ -33,7 +35,8 @@ import {
 
 const LAUNCH = '2026-07-01'
 const FLIGHT_END = '2026-07-31'
-const REPORT_AS_OF = FLIGHT_END
+/** Today’s snapshot — flight still live through Jul 31. */
+const REPORT_AS_OF = '2026-07-28'
 
 const BOOKED_CPM_USD = REPORTING_PLANNING_CPM.endemicNative
 const TOTAL_MEDIA_SPEND_USD = 2000
@@ -48,24 +51,28 @@ function clicksForImps(imps: number, ctrPct: number): number {
 }
 
 /**
- * Weekly partner grain within the single July billing period —
- * slight over-delivery vs book (~101.4%).
+ * Weekly partner grain through Jul 28 snapshot (in-market).
+ * Pace slightly ahead of linear (~93% of book vs ~90% elapsed).
  */
 const WEEKLY_SEGMENTS: MonthlyDeliverySegment[] = [
   { start: '2026-07-01', end: '2026-07-07', impressions: 35_840, clicks: clicksForImps(35_840, 0.96) },
   { start: '2026-07-08', end: '2026-07-14', impressions: 42_610, clicks: clicksForImps(42_610, 1.02) },
   { start: '2026-07-15', end: '2026-07-21', impressions: 44_925, clicks: clicksForImps(44_925, 1.09) },
-  { start: '2026-07-22', end: '2026-07-31', impressions: 45_720, clicks: clicksForImps(45_720, 1.05) },
+  { start: '2026-07-22', end: '2026-07-28', impressions: 32_110, clicks: clicksForImps(32_110, 1.04) },
 ]
+
+const DELIVERED_IMP = WEEKLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0)
+const TOTAL_CLICKS = Math.max(1, WEEKLY_SEGMENTS.reduce((a, s) => a + s.clicks, 0))
+const DELIVERED_SPEND_USD = mediaSpendForImpressions(DELIVERED_IMP, BOOKED_CPM_USD)
 
 const BILLING_PERIOD_ROWS: BillingPeriodRow[] = [
   {
-    period: 'July 2026',
+    period: 'July 2026 (MTD)',
     start: LAUNCH,
-    end: FLIGHT_END,
-    spendUsd: TOTAL_MEDIA_SPEND_USD,
-    impressions: WEEKLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0),
-    clicks: WEEKLY_SEGMENTS.reduce((a, s) => a + s.clicks, 0),
+    end: REPORT_AS_OF,
+    spendUsd: DELIVERED_SPEND_USD,
+    impressions: DELIVERED_IMP,
+    clicks: TOTAL_CLICKS,
     creativeLabel: 'AVO Expresivo — Burn Brighter',
     placements: 'Article feed native · Newsletter · Homepage native · Mobile web',
   },
@@ -101,24 +108,16 @@ const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
     placementsUpdated: 'Newsletter native block',
     notes: 'Newsletter asset re-trafficked mid-flight — headline and destination unchanged.',
   },
-  {
-    date: '2026-07-31',
-    action: 'close',
-    creativeName: 'AVO Expresivo — Burn Brighter',
-    placementsUpdated: 'All active units',
-    notes: 'Flight end — tags removed, July delivery reconciled.',
-  },
 ]
 
 const IMPRESSIONS_BOOKED = impressionsFromMediaSpend(TOTAL_MEDIA_SPEND_USD, BOOKED_CPM_USD)
-const DELIVERED_IMP = WEEKLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0)
-const TOTAL_CLICKS = Math.max(1, WEEKLY_SEGMENTS.reduce((a, s) => a + s.clicks, 0))
 
-const CPM_USD = (TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP
+const CPM_USD = BOOKED_CPM_USD
 const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
 const PCT_DELIVERED = (DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100
 
 const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, FLIGHT_END)
+const ELAPSED_DAYS = daysInclusive(LAUNCH, REPORT_AS_OF)
 
 const NATIVE_FORMATS = [
   'Article feed native card',
@@ -171,8 +170,8 @@ export const davidoffAvoExpresivoCampaign: CampaignReport = {
   clientFacingName: 'Davidoff · AVO Expresivo (July)',
   flight: {
     launched: LAUNCH,
-    inMarket: false,
-    summary: `Flight ended ${REPORT_AS_OF} · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} production · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} book).`,
+    inMarket: true,
+    summary: `In market through ${FLIGHT_END} — snapshot ${REPORT_AS_OF} · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} production · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} book) · ${ELAPSED_DAYS} of ${FLIGHT_PLANNED_DAYS} days.`,
   },
   delivery: {
     cpmUsd: CPM_USD,
@@ -182,7 +181,7 @@ export const davidoffAvoExpresivoCampaign: CampaignReport = {
   },
   performance: {
     ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
-    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} CA.com native (Jul 1–31). Creative: “${HEADLINE}” · CTA ${CTA}. ${DELIVERED_IMP.toLocaleString('en-US')} delivered @ ~$${CPM_USD.toFixed(2)} blended CPM · ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR).`,
+    measurementNote: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} CA.com native (Jul 1–31 booked). Still in market as of ${REPORT_AS_OF}. Creative: “${HEADLINE}” · CTA ${CTA}. ${DELIVERED_IMP.toLocaleString('en-US')} delivered MTD @ $${CPM_USD.toFixed(2)} CPM · ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR).`,
   },
   geo: {
     headline:
@@ -200,10 +199,10 @@ export const davidoffAvoExpresivoCampaign: CampaignReport = {
     description: `${HEADLINE} · CTA: ${CTA}. Routes to the Cigar Aficionado article experience as trafficked for the July IO.`,
     clickthroughUrl: CLICKTHROUGH_URL,
   },
-  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} Jul production · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM · AVO Expresivo Burn Brighter on CA.com native.`,
+  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} Jul production · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(2)} CPM · in market through Jul 31 · AVO Expresivo on CA.com native.`,
   monthlyDelivery: [...WEEKLY_SEGMENTS],
   monthlyDeliveryNote:
-    'Weekly delivery grain within the single July billing period ($2,000 production). Slight over-delivery vs $12 CPM book at flight close.',
+    `Weekly delivery through ${REPORT_AS_OF} snapshot (flight still live through Jul 31). $2,000 production book @ $${BOOKED_CPM_USD.toFixed(2)} CPM.`,
   billingPeriods: [...BILLING_PERIOD_ROWS],
   creativeTraffickingLog: [...CREATIVE_TRAFFICKING_LOG],
   audienceActivationMix: [
