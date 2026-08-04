@@ -4,6 +4,7 @@ import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { beamSuntoryWhiskyAdvocateCampaign } from './beamSuntoryWhiskyAdvocate'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { davidoffAvoExpresivoCampaign } from './davidoffAvoExpresivo'
+import { duckhornNativeJulyCampaign } from './duckhornNativeJuly'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
 import { laAuroraPmpExtensionCampaign } from './laAuroraPmpExtension'
@@ -73,6 +74,10 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
   duckhorn: duckhornWineSpectatorCampaign,
   'duckhorn-ws': duckhornWineSpectatorCampaign,
   'wine-spectator': duckhornWineSpectatorCampaign,
+  'duckhorn-july': duckhornNativeJulyCampaign,
+  'duckhorn-native': duckhornNativeJulyCampaign,
+  'duckhorn-native-july': duckhornNativeJulyCampaign,
+  'meet-the-makers': duckhornNativeJulyCampaign,
   'la-aurora': laAuroraPmpExtensionCampaign,
   'la-aurora-pmp': laAuroraPmpExtensionCampaign,
   aurora: laAuroraPmpExtensionCampaign,
@@ -107,6 +112,11 @@ export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'beam-suntory', label: 'Beam Suntory WA', href: '/reporting?campaign=beam-suntory' },
   { key: 'casa-dragones', label: 'Casa Dragones — Whisky Advocate', href: '/reporting?campaign=casa-dragones' },
   { key: 'duckhorn', label: 'Duckhorn — Wine Spectator', href: '/reporting?campaign=duckhorn' },
+  {
+    key: 'duckhorn-july',
+    label: 'Duckhorn — Native Extension (July)',
+    href: '/reporting?campaign=duckhorn-july',
+  },
   { key: 'la-aurora', label: 'La Aurora — PMP Extension', href: '/reporting?campaign=la-aurora' },
   ...M_SHANKEN_CAMPAIGN_NAV,
   { key: 'random', label: 'QA random', href: '/reporting?campaign=random' },
@@ -157,6 +167,14 @@ export function resolveReportingCampaign(campaignParam: string | undefined): {
     campaignKey === 'wine-spectator'
   ) {
     return { campaign: duckhornWineSpectatorCampaign, activeNavKey: 'duckhorn' }
+  }
+  if (
+    campaignKey === 'duckhorn-july' ||
+    campaignKey === 'duckhorn-native' ||
+    campaignKey === 'duckhorn-native-july' ||
+    campaignKey === 'meet-the-makers'
+  ) {
+    return { campaign: duckhornNativeJulyCampaign, activeNavKey: 'duckhorn-july' }
   }
   if (
     campaignKey === 'la-aurora' ||
