@@ -404,8 +404,8 @@ const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
 const LANDING_PAGE: LandingPageInsight = {
   url: 'https://deutsch.whiskyadvocate.com/',
   headline: 'Deutsch Spirits Hub performed as a strong dual-brand destination',
-  pageViews: 12_840,
-  uniqueVisitors: 9_920,
+  pageViews: 32_792,
+  uniqueVisitors: 24_180,
   avgTimeOnPageSec: 222,
   bounceRatePct: 29.8,
   pagesPerSession: 2.6,
