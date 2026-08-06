@@ -115,37 +115,41 @@ export const M_SHANKEN_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'glenmorangie-native', label: 'Glenmorangie WA · prebooked', href: '/reporting?campaign=glenmorangie-native' },
   { key: 'davidoff-ca', label: 'Davidoff CA · AVO Expresivo', href: '/reporting?campaign=davidoff-ca' },
   { key: 'la-aurora-ca', label: 'La Aurora CA', href: '/reporting?campaign=la-aurora-ca' },
-  {
-    key: 'bib-tucker-coffee',
-    label: 'Deutsch · Bib & Tucker · Coffee Bourbon',
-    href: '/reporting?campaign=bib-tucker-coffee',
-  },
-  {
-    key: 'bib-tucker-tennessee',
-    label: 'Deutsch · Bib & Tucker · Tennessee',
-    href: '/reporting?campaign=bib-tucker-tennessee',
-  },
-  {
-    key: 'bib-tucker-six-years',
-    label: 'Deutsch · Bib & Tucker · Six Years',
-    href: '/reporting?campaign=bib-tucker-six-years',
-  },
-  {
-    key: 'redemption-rye',
-    label: 'Deutsch · Redemption · Rye Revival',
-    href: '/reporting?campaign=redemption-rye',
-  },
-  {
-    key: 'redemption-rye-2',
-    label: 'Deutsch · Redemption · Turns Up the Rye',
-    href: '/reporting?campaign=redemption-rye-2',
-  },
   { key: 'perelada-ws', label: 'Perelada WS · prebooked', href: '/reporting?campaign=perelada-ws' },
   { key: 'ca-podcast', label: 'CA Podcast', href: '/reporting?campaign=ca-podcast' },
 ]
 
+export const DEUTSCH_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
+  {
+    key: 'bib-tucker-coffee',
+    label: 'Deutsch · B&T Coffee Bourbon',
+    href: '/reporting?campaign=bib-tucker-coffee',
+  },
+  {
+    key: 'bib-tucker-tennessee',
+    label: 'Deutsch · B&T Tennessee',
+    href: '/reporting?campaign=bib-tucker-tennessee',
+  },
+  {
+    key: 'bib-tucker-six-years',
+    label: 'Deutsch · B&T Six Years',
+    href: '/reporting?campaign=bib-tucker-six-years',
+  },
+  {
+    key: 'redemption-rye',
+    label: 'Deutsch · Redemption Rye',
+    href: '/reporting?campaign=redemption-rye',
+  },
+  {
+    key: 'redemption-rye-2',
+    label: 'Deutsch · Redemption Turns Up Rye',
+    href: '/reporting?campaign=redemption-rye-2',
+  },
+]
+
 export const REPORTING_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'big-smoke', label: 'Big Smoke Miami', href: '/reporting?campaign=big-smoke' },
+  ...DEUTSCH_CAMPAIGN_NAV,
   {
     key: 'visit-napa',
     label: 'Visit Napa Valley',
