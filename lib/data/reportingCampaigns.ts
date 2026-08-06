@@ -8,7 +8,6 @@ import {
   bibTuckerCoffeeBourbonCampaign,
   bibTuckerSixYearsCampaign,
   bibTuckerTennesseeCampaign,
-  bibTuckerWaNativeCampaign,
   deutschFamilyWaCampaign,
   redemptionRyeRevivalCampaign,
   redemptionTurnsUpRyeCampaign,
@@ -19,6 +18,7 @@ import { internalRandomFixtureCampaign } from './internalRandomFixture'
 import { laAuroraPmpExtensionCampaign } from './laAuroraPmpExtension'
 import { visitNapaValleyCampaign } from './visitNapaValley'
 import {
+  bibTuckerWaNativeCampaign,
   cigarAficionadoPodcastCampaign,
   glenmorangieNativeCampaign,
   laAuroraCaNativeCampaign,
@@ -54,14 +54,14 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   '3g7viwill-7281': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
   deutsch: { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
   'deutsch-family': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
-  'bib-tucker-wa': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
+  'bib-tucker-wa': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
   'bib-tucker-coffee': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
   'coffee-bourbon': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
   'bib-tucker-tennessee': { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
   tennessee: { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
   'bib-tucker-six-years': { campaign: bibTuckerSixYearsCampaign, navKey: 'bib-tucker-six-years' },
-  '3g7viwill-7282': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  '3g7viwill-7282': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
   redemption: { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
   'redemption-rye': { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
   'rye-revival': { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
@@ -126,6 +126,11 @@ export const DEUTSCH_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
     key: 'deutsch',
     label: 'Deutsch Family · WA Native (suite)',
     href: '/reporting?campaign=deutsch',
+  },
+  {
+    key: 'bib-tucker-wa',
+    label: 'Bib & Tucker WA · Native Extension',
+    href: '/reporting?campaign=bib-tucker-wa',
   },
   {
     key: 'bib-tucker-coffee',

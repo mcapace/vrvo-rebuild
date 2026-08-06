@@ -205,7 +205,7 @@ const ARTICLE_SPECS: ArticleSpec[] = [
     spendUsd: 1528,
     launch: '2026-06-01',
     flightEnd: '2026-06-13',
-    orderId: '3G7VIWLL-7282',
+    orderId: 'VRVO-IO-DEUTSCH-BT-2026-0601',
     invoiceLine: 'Deutsch Native — Bib & Tucker — Six Years in the Making — Jun 2026',
     clickthroughUrl: hashStoryUrl('#story-six-years-in-the-making', 'bt_six_years'),
     assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-six-years-in-the-making',
@@ -386,7 +386,7 @@ const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
     headline: 'Six Years in the Making',
     destinationUrl: 'https://deutsch.whiskyadvocate.com/#story-six-years-in-the-making',
     placementsUpdated: 'Article feed · Newsletter native',
-    notes: '3rd Bib & Tucker article — $1,528 through Jun 13 (invoice 3G7VIWLL-7282).',
+    notes: '3rd Bib & Tucker article — $1,528 through Jun 13.',
   },
   {
     date: '2026-06-13',
@@ -538,9 +538,6 @@ export const redemptionRyeRevivalCampaign = ARTICLE_CAMPAIGNS[1]
 export const bibTuckerTennesseeCampaign = ARTICLE_CAMPAIGNS[2]
 export const redemptionTurnsUpRyeCampaign = ARTICLE_CAMPAIGNS[3]
 export const bibTuckerSixYearsCampaign = ARTICLE_CAMPAIGNS[4]
-
-/** Invoice alias 3G7VIWLL-7282 / legacy `bib-tucker-wa` → Six Years article. */
-export const bibTuckerWaNativeCampaign = bibTuckerSixYearsCampaign
 
 export const DEUTSCH_FAMILY_WA_CAMPAIGNS = [
   deutschFamilyWaCampaign,
