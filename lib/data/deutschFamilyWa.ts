@@ -1,45 +1,83 @@
 /**
- * Deutsch Family Wine & Spirits × Whisky Advocate — native article extensions.
+ * Deutsch Family Wine & Spirits × Whisky Advocate — comprehensive custom report.
  *
- * Per-article briefs (Hilary → Mike). Each flight is its own report:
+ * One partner-style pull across all Bib & Tucker + Redemption native article
+ * extensions (Hilary briefs). Combined KPIs, billing-period table, trafficking
+ * log, and creative-line drill-down per article.
  *
- * | Brand        | Article                         | Production | Flight (ASAP → end) | Destination |
+ * | Brand        | Article                         | Production | Flight              | Destination |
  * |--------------|---------------------------------|----------:|---------------------|-------------|
  * | Bib & Tucker | Coffee Bourbon                  |    $2,500 | Mar 1–31, 2026      | #story-coffee-bourbon |
  * | Redemption   | Rye Revival                     |    $2,500 | Mar 1–31, 2026      | ?story=rye-revival |
  * | Bib & Tucker | Tennessee Bourbon (2nd)         |    $2,500 | May 1–15, 2026      | #story-tennessee-bourbon-dressed-to-impress |
  * | Redemption   | Turns Up the Rye (2nd)          |    $2,500 | May 1–31, 2026      | #story-redemption-turns-up-the-rye |
  * | Bib & Tucker | Six Years in the Making (3rd)   |    $1,528 | Jun 1–13, 2026      | #story-six-years-in-the-making |
+ * | **Total**    |                                 | **$11,528** | Mar 1–Jun 13     | |
  *
- * Open:
- * - `/reporting?campaign=bib-tucker-coffee`
- * - `/reporting?campaign=redemption-rye`
- * - `/reporting?campaign=bib-tucker-tennessee`
- * - `/reporting?campaign=redemption-rye-2`
- * - `/reporting?campaign=bib-tucker` (Six Years / invoice 7282)
+ * Open `/reporting?campaign=deutsch` (also `?campaign=bib-tucker`, `?campaign=redemption`).
  */
 
-import type { AudienceBucket } from './bigSmokeMiami'
+import type {
+  AudienceBucket,
+  BillingPeriodRow,
+  CampaignCreativeLine,
+  CampaignReport,
+  CreativeTraffickingEvent,
+} from './bigSmokeMiami'
+import {
+  impressionsFromMediaSpend,
+  REPORTING_PLANNING_CPM,
+} from './reportingCpmDefaults'
 import { buildNativeInvoiceCampaign } from './mShankenNativeInvoices'
+import {
+  buildFormatDelivery,
+  buildGeoDelivery,
+  buildTradeDeskDailyFromMonthlySegments,
+  daysInclusive,
+  type DeviceSplitRow,
+  type MonthlyDeliverySegment,
+  type TradeDeskMeta,
+} from './tradeDeskSeries'
+
+const LAUNCH = '2026-03-01'
+const FLIGHT_END = '2026-06-13'
+const REPORT_AS_OF = FLIGHT_END
+const BOOKED_CPM_USD = REPORTING_PLANNING_CPM.endemicNative
 
 const deutschWaAudiences: AudienceBucket[] = [
   {
-    id: 'endemic',
-    label: 'Whisky Advocate endemic · Deutsch microsite',
+    id: 'bib-tucker',
+    label: 'Bib & Tucker · three article activations',
     description:
-      'Native extension on WA.com and the Deutsch Family partner microsite (deutsch.whiskyadvocate.com).',
+      'Coffee Bourbon (Mar), Tennessee Bourbon (May), Six Years in the Making (Jun) — native to deutsch.whiskyadvocate.com story URLs.',
     cohorts: [
       {
-        title: 'WA.com article native',
-        detail: 'Editorial alignment on bourbon / rye reviews and whiskey lifestyle content.',
+        title: 'Coffee Bourbon',
+        detail: 'Mar 1–31 · $2,500 · #story-coffee-bourbon',
       },
       {
-        title: 'Deutsch partner story native',
-        detail: 'Traffic to the trafficked deutsch.whiskyadvocate.com story URL for each article.',
+        title: 'Tennessee Bourbon Dressed to Impress',
+        detail: 'May 1–15 · $2,500 · #story-tennessee-bourbon-dressed-to-impress',
       },
       {
-        title: 'Premium brown spirits intent',
-        detail: 'Modeled ultra-premium bourbon and rye buyers aligned to Bib & Tucker / Redemption.',
+        title: 'Six Years in the Making',
+        detail: 'Jun 1–13 · $1,528 · #story-six-years-in-the-making',
+      },
+    ],
+  },
+  {
+    id: 'redemption',
+    label: 'Redemption · two article activations',
+    description:
+      'Rye Revival (Mar) and Turns Up the Rye (May) — same WA.com endemic native package, Deutsch microsite destinations.',
+    cohorts: [
+      {
+        title: 'Rye Revival',
+        detail: 'Mar 1–31 · $2,500 · ?story=rye-revival',
+      },
+      {
+        title: 'Turns Up the Rye',
+        detail: 'May 1–31 · $2,500 · #story-redemption-turns-up-the-rye',
       },
     ],
   },
@@ -66,111 +104,352 @@ function queryStoryUrl(storyParam: string, utmContent: string): string {
   return `https://deutsch.whiskyadvocate.com/?${q.toString()}`
 }
 
-/** Article 1 — Coffee Bourbon · Mar 1–31 · $2,500 */
-export const bibTuckerCoffeeBourbonCampaign = buildNativeInvoiceCampaign({
-  orderId: 'VRVO-IO-DEUTSCH-BT-2026-0301',
-  id: 'bib_tucker_coffee_bourbon_2026',
-  name: 'Bib & Tucker — Coffee Bourbon (WA Native)',
-  clientFacingName: 'Deutsch · Bib & Tucker',
-  lineItem: 'Deutsch Native — Bib & Tucker — Coffee Bourbon — Mar 2026',
-  invoiceLine: 'Deutsch Native Extension - Bib & Tucker - Coffee Bourbon - Mar 2026',
-  spendUsd: 2500,
-  launch: '2026-03-01',
-  flightEnd: '2026-03-31',
-  reportAsOf: '2026-03-31',
-  publisher: 'wa.com',
-  clickthroughUrl: hashStoryUrl('#story-coffee-bourbon', 'bt_coffee_bourbon'),
-  assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-coffee-bourbon',
-  audiences: deutschWaAudiences,
+type ArticleSpec = {
+  id: string
+  label: string
+  brand: 'Bib & Tucker' | 'Redemption'
+  spendUsd: number
+  launch: string
+  flightEnd: string
+  orderId: string
+  invoiceLine: string
+  clickthroughUrl: string
+  assetsFolderUrl: string
+  placements: string
+}
+
+const ARTICLE_SPECS: ArticleSpec[] = [
+  {
+    id: 'bt-coffee',
+    label: 'B&T · Coffee Bourbon',
+    brand: 'Bib & Tucker',
+    spendUsd: 2500,
+    launch: '2026-03-01',
+    flightEnd: '2026-03-31',
+    orderId: 'VRVO-IO-DEUTSCH-BT-2026-0301',
+    invoiceLine: 'Deutsch Native — Bib & Tucker — Coffee Bourbon — Mar 2026',
+    clickthroughUrl: hashStoryUrl('#story-coffee-bourbon', 'bt_coffee_bourbon'),
+    assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-coffee-bourbon',
+    placements: 'Article feed · Newsletter · Homepage native',
+  },
+  {
+    id: 'red-rye',
+    label: 'Redemption · Rye Revival',
+    brand: 'Redemption',
+    spendUsd: 2500,
+    launch: '2026-03-01',
+    flightEnd: '2026-03-31',
+    orderId: 'VRVO-IO-DEUTSCH-RED-2026-0301',
+    invoiceLine: 'Deutsch Native — Redemption — Rye Revival — Mar 2026',
+    clickthroughUrl: queryStoryUrl('rye-revival', 'redemption_rye_revival'),
+    assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/?story=rye-revival',
+    placements: 'Article feed · Newsletter · Homepage native',
+  },
+  {
+    id: 'bt-tennessee',
+    label: 'B&T · Tennessee Bourbon',
+    brand: 'Bib & Tucker',
+    spendUsd: 2500,
+    launch: '2026-05-01',
+    flightEnd: '2026-05-15',
+    orderId: 'VRVO-IO-DEUTSCH-BT-2026-0501',
+    invoiceLine: 'Deutsch Native — Bib & Tucker — Tennessee Bourbon — May 2026',
+    clickthroughUrl: hashStoryUrl(
+      '#story-tennessee-bourbon-dressed-to-impress',
+      'bt_tennessee_bourbon',
+    ),
+    assetsFolderUrl:
+      'https://deutsch.whiskyadvocate.com/#story-tennessee-bourbon-dressed-to-impress',
+    placements: 'Article feed · Mobile web · Newsletter native',
+  },
+  {
+    id: 'red-turns-up',
+    label: 'Redemption · Turns Up the Rye',
+    brand: 'Redemption',
+    spendUsd: 2500,
+    launch: '2026-05-01',
+    flightEnd: '2026-05-31',
+    orderId: 'VRVO-IO-DEUTSCH-RED-2026-0501',
+    invoiceLine: 'Deutsch Native — Redemption — Turns Up the Rye — May 2026',
+    clickthroughUrl: hashStoryUrl('#story-redemption-turns-up-the-rye', 'redemption_turns_up_rye'),
+    assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-redemption-turns-up-the-rye',
+    placements: 'Article feed · Newsletter · Homepage native',
+  },
+  {
+    id: 'bt-six-years',
+    label: 'B&T · Six Years in the Making',
+    brand: 'Bib & Tucker',
+    spendUsd: 1528,
+    launch: '2026-06-01',
+    flightEnd: '2026-06-13',
+    orderId: '3G7VIWLL-7282',
+    invoiceLine: 'Deutsch Native — Bib & Tucker — Six Years in the Making — Jun 2026',
+    clickthroughUrl: hashStoryUrl('#story-six-years-in-the-making', 'bt_six_years'),
+    assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-six-years-in-the-making',
+    placements: 'Article feed · Newsletter native',
+  },
+]
+
+function buildArticleCampaign(spec: ArticleSpec): CampaignReport {
+  return buildNativeInvoiceCampaign({
+    orderId: spec.orderId,
+    id: `deutsch_${spec.id.replace(/-/g, '_')}_2026`,
+    name: `${spec.brand} — ${spec.label.replace(/^(B&T|Redemption) · /, '')} (WA Native)`,
+    clientFacingName: `Deutsch · ${spec.brand}`,
+    lineItem: spec.invoiceLine,
+    invoiceLine: spec.invoiceLine,
+    spendUsd: spec.spendUsd,
+    launch: spec.launch,
+    flightEnd: spec.flightEnd,
+    reportAsOf: spec.flightEnd,
+    publisher: 'wa.com',
+    clickthroughUrl: spec.clickthroughUrl,
+    assetsFolderUrl: spec.assetsFolderUrl,
+    audiences: deutschWaAudiences,
+  })
+}
+
+const ARTICLE_CAMPAIGNS = ARTICLE_SPECS.map(buildArticleCampaign)
+
+function asCreativeLine(
+  campaign: CampaignReport,
+  spec: ArticleSpec,
+): CampaignCreativeLine {
+  return {
+    id: spec.id,
+    label: spec.label,
+    kind: 'native',
+    delivery: campaign.delivery,
+    performance: {
+      ...campaign.performance,
+      pmpSharePct: 76.8,
+      measurementNote: `${spec.invoiceLine} · $${spec.spendUsd.toLocaleString('en-US')} production · ${spec.launch}–${spec.flightEnd}. ${campaign.performance.measurementNote}`,
+    },
+    monthlyDelivery: campaign.monthlyDelivery,
+    monthlyDeliveryNote: campaign.monthlyDeliveryNote,
+    creative: campaign.creative,
+    tracking: {
+      description: `${spec.invoiceLine}. Native units route to the Deutsch WA story page.`,
+      clickthroughUrl: spec.clickthroughUrl,
+    },
+    overviewObjectiveSub: `${spec.brand} · $${spec.spendUsd.toLocaleString('en-US')} · ${spec.launch}–${spec.flightEnd}`,
+    tradeDesk: campaign.tradeDesk,
+  }
+}
+
+const CREATIVE_LINES: CampaignCreativeLine[] = ARTICLE_CAMPAIGNS.map((c, i) =>
+  asCreativeLine(c, ARTICLE_SPECS[i]),
+)
+
+const BILLING_PERIODS: BillingPeriodRow[] = ARTICLE_SPECS.map((spec, i) => {
+  const c = ARTICLE_CAMPAIGNS[i]
+  const delivered = c.delivery.deliveredImpressions ?? Math.round(
+    (c.delivery.impressionsPurchased * c.delivery.pctDelivered) / 100,
+  )
+  const clicks = Math.max(
+    1,
+    Math.round((delivered * c.performance.ctrPct) / 100),
+  )
+  return {
+    period: spec.label,
+    start: spec.launch,
+    end: spec.flightEnd,
+    spendUsd: spec.spendUsd,
+    impressions: delivered,
+    clicks,
+    creativeLabel: spec.label,
+    placements: spec.placements,
+  }
 })
 
-/** Article 1 — Rye Revival · Mar 1–31 · $2,500 */
-export const redemptionRyeRevivalCampaign = buildNativeInvoiceCampaign({
-  orderId: 'VRVO-IO-DEUTSCH-RED-2026-0301',
-  id: 'redemption_rye_revival_2026',
-  name: 'Redemption — Rye Revival (WA Native)',
-  clientFacingName: 'Deutsch · Redemption',
-  lineItem: 'Deutsch Native — Redemption — Rye Revival — Mar 2026',
-  invoiceLine: 'Deutsch Native Extension - Redemption - Rye Revival - Mar 2026',
-  spendUsd: 2500,
-  launch: '2026-03-01',
-  flightEnd: '2026-03-31',
-  reportAsOf: '2026-03-31',
-  publisher: 'wa.com',
-  clickthroughUrl: queryStoryUrl('rye-revival', 'redemption_rye_revival'),
-  assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/?story=rye-revival',
-  audiences: deutschWaAudiences,
-})
+const MONTHLY_SEGMENTS: MonthlyDeliverySegment[] = BILLING_PERIODS.map((row) => ({
+  start: row.start,
+  end: row.end,
+  impressions: row.impressions,
+  clicks: row.clicks,
+}))
 
-/** Article 2 — Tennessee Bourbon · May 1–15 · $2,500 */
-export const bibTuckerTennesseeCampaign = buildNativeInvoiceCampaign({
-  orderId: 'VRVO-IO-DEUTSCH-BT-2026-0501',
-  id: 'bib_tucker_tennessee_bourbon_2026',
-  name: 'Bib & Tucker — Tennessee Bourbon (WA Native)',
-  clientFacingName: 'Deutsch · Bib & Tucker',
-  lineItem: 'Deutsch Native — Bib & Tucker — Tennessee Bourbon — May 2026',
-  invoiceLine:
-    'Deutsch Native Extension - Bib & Tucker - Tennessee Bourbon Dressed to Impress - May 2026',
-  spendUsd: 2500,
-  launch: '2026-05-01',
-  flightEnd: '2026-05-15',
-  reportAsOf: '2026-05-15',
-  publisher: 'wa.com',
-  clickthroughUrl: hashStoryUrl(
-    '#story-tennessee-bourbon-dressed-to-impress',
-    'bt_tennessee_bourbon',
-  ),
-  assetsFolderUrl:
-    'https://deutsch.whiskyadvocate.com/#story-tennessee-bourbon-dressed-to-impress',
-  audiences: deutschWaAudiences,
-})
+const TOTAL_MEDIA_SPEND_USD = ARTICLE_SPECS.reduce((a, s) => a + s.spendUsd, 0)
+const IMPRESSIONS_BOOKED = impressionsFromMediaSpend(TOTAL_MEDIA_SPEND_USD, BOOKED_CPM_USD)
+const DELIVERED_IMP = MONTHLY_SEGMENTS.reduce((a, s) => a + s.impressions, 0)
+const TOTAL_CLICKS = Math.max(1, MONTHLY_SEGMENTS.reduce((a, s) => a + s.clicks, 0))
+const CPM_USD = (TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP
+const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
+const PCT_DELIVERED = (DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100
+const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, FLIGHT_END)
+const COMBINED_PMP_SHARE_PCT = 76.8
 
-/** Article 2 — Turns Up the Rye · May 1–31 · $2,500 */
-export const redemptionTurnsUpRyeCampaign = buildNativeInvoiceCampaign({
-  orderId: 'VRVO-IO-DEUTSCH-RED-2026-0501',
-  id: 'redemption_turns_up_the_rye_2026',
-  name: 'Redemption — Turns Up the Rye (WA Native)',
-  clientFacingName: 'Deutsch · Redemption',
-  lineItem: 'Deutsch Native — Redemption — Turns Up the Rye — May 2026',
-  invoiceLine: 'Deutsch Native Extension - Redemption - Turns Up the Rye - May 2026',
-  spendUsd: 2500,
-  launch: '2026-05-01',
-  flightEnd: '2026-05-31',
-  reportAsOf: '2026-05-31',
-  publisher: 'wa.com',
-  clickthroughUrl: hashStoryUrl('#story-redemption-turns-up-the-rye', 'redemption_turns_up_rye'),
-  assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-redemption-turns-up-the-rye',
-  audiences: deutschWaAudiences,
-})
+const NATIVE_FORMATS = [
+  'Article feed native card',
+  'Mobile web article native',
+  'Desktop article embed',
+  'Newsletter native block',
+  'Homepage native unit',
+]
 
-/**
- * Article 3 — Six Years in the Making · Jun 1–13 · $1,528
- * (Invoice alias 3G7VIWLL-7282 — was the generic May Bib & Tucker WA line.)
- */
-export const bibTuckerSixYearsCampaign = buildNativeInvoiceCampaign({
-  orderId: '3G7VIWLL-7282',
-  id: 'bib_tucker_six_years_2026',
-  name: 'Bib & Tucker — Six Years in the Making (WA Native)',
-  clientFacingName: 'Deutsch · Bib & Tucker',
-  lineItem: 'Deutsch Native — Bib & Tucker — Six Years in the Making — Jun 2026',
-  invoiceLine: 'Deutsch Native Extension - Bib & Tucker - Six Years in the Making - Jun 2026',
-  spendUsd: 1528,
-  launch: '2026-06-01',
-  flightEnd: '2026-06-13',
-  reportAsOf: '2026-06-13',
-  publisher: 'wa.com',
-  clickthroughUrl: hashStoryUrl('#story-six-years-in-the-making', 'bt_six_years'),
-  assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-six-years-in-the-making',
-  audiences: deutschWaAudiences,
-})
+const PRIMARY_DMAS = ['New York', 'Los Angeles', 'Chicago'] as const
+const SECONDARY_DMAS = ['San Francisco', 'Dallas', 'Miami', 'Seattle'] as const
+const GEO_PRIMARY = [0.26, 0.22, 0.16] as const
+const GEO_SECONDARY = [0.12, 0.1, 0.08, 0.06] as const
 
-/** @deprecated Prefer named article exports; kept for invoice / nav alias `bib-tucker-wa`. */
-export const bibTuckerWaNativeCampaign = bibTuckerSixYearsCampaign
+const deviceSplit: DeviceSplitRow[] = [
+  { device: 'Mobile', sharePct: 61.8 },
+  { device: 'Desktop', sharePct: 31.1 },
+  { device: 'Tablet', sharePct: 7.1 },
+]
+
+const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
+  {
+    date: '2026-03-01',
+    action: 'launch',
+    creativeName: 'Bib & Tucker — Coffee Bourbon',
+    headline: 'Coffee Bourbon special feature',
+    destinationUrl: 'https://deutsch.whiskyadvocate.com/#story-coffee-bourbon',
+    placementsUpdated: 'Article feed · Newsletter · Homepage native',
+    notes: 'First Bib & Tucker article live — $2,500 production through Mar 31.',
+  },
+  {
+    date: '2026-03-01',
+    action: 'launch',
+    creativeName: 'Redemption — Rye Revival',
+    headline: 'Rye Revival special feature',
+    destinationUrl: 'https://deutsch.whiskyadvocate.com/?story=rye-revival',
+    placementsUpdated: 'Article feed · Newsletter · Homepage native',
+    notes: 'First Redemption article live — $2,500 production through Mar 31.',
+  },
+  {
+    date: '2026-05-01',
+    action: 'launch',
+    creativeName: 'Bib & Tucker — Tennessee Bourbon',
+    headline: 'Tennessee Bourbon Dressed to Impress',
+    destinationUrl:
+      'https://deutsch.whiskyadvocate.com/#story-tennessee-bourbon-dressed-to-impress',
+    placementsUpdated: 'Article feed · Mobile web · Newsletter native',
+    notes: '2nd Bib & Tucker article — $2,500 through May 15.',
+  },
+  {
+    date: '2026-05-01',
+    action: 'launch',
+    creativeName: 'Redemption — Turns Up the Rye',
+    headline: 'Redemption Turns Up the Rye',
+    destinationUrl: 'https://deutsch.whiskyadvocate.com/#story-redemption-turns-up-the-rye',
+    placementsUpdated: 'Article feed · Newsletter · Homepage native',
+    notes: '2nd Redemption article — $2,500 through May 31.',
+  },
+  {
+    date: '2026-06-01',
+    action: 'launch',
+    creativeName: 'Bib & Tucker — Six Years in the Making',
+    headline: 'Six Years in the Making',
+    destinationUrl: 'https://deutsch.whiskyadvocate.com/#story-six-years-in-the-making',
+    placementsUpdated: 'Article feed · Newsletter native',
+    notes: '3rd Bib & Tucker article — $1,528 through Jun 13 (invoice 3G7VIWLL-7282).',
+  },
+  {
+    date: '2026-06-13',
+    action: 'close',
+    creativeName: 'Deutsch WA native suite',
+    placementsUpdated: 'All active units',
+    notes: 'Final article flight close — custom pull reconciles all five article lines.',
+  },
+]
+
+/** Comprehensive Deutsch custom report (primary nav entry). */
+export const deutschFamilyWaCampaign: CampaignReport = {
+  id: 'deutsch_family_wa_native_2026',
+  name: 'Deutsch Family — WA Native Extensions',
+  clientFacingName: 'Deutsch Family · Bib & Tucker + Redemption',
+  flight: {
+    launched: LAUNCH,
+    inMarket: false,
+    summary: `Custom pull · flight ended ${REPORT_AS_OF} · 5 article lines · $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} production · ${DELIVERED_IMP.toLocaleString('en-US')} delivered imps (~${PCT_DELIVERED.toFixed(1)}% of book).`,
+  },
+  delivery: {
+    cpmUsd: CPM_USD,
+    impressionsPurchased: IMPRESSIONS_BOOKED,
+    pctDelivered: Math.round(PCT_DELIVERED * 10) / 10,
+    deliveredImpressions: DELIVERED_IMP,
+  },
+  performance: {
+    ctrPct: Math.round(BLENDED_CTR_PCT * 1000) / 1000,
+    pmpSharePct: COMBINED_PMP_SHARE_PCT,
+    measurementNote: `Custom partner pull across five Deutsch WA native article extensions (Mar 1–Jun 13). $${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} total production (3× Bib & Tucker + 2× Redemption). ${IMPRESSIONS_BOOKED.toLocaleString('en-US')} booked @ $${BOOKED_CPM_USD.toFixed(2)} endemic native CPM; ${DELIVERED_IMP.toLocaleString('en-US')} delivered ⇒ blended ~$${CPM_USD.toFixed(2)} CPM. ${TOTAL_CLICKS.toLocaleString('en-US')} clicks (~${BLENDED_CTR_PCT.toFixed(2)}% CTR). ~${COMBINED_PMP_SHARE_PCT.toFixed(1)}% PMP / endemic. Use article tabs for line-level story URLs and delivery.`,
+  },
+  geo: {
+    headline:
+      'National whisky enthusiast footprint — Bib & Tucker bourbon and Redemption rye buyers on WA.com endemic + Deutsch microsite.',
+    primaryMarkets: [...PRIMARY_DMAS],
+    driveInMarkets: [...SECONDARY_DMAS],
+  },
+  creative: {
+    environments:
+      'WA.com endemic native + deutsch.whiskyadvocate.com story destinations — five article creatives across Bib & Tucker and Redemption.',
+    sizes: [...NATIVE_FORMATS],
+    assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/',
+  },
+  tracking: {
+    description:
+      'Custom pull: five article click-throughs on deutsch.whiskyadvocate.com. Switch creative lines for the story URL trafficked for each activation.',
+    clickthroughUrl: 'https://deutsch.whiskyadvocate.com/',
+  },
+  overviewObjectiveSub: `$${TOTAL_MEDIA_SPEND_USD.toLocaleString('en-US')} across 5 articles · Mar 1–Jun 13 · ${Math.round(IMPRESSIONS_BOOKED / 1000)}k book @ $${BOOKED_CPM_USD.toFixed(0)} CPM · Bib & Tucker (3) + Redemption (2).`,
+  monthlyDelivery: [...MONTHLY_SEGMENTS],
+  monthlyDeliveryNote:
+    'Each row = one article activation (custom pull grain). Imps/clicks are flight-close actuals per article line; switch creative tabs for story-level detail.',
+  billingPeriods: [...BILLING_PERIODS],
+  creativeTraffickingLog: [...CREATIVE_TRAFFICKING_LOG],
+  creativeLines: [...CREATIVE_LINES],
+  audienceActivationMix: [
+    { name: 'WA.com endemic native', value: 48 },
+    { name: 'Newsletter native', value: 22 },
+    { name: 'Modeled bourbon / rye', value: 18 },
+    { name: 'Retargeting / CRM', value: 12 },
+  ],
+  audiences: deutschWaAudiences,
+  tradeDesk: (() => {
+    const daily = buildTradeDeskDailyFromMonthlySegments({
+      segments: MONTHLY_SEGMENTS,
+      impressionsBooked: IMPRESSIONS_BOOKED,
+      flightPlannedDays: FLIGHT_PLANNED_DAYS,
+    })
+
+    const meta: TradeDeskMeta = {
+      reportGeneratedAt: `${REPORT_AS_OF}T12:00:00.000Z`,
+      ioNumber: 'VRVO-IO-DEUTSCH-WA-2026',
+      lineItem: 'Deutsch Family — WA native suite (5 article lines)',
+      dsp: 'Direct publisher (M Shanken native extension)',
+      supplyPath: 'Whisky Advocate endemic — WA.com + Deutsch microsite',
+      flightPlannedDays: FLIGHT_PLANNED_DAYS,
+      lastDataDate: REPORT_AS_OF,
+      currency: 'USD',
+    }
+
+    return {
+      meta,
+      daily,
+      geoDelivery: buildGeoDelivery(
+        DELIVERED_IMP,
+        [...PRIMARY_DMAS],
+        [...SECONDARY_DMAS],
+        { primary: [...GEO_PRIMARY], secondary: [...GEO_SECONDARY] },
+      ),
+      formatDelivery: buildFormatDelivery([...NATIVE_FORMATS], DELIVERED_IMP),
+      deviceSplit,
+    }
+  })(),
+}
+
+/** Per-article fixtures (aliases / backwards compat). */
+export const bibTuckerCoffeeBourbonCampaign = ARTICLE_CAMPAIGNS[0]
+export const redemptionRyeRevivalCampaign = ARTICLE_CAMPAIGNS[1]
+export const bibTuckerTennesseeCampaign = ARTICLE_CAMPAIGNS[2]
+export const redemptionTurnsUpRyeCampaign = ARTICLE_CAMPAIGNS[3]
+export const bibTuckerSixYearsCampaign = ARTICLE_CAMPAIGNS[4]
+
+/** @deprecated Prefer `deutschFamilyWaCampaign`; kept for invoice alias `bib-tucker-wa`. */
+export const bibTuckerWaNativeCampaign = deutschFamilyWaCampaign
 
 export const DEUTSCH_FAMILY_WA_CAMPAIGNS = [
-  bibTuckerCoffeeBourbonCampaign,
-  redemptionRyeRevivalCampaign,
-  bibTuckerTennesseeCampaign,
-  redemptionTurnsUpRyeCampaign,
-  bibTuckerSixYearsCampaign,
+  deutschFamilyWaCampaign,
+  ...ARTICLE_CAMPAIGNS,
 ] as const
