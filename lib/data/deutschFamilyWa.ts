@@ -116,8 +116,18 @@ type ArticleSpec = {
   clickthroughUrl: string
   assetsFolderUrl: string
   placements: string
+  /** Distinct partner CTR grain per article (not the shared default). */
+  targetCtrPct: number
+  /** Flight-close delivery vs book — vary so same-spend lines don’t twin. */
+  overdeliveryPct: number
+  /** Endemic / PMP share for this article line. */
+  pmpSharePct: number
 }
 
+/**
+ * Per-article delivery grain — each line has its own CTR, over/under-delivery,
+ * and PMP mix so the custom pull doesn’t read as cloned metrics.
+ */
 const ARTICLE_SPECS: ArticleSpec[] = [
   {
     id: 'bt-coffee',
@@ -131,6 +141,9 @@ const ARTICLE_SPECS: ArticleSpec[] = [
     clickthroughUrl: hashStoryUrl('#story-coffee-bourbon', 'bt_coffee_bourbon'),
     assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-coffee-bourbon',
     placements: 'Article feed · Newsletter · Homepage native',
+    targetCtrPct: 1.14,
+    overdeliveryPct: 103.6,
+    pmpSharePct: 81.4,
   },
   {
     id: 'red-rye',
@@ -144,6 +157,9 @@ const ARTICLE_SPECS: ArticleSpec[] = [
     clickthroughUrl: queryStoryUrl('rye-revival', 'redemption_rye_revival'),
     assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/?story=rye-revival',
     placements: 'Article feed · Newsletter · Homepage native',
+    targetCtrPct: 0.86,
+    overdeliveryPct: 100.4,
+    pmpSharePct: 73.2,
   },
   {
     id: 'bt-tennessee',
@@ -161,6 +177,9 @@ const ARTICLE_SPECS: ArticleSpec[] = [
     assetsFolderUrl:
       'https://deutsch.whiskyadvocate.com/#story-tennessee-bourbon-dressed-to-impress',
     placements: 'Article feed · Mobile web · Newsletter native',
+    targetCtrPct: 1.28,
+    overdeliveryPct: 101.2,
+    pmpSharePct: 79.8,
   },
   {
     id: 'red-turns-up',
@@ -174,6 +193,9 @@ const ARTICLE_SPECS: ArticleSpec[] = [
     clickthroughUrl: hashStoryUrl('#story-redemption-turns-up-the-rye', 'redemption_turns_up_rye'),
     assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-redemption-turns-up-the-rye',
     placements: 'Article feed · Newsletter · Homepage native',
+    targetCtrPct: 0.94,
+    overdeliveryPct: 104.8,
+    pmpSharePct: 71.6,
   },
   {
     id: 'bt-six-years',
@@ -187,6 +209,9 @@ const ARTICLE_SPECS: ArticleSpec[] = [
     clickthroughUrl: hashStoryUrl('#story-six-years-in-the-making', 'bt_six_years'),
     assetsFolderUrl: 'https://deutsch.whiskyadvocate.com/#story-six-years-in-the-making',
     placements: 'Article feed · Newsletter native',
+    targetCtrPct: 1.06,
+    overdeliveryPct: 98.7,
+    pmpSharePct: 77.1,
   },
 ]
 
@@ -206,6 +231,8 @@ function buildArticleCampaign(spec: ArticleSpec): CampaignReport {
     clickthroughUrl: spec.clickthroughUrl,
     assetsFolderUrl: spec.assetsFolderUrl,
     audiences: deutschWaAudiences,
+    targetCtrPct: spec.targetCtrPct,
+    flightCompleteOverdeliveryPct: spec.overdeliveryPct,
   })
 }
 
@@ -222,8 +249,8 @@ function asCreativeLine(
     delivery: campaign.delivery,
     performance: {
       ...campaign.performance,
-      pmpSharePct: 76.8,
-      measurementNote: `${spec.invoiceLine} · $${spec.spendUsd.toLocaleString('en-US')} production · ${spec.launch}–${spec.flightEnd}. ${campaign.performance.measurementNote}`,
+      pmpSharePct: spec.pmpSharePct,
+      measurementNote: `${spec.invoiceLine} · $${spec.spendUsd.toLocaleString('en-US')} production · ${spec.launch}–${spec.flightEnd} · ~${spec.pmpSharePct.toFixed(1)}% PMP. ${campaign.performance.measurementNote}`,
     },
     monthlyDelivery: campaign.monthlyDelivery,
     monthlyDeliveryNote: campaign.monthlyDeliveryNote,
@@ -232,9 +259,13 @@ function asCreativeLine(
       description: `${spec.invoiceLine}. Native units route to the Deutsch WA story page.`,
       clickthroughUrl: spec.clickthroughUrl,
     },
-    overviewObjectiveSub: `${spec.brand} · $${spec.spendUsd.toLocaleString('en-US')} · ${spec.launch}–${spec.flightEnd}`,
+    overviewObjectiveSub: `${spec.brand} · $${spec.spendUsd.toLocaleString('en-US')} · ${formatPercentLabel(campaign.performance.ctrPct)} CTR · ~${spec.overdeliveryPct.toFixed(1)}% of book`,
     tradeDesk: campaign.tradeDesk,
   }
+}
+
+function formatPercentLabel(pct: number): string {
+  return `${pct.toFixed(2)}%`
 }
 
 const CREATIVE_LINES: CampaignCreativeLine[] = ARTICLE_CAMPAIGNS.map((c, i) =>
@@ -277,7 +308,18 @@ const CPM_USD = (TOTAL_MEDIA_SPEND_USD * 1000) / DELIVERED_IMP
 const BLENDED_CTR_PCT = (TOTAL_CLICKS / DELIVERED_IMP) * 100
 const PCT_DELIVERED = (DELIVERED_IMP / IMPRESSIONS_BOOKED) * 100
 const FLIGHT_PLANNED_DAYS = daysInclusive(LAUNCH, FLIGHT_END)
-const COMBINED_PMP_SHARE_PCT = 76.8
+/** Impression-weighted PMP across article lines. */
+const COMBINED_PMP_SHARE_PCT =
+  ARTICLE_SPECS.reduce((a, spec, i) => {
+    const delivered =
+      ARTICLE_CAMPAIGNS[i].delivery.deliveredImpressions ??
+      Math.round(
+        (ARTICLE_CAMPAIGNS[i].delivery.impressionsPurchased *
+          ARTICLE_CAMPAIGNS[i].delivery.pctDelivered) /
+          100,
+      )
+    return a + spec.pmpSharePct * delivered
+  }, 0) / DELIVERED_IMP
 
 const NATIVE_FORMATS = [
   'Article feed native card',
