@@ -4,13 +4,20 @@ import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { beamSuntoryWhiskyAdvocateCampaign } from './beamSuntoryWhiskyAdvocate'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { davidoffAvoExpresivoCampaign } from './davidoffAvoExpresivo'
+import {
+  bibTuckerCoffeeBourbonCampaign,
+  bibTuckerSixYearsCampaign,
+  bibTuckerTennesseeCampaign,
+  bibTuckerWaNativeCampaign,
+  redemptionRyeRevivalCampaign,
+  redemptionTurnsUpRyeCampaign,
+} from './deutschFamilyWa'
 import { duckhornNativeJulyCampaign } from './duckhornNativeJuly'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
 import { laAuroraPmpExtensionCampaign } from './laAuroraPmpExtension'
 import { visitNapaValleyCampaign } from './visitNapaValley'
 import {
-  bibTuckerWaNativeCampaign,
   cigarAficionadoPodcastCampaign,
   glenmorangieNativeCampaign,
   laAuroraCaNativeCampaign,
@@ -44,9 +51,21 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   '3g7viwill-7280': { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
   'la-aurora-ca': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
   '3g7viwill-7281': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
-  'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
-  'bib-tucker-wa': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
-  '3g7viwill-7282': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
+  'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  'bib-tucker-wa': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  'bib-tucker-six-years': { campaign: bibTuckerSixYearsCampaign, navKey: 'bib-tucker-six-years' },
+  'bib-tucker-coffee': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
+  'coffee-bourbon': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
+  'bib-tucker-tennessee': { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
+  tennessee: { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
+  '3g7viwill-7282': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  redemption: { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
+  'redemption-rye': { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
+  'rye-revival': { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
+  'redemption-rye-2': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
+  'redemption-turns-up-rye': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
+  'turns-up-the-rye': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
+  deutsch: { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
   perelada: { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
   'perelada-ws': { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
   '3g7viwill-7283': { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
@@ -96,7 +115,31 @@ export const M_SHANKEN_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'glenmorangie-native', label: 'Glenmorangie WA · prebooked', href: '/reporting?campaign=glenmorangie-native' },
   { key: 'davidoff-ca', label: 'Davidoff CA · AVO Expresivo', href: '/reporting?campaign=davidoff-ca' },
   { key: 'la-aurora-ca', label: 'La Aurora CA', href: '/reporting?campaign=la-aurora-ca' },
-  { key: 'bib-tucker-wa', label: 'Bib & Tucker WA', href: '/reporting?campaign=bib-tucker-wa' },
+  {
+    key: 'bib-tucker-coffee',
+    label: 'Deutsch · Bib & Tucker · Coffee Bourbon',
+    href: '/reporting?campaign=bib-tucker-coffee',
+  },
+  {
+    key: 'bib-tucker-tennessee',
+    label: 'Deutsch · Bib & Tucker · Tennessee',
+    href: '/reporting?campaign=bib-tucker-tennessee',
+  },
+  {
+    key: 'bib-tucker-six-years',
+    label: 'Deutsch · Bib & Tucker · Six Years',
+    href: '/reporting?campaign=bib-tucker-six-years',
+  },
+  {
+    key: 'redemption-rye',
+    label: 'Deutsch · Redemption · Rye Revival',
+    href: '/reporting?campaign=redemption-rye',
+  },
+  {
+    key: 'redemption-rye-2',
+    label: 'Deutsch · Redemption · Turns Up the Rye',
+    href: '/reporting?campaign=redemption-rye-2',
+  },
   { key: 'perelada-ws', label: 'Perelada WS · prebooked', href: '/reporting?campaign=perelada-ws' },
   { key: 'ca-podcast', label: 'CA Podcast', href: '/reporting?campaign=ca-podcast' },
 ]

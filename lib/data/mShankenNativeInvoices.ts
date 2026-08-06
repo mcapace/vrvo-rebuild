@@ -558,24 +558,6 @@ export const laAuroraCaNativeCampaign = buildNativeInvoiceCampaign({
   audiences: sharedCigarAudiences,
 })
 
-export const bibTuckerWaNativeCampaign = buildNativeInvoiceCampaign({
-  orderId: '3G7VIWLL-7282',
-  id: 'bib_tucker_wa_native_2026',
-  name: 'Bib & Tucker — Whisky Advocate Native Extension',
-  clientFacingName: 'Deutsch · Bib & Tucker · WA.com',
-  lineItem: 'Deutsch Native Extension — Bib & Tucker — WA.com May 2026',
-  invoiceLine: 'Deutsch Native Extension - Bib & Tucker - WA.com - May 2026',
-  spendUsd: 1528,
-  launch: '2026-05-01',
-  flightEnd: '2026-05-31',
-  reportAsOf: '2026-05-31',
-  publisher: 'wa.com',
-  clickthroughUrl:
-    'https://www.whiskyadvocate.com/?utm_source=vrvo&utm_medium=native&utm_campaign=bib_tucker_wa_native&utm_content=invoice_7282',
-  assetsFolderUrl: 'https://www.whiskyadvocate.com/',
-  audiences: sharedWaAudiences,
-})
-
 export const pereladaWsNativeCampaign = buildNativeInvoiceCampaign({
   orderId: '3G7VIWLL-7283',
   id: 'perelada_ws_native_2026',
@@ -623,13 +605,12 @@ export const cigarAficionadoPodcastCampaign = buildNativeInvoiceCampaign({
   ],
 })
 
-/** All June 2026 M Shanken invoice dashboards (7278–7284). */
+/** All June 2026 M Shanken invoice dashboards (7278–7284). Bib & Tucker (7282) lives in `deutschFamilyWa.ts`. */
 export const M_SHANKEN_INVOICE_CAMPAIGNS: CampaignReport[] = [
   pernod90ClubNativeCampaign,
   glenmorangieNativeCampaign,
   davidoffCaNativeCampaign,
   laAuroraCaNativeCampaign,
-  bibTuckerWaNativeCampaign,
   pereladaWsNativeCampaign,
   cigarAficionadoPodcastCampaign,
 ]
