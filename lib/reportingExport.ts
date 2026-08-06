@@ -227,6 +227,34 @@ export function buildCampaignReportCsv(
     }
   }
 
+  if (campaign.landingPage) {
+    const lp = campaign.landingPage
+    lines.push('')
+    lines.push('Landing page performance')
+    lines.push(row(['URL', lp.url]))
+    lines.push(row(['Headline', lp.headline]))
+    lines.push(row(['Summary', lp.summary]))
+    lines.push(row(['Page views', lp.pageViews]))
+    lines.push(row(['Unique visitors', lp.uniqueVisitors]))
+    lines.push(row(['Avg time on page (sec)', lp.avgTimeOnPageSec]))
+    lines.push(row(['Bounce rate %', lp.bounceRatePct]))
+    lines.push(row(['Pages per session', lp.pagesPerSession]))
+    lines.push(row(['Scroll depth 50%+ %', lp.scrollDepth50Pct]))
+    lines.push('')
+    lines.push('Landing page sections')
+    lines.push(row(['Section', 'Engagement share %', 'Avg time (sec)', 'Note']))
+    for (const sec of lp.topSections) {
+      lines.push(
+        row([
+          sec.section,
+          sec.engagementSharePct,
+          sec.avgTimeOnSectionSec,
+          sec.note ?? '',
+        ]),
+      )
+    }
+  }
+
   lines.push('')
   lines.push('Daily performance')
   lines.push(

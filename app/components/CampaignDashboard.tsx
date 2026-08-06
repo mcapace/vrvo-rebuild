@@ -88,6 +88,12 @@ function formatPercent(n: number, fractionDigits = 1) {
   return `${n.toFixed(fractionDigits)}%`
 }
 
+function formatDurationSec(totalSec: number) {
+  const m = Math.floor(totalSec / 60)
+  const s = Math.round(totalSec % 60)
+  return `${m}m ${String(s).padStart(2, '0')}s`
+}
+
 function formatShortDate(iso: string) {
   const [, m, day] = iso.split('-')
   return `${m}/${day}`
@@ -465,6 +471,18 @@ export function CampaignDashboard({
               </button>
             </>
           ) : null}
+          {campaign.landingPage ? (
+            <>
+              <span className="text-white/40">|</span>
+              <button
+                type="button"
+                onClick={() => scrollToReportingSection('reporting-landing-page')}
+                className={RIBBON_ACTION}
+              >
+                Landing page
+              </button>
+            </>
+          ) : null}
           <span className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-1 tabular-nums text-white/70">
             {onExpandReport ? (
               <>
@@ -662,6 +680,100 @@ export function CampaignDashboard({
                   </p>
                 </button>
               ))}
+            </div>
+          </section>
+        ) : null}
+
+        {campaign.landingPage ? (
+          <section
+            id="reporting-landing-page"
+            className="mb-8 scroll-mt-8 rounded-xl border-2 border-navy/25 bg-white p-5 shadow-sm"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-navy">
+                  Landing page performance
+                </h2>
+                <p className="mt-1 text-sm font-semibold text-slate-900">
+                  {campaign.landingPage.headline}
+                </p>
+                <p className="mt-1 text-sm text-slate-600">{campaign.landingPage.summary}</p>
+                <a
+                  href={campaign.landingPage.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-block text-xs font-medium text-navy underline"
+                >
+                  {campaign.landingPage.url}
+                </a>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-3 lg:grid-cols-6">
+              <SnapshotCell
+                label="Page views"
+                value={formatNumber(campaign.landingPage.pageViews)}
+                accent
+              />
+              <SnapshotCell
+                label="Unique visitors"
+                value={formatNumber(campaign.landingPage.uniqueVisitors)}
+              />
+              <SnapshotCell
+                label="Avg. time on page"
+                value={formatDurationSec(campaign.landingPage.avgTimeOnPageSec)}
+                accent
+              />
+              <SnapshotCell
+                label="Bounce rate"
+                value={formatPercent(campaign.landingPage.bounceRatePct, 1)}
+              />
+              <SnapshotCell
+                label="Pages / session"
+                value={campaign.landingPage.pagesPerSession.toFixed(1)}
+              />
+              <SnapshotCell
+                label="Scroll depth 50%+"
+                value={formatPercent(campaign.landingPage.scrollDepth50Pct, 1)}
+              />
+            </div>
+            <h3 className="mt-5 text-[10px] font-bold uppercase tracking-wide text-slate-500">
+              Section performance (best → rest)
+            </h3>
+            <div className="mt-2 overflow-x-auto">
+              <table className="w-full min-w-[520px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                    <th className="py-2 pr-4">Section</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Engagement share</th>
+                    <th className="py-2 pr-4 text-right tabular-nums">Avg. time</th>
+                    <th className="py-2">Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {campaign.landingPage.topSections.map((row, i) => (
+                    <tr
+                      key={row.section}
+                      className={`border-b border-slate-100 text-slate-800 ${i === 0 ? 'bg-emerald-50/60' : ''}`}
+                    >
+                      <td className="py-2.5 pr-4 font-medium">
+                        {i === 0 ? (
+                          <span className="mr-2 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-800">
+                            Best
+                          </span>
+                        ) : null}
+                        {row.section}
+                      </td>
+                      <td className="py-2.5 pr-4 text-right tabular-nums">
+                        {formatPercent(row.engagementSharePct, 0)}
+                      </td>
+                      <td className="py-2.5 pr-4 text-right tabular-nums">
+                        {formatDurationSec(row.avgTimeOnSectionSec)}
+                      </td>
+                      <td className="py-2.5 text-xs text-slate-600">{row.note ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </section>
         ) : null}

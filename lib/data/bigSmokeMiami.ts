@@ -80,6 +80,30 @@ export interface CreativeTraffickingEvent {
   notes?: string
 }
 
+/** Destination / landing-page engagement (GA-style) for partner microsites. */
+export interface LandingPageSectionRow {
+  section: string
+  /** Share of engaged sessions that interacted with this section (0–100). */
+  engagementSharePct: number
+  avgTimeOnSectionSec: number
+  /** Optional highlight — e.g. “Highest CTR entry”. */
+  note?: string
+}
+
+export interface LandingPageInsight {
+  url: string
+  headline: string
+  pageViews: number
+  uniqueVisitors: number
+  avgTimeOnPageSec: number
+  bounceRatePct: number
+  pagesPerSession: number
+  scrollDepth50Pct: number
+  /** Short favorable summary for the partner. */
+  summary: string
+  topSections: LandingPageSectionRow[]
+}
+
 export interface CampaignReport {
   id: string
   name: string
@@ -157,6 +181,11 @@ export interface CampaignReport {
   billingPeriods?: BillingPeriodRow[]
   /** Creative launch / swap / refresh log for partner trafficking transparency. */
   creativeTraffickingLog?: CreativeTraffickingEvent[]
+  /**
+   * Optional destination-site engagement (page views, time on page, section mix)
+   * for partner microsites such as deutsch.whiskyadvocate.com.
+   */
+  landingPage?: LandingPageInsight
   audiences: AudienceBucket[]
   tradeDesk: CampaignTradeDesk
 }

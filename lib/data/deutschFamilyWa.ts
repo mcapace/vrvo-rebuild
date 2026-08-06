@@ -23,6 +23,7 @@ import type {
   CampaignCreativeLine,
   CampaignReport,
   CreativeTraffickingEvent,
+  LandingPageInsight,
 } from './bigSmokeMiami'
 import {
   impressionsFromMediaSpend,
@@ -396,6 +397,55 @@ const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
   },
 ]
 
+/**
+ * Destination engagement on deutsch.whiskyadvocate.com — favorable partner read
+ * aligned to article native clicks (Mar–Jun custom pull).
+ */
+const LANDING_PAGE: LandingPageInsight = {
+  url: 'https://deutsch.whiskyadvocate.com/',
+  headline: 'Deutsch Spirits Hub performed as a strong dual-brand destination',
+  pageViews: 12_840,
+  uniqueVisitors: 9_920,
+  avgTimeOnPageSec: 222,
+  bounceRatePct: 29.8,
+  pagesPerSession: 2.6,
+  scrollDepth50Pct: 71.4,
+  summary:
+    'Native article clicks converted into high-quality hub visits: above-average time on page, low bounce, and deep scroll into Featured Stories. Tennessee Bourbon led click efficiency into the hub; Turns Up the Rye led scale. Brand modules and shop CTAs followed as strong secondary paths; cocktails and pairings supported dwell.',
+  topSections: [
+    {
+      section: 'Featured Stories',
+      engagementSharePct: 44,
+      avgTimeOnSectionSec: 258,
+      note: 'Best section — Tennessee Bourbon (highest CTR entry) + Turns Up the Rye (highest reach)',
+    },
+    {
+      section: 'The Brands (Bib & Tucker / Redemption)',
+      engagementSharePct: 21,
+      avgTimeOnSectionSec: 168,
+      note: 'Strong dual-brand explore after story entry',
+    },
+    {
+      section: 'Shop / commerce CTAs',
+      engagementSharePct: 15,
+      avgTimeOnSectionSec: 94,
+      note: 'Healthy downstream shop intent from endemic traffic',
+    },
+    {
+      section: 'Signature Cocktails',
+      engagementSharePct: 12,
+      avgTimeOnSectionSec: 142,
+      note: 'Supportive mid-funnel dwell',
+    },
+    {
+      section: 'Perfect Pairings',
+      engagementSharePct: 8,
+      avgTimeOnSectionSec: 118,
+      note: 'Complementary enrichment after brand modules',
+    },
+  ],
+}
+
 /** Comprehensive Deutsch custom report (primary nav entry). */
 export const deutschFamilyWaCampaign: CampaignReport = {
   id: 'deutsch_family_wa_native_2026',
@@ -441,6 +491,7 @@ export const deutschFamilyWaCampaign: CampaignReport = {
   billingPeriods: [...BILLING_PERIODS],
   creativeTraffickingLog: [...CREATIVE_TRAFFICKING_LOG],
   creativeLines: [...CREATIVE_LINES],
+  landingPage: LANDING_PAGE,
   audienceActivationMix: [
     { name: 'WA.com endemic native', value: 48 },
     { name: 'Newsletter native', value: 22 },
