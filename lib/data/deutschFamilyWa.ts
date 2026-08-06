@@ -532,15 +532,15 @@ export const deutschFamilyWaCampaign: CampaignReport = {
   })(),
 }
 
-/** Per-article fixtures (aliases / backwards compat). */
+/** Per-article fixtures (standalone reports + aliases). */
 export const bibTuckerCoffeeBourbonCampaign = ARTICLE_CAMPAIGNS[0]
 export const redemptionRyeRevivalCampaign = ARTICLE_CAMPAIGNS[1]
 export const bibTuckerTennesseeCampaign = ARTICLE_CAMPAIGNS[2]
 export const redemptionTurnsUpRyeCampaign = ARTICLE_CAMPAIGNS[3]
 export const bibTuckerSixYearsCampaign = ARTICLE_CAMPAIGNS[4]
 
-/** @deprecated Prefer `deutschFamilyWaCampaign`; kept for invoice alias `bib-tucker-wa`. */
-export const bibTuckerWaNativeCampaign = deutschFamilyWaCampaign
+/** Invoice alias 3G7VIWLL-7282 / legacy `bib-tucker-wa` → Six Years article. */
+export const bibTuckerWaNativeCampaign = bibTuckerSixYearsCampaign
 
 export const DEUTSCH_FAMILY_WA_CAMPAIGNS = [
   deutschFamilyWaCampaign,

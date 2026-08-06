@@ -4,7 +4,15 @@ import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { beamSuntoryWhiskyAdvocateCampaign } from './beamSuntoryWhiskyAdvocate'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { davidoffAvoExpresivoCampaign } from './davidoffAvoExpresivo'
-import { deutschFamilyWaCampaign } from './deutschFamilyWa'
+import {
+  bibTuckerCoffeeBourbonCampaign,
+  bibTuckerSixYearsCampaign,
+  bibTuckerTennesseeCampaign,
+  bibTuckerWaNativeCampaign,
+  deutschFamilyWaCampaign,
+  redemptionRyeRevivalCampaign,
+  redemptionTurnsUpRyeCampaign,
+} from './deutschFamilyWa'
 import { duckhornNativeJulyCampaign } from './duckhornNativeJuly'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
@@ -46,20 +54,20 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   '3g7viwill-7281': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
   deutsch: { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
   'deutsch-family': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'bib-tucker': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'bib-tucker-wa': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'bib-tucker-coffee': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'bib-tucker-tennessee': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'bib-tucker-six-years': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'coffee-bourbon': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  tennessee: { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  '3g7viwill-7282': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  redemption: { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'redemption-rye': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'redemption-rye-2': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'rye-revival': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'redemption-turns-up-rye': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
-  'turns-up-the-rye': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
+  'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  'bib-tucker-wa': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  'bib-tucker-coffee': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
+  'coffee-bourbon': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
+  'bib-tucker-tennessee': { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
+  tennessee: { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
+  'bib-tucker-six-years': { campaign: bibTuckerSixYearsCampaign, navKey: 'bib-tucker-six-years' },
+  '3g7viwill-7282': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-six-years' },
+  redemption: { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
+  'redemption-rye': { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
+  'rye-revival': { campaign: redemptionRyeRevivalCampaign, navKey: 'redemption-rye' },
+  'redemption-rye-2': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
+  'redemption-turns-up-rye': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
+  'turns-up-the-rye': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
   perelada: { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
   'perelada-ws': { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
   '3g7viwill-7283': { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
@@ -116,8 +124,33 @@ export const M_SHANKEN_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
 export const DEUTSCH_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   {
     key: 'deutsch',
-    label: 'Deutsch Family · WA Native',
+    label: 'Deutsch Family · WA Native (suite)',
     href: '/reporting?campaign=deutsch',
+  },
+  {
+    key: 'bib-tucker-coffee',
+    label: 'Deutsch · B&T Coffee Bourbon',
+    href: '/reporting?campaign=bib-tucker-coffee',
+  },
+  {
+    key: 'bib-tucker-tennessee',
+    label: 'Deutsch · B&T Tennessee',
+    href: '/reporting?campaign=bib-tucker-tennessee',
+  },
+  {
+    key: 'bib-tucker-six-years',
+    label: 'Deutsch · B&T Six Years',
+    href: '/reporting?campaign=bib-tucker-six-years',
+  },
+  {
+    key: 'redemption-rye',
+    label: 'Deutsch · Redemption Rye Revival',
+    href: '/reporting?campaign=redemption-rye',
+  },
+  {
+    key: 'redemption-rye-2',
+    label: 'Deutsch · Redemption Turns Up Rye',
+    href: '/reporting?campaign=redemption-rye-2',
   },
 ]
 
