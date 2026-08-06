@@ -411,7 +411,7 @@ const LANDING_PAGE: LandingPageInsight = {
   pagesPerSession: 2.6,
   scrollDepth50Pct: 71.4,
   summary:
-    'Native article clicks converted into high-quality hub visits: above-average time on page, low bounce, and deep scroll into Featured Stories. Tennessee Bourbon led click efficiency into the hub; Turns Up the Rye led scale. Brand modules and shop CTAs followed as strong secondary paths; cocktails and pairings supported dwell.',
+    'Native article clicks converted into high-quality hub visits: 32,792 page views with above-average time on page, low bounce, and deep scroll into Featured Stories. Tennessee Bourbon led click efficiency into the hub; Turns Up the Rye led scale. Brand modules and shop CTAs followed as strong secondary paths; cocktails and pairings supported dwell.',
   topSections: [
     {
       section: 'Featured Stories',
