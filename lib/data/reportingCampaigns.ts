@@ -12,6 +12,10 @@ import {
   redemptionRyeRevivalCampaign,
   redemptionTurnsUpRyeCampaign,
 } from './deutschFamilyWa'
+import {
+  bibTuckerDisplayPmpCampaign,
+  redemptionDisplayPmpCampaign,
+} from './deutschDisplayPmpExtension'
 import { duckhornNativeJulyCampaign } from './duckhornNativeJuly'
 import { duckhornWineSpectatorCampaign } from './duckhornWineSpectator'
 import { internalRandomFixtureCampaign } from './internalRandomFixture'
@@ -56,6 +60,9 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   'deutsch-family': { campaign: deutschFamilyWaCampaign, navKey: 'deutsch' },
   'bib-tucker': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
   'bib-tucker-wa': { campaign: bibTuckerWaNativeCampaign, navKey: 'bib-tucker-wa' },
+  'bib-tucker-pmp': { campaign: bibTuckerDisplayPmpCampaign, navKey: 'bib-tucker-pmp' },
+  'bib-tucker-display': { campaign: bibTuckerDisplayPmpCampaign, navKey: 'bib-tucker-pmp' },
+  'bib-tucker-display-pmp': { campaign: bibTuckerDisplayPmpCampaign, navKey: 'bib-tucker-pmp' },
   'bib-tucker-coffee': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
   'coffee-bourbon': { campaign: bibTuckerCoffeeBourbonCampaign, navKey: 'bib-tucker-coffee' },
   'bib-tucker-tennessee': { campaign: bibTuckerTennesseeCampaign, navKey: 'bib-tucker-tennessee' },
@@ -68,6 +75,9 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   'redemption-rye-2': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
   'redemption-turns-up-rye': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
   'turns-up-the-rye': { campaign: redemptionTurnsUpRyeCampaign, navKey: 'redemption-rye-2' },
+  'redemption-pmp': { campaign: redemptionDisplayPmpCampaign, navKey: 'redemption-pmp' },
+  'redemption-display': { campaign: redemptionDisplayPmpCampaign, navKey: 'redemption-pmp' },
+  'redemption-display-pmp': { campaign: redemptionDisplayPmpCampaign, navKey: 'redemption-pmp' },
   perelada: { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
   'perelada-ws': { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
   '3g7viwill-7283': { campaign: pereladaWsNativeCampaign, navKey: 'perelada-ws' },
@@ -133,6 +143,11 @@ export const DEUTSCH_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
     href: '/reporting?campaign=bib-tucker-wa',
   },
   {
+    key: 'bib-tucker-pmp',
+    label: 'Bib & Tucker · Display PMP (Dec–Jan)',
+    href: '/reporting?campaign=bib-tucker-pmp',
+  },
+  {
     key: 'bib-tucker-coffee',
     label: 'Deutsch · B&T Coffee Bourbon',
     href: '/reporting?campaign=bib-tucker-coffee',
@@ -146,6 +161,11 @@ export const DEUTSCH_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
     key: 'bib-tucker-six-years',
     label: 'Deutsch · B&T Six Years',
     href: '/reporting?campaign=bib-tucker-six-years',
+  },
+  {
+    key: 'redemption-pmp',
+    label: 'Redemption · Display PMP (Dec–Jan)',
+    href: '/reporting?campaign=redemption-pmp',
   },
   {
     key: 'redemption-rye',
