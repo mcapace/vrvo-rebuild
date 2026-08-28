@@ -265,18 +265,41 @@ const CREATIVE_TRAFFICKING_LOG: CreativeTraffickingEvent[] = [
 ]
 
 const LANDING_PAGE_INSIGHT: LandingPageInsight = {
-  landingUrl: 'https://us.davidoffgeneva.com / cigaraficionado.com',
+  url: 'https://us.davidoffgeneva.com / cigaraficionado.com',
+  headline: 'High qualified engagement across 2026 Davidoff & AVO destinations',
   pageViews: 418_520,
   uniqueVisitors: 284_900,
   avgTimeOnPageSec: 94,
   bounceRatePct: 41.2,
   pagesPerSession: 2.7,
   scrollDepth50Pct: 78.4,
+  summary:
+    'Full-portfolio cross-device traffic demonstrated strong dwell and low bounce across e-commerce product pages and editorial features. High repeat engagement observed across the AVO Expresivo and Puro Dominicano destinations.',
   topSections: [
-    { section: 'AVO Expresivo Product & Cigar Details', viewsPct: 34.2 },
-    { section: 'Puro Dominicano 2026 Black Band Collection', viewsPct: 29.8 },
-    { section: 'WSC The Late Hour Belicoso Purchase Page', viewsPct: 21.5 },
-    { section: 'Cigar Aficionado Sponsored Feature Read-Throughs', viewsPct: 14.5 },
+    {
+      section: 'AVO Expresivo Product & Cigar Details',
+      engagementSharePct: 34,
+      avgTimeOnSectionSec: 112,
+      note: 'Highest dwell — strong product exploration',
+    },
+    {
+      section: 'Puro Dominicano 2026 Black Band Collection',
+      engagementSharePct: 30,
+      avgTimeOnSectionSec: 98,
+      note: 'High cross-line traffic from sponsored editorial',
+    },
+    {
+      section: 'WSC The Late Hour Belicoso Purchase Page',
+      engagementSharePct: 22,
+      avgTimeOnSectionSec: 86,
+      note: 'Direct e-commerce conversion path from Banner A',
+    },
+    {
+      section: 'Cigar Aficionado Sponsored Feature Read-Throughs',
+      engagementSharePct: 14,
+      avgTimeOnSectionSec: 145,
+      note: 'Strong editorial engagement and brand depth',
+    },
   ],
 }
 
