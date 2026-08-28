@@ -4,6 +4,7 @@ import { bigSmokeMiamiCampaign } from './bigSmokeMiami'
 import { beamSuntoryWhiskyAdvocateCampaign } from './beamSuntoryWhiskyAdvocate'
 import { casaDragonesWhiskyAdvocateCampaign } from './casaDragonesWhiskyAdvocate'
 import { davidoffAvoExpresivoCampaign } from './davidoffAvoExpresivo'
+import { davidoff2026SuiteCampaign } from './davidoff2026Suite'
 import {
   bibTuckerCoffeeBourbonCampaign,
   bibTuckerSixYearsCampaign,
@@ -49,9 +50,13 @@ const M_SHANKEN_ROUTES: Record<string, CampaignRoute> = {
   glenmorangie: { campaign: glenmorangieNativeCampaign, navKey: 'glenmorangie-native' },
   'glenmorangie-native': { campaign: glenmorangieNativeCampaign, navKey: 'glenmorangie-native' },
   '3g7viwill-7279': { campaign: glenmorangieNativeCampaign, navKey: 'glenmorangie-native' },
-  davidoff: { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
-  'davidoff-ca': { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
+  davidoff: { campaign: davidoff2026SuiteCampaign, navKey: 'davidoff-ca' },
+  'davidoff-2026': { campaign: davidoff2026SuiteCampaign, navKey: 'davidoff-ca' },
+  'davidoff-suite': { campaign: davidoff2026SuiteCampaign, navKey: 'davidoff-ca' },
+  'davidoff-ca': { campaign: davidoff2026SuiteCampaign, navKey: 'davidoff-ca' },
+  dimando: { campaign: davidoff2026SuiteCampaign, navKey: 'davidoff-ca' },
   avo: { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
+  'avo-expresivo': { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
   expresivo: { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
   '3g7viwill-7280': { campaign: davidoffAvoExpresivoCampaign, navKey: 'davidoff-ca' },
   'la-aurora-ca': { campaign: laAuroraCaNativeCampaign, navKey: 'la-aurora-ca' },
@@ -125,7 +130,7 @@ const CAMPAIGN_BY_KEY: Record<string, CampaignReport> = {
 export const M_SHANKEN_CAMPAIGN_NAV: ReportingCampaignNavItem[] = [
   { key: 'pernod-90-club', label: 'Pernod · 90 Club', href: '/reporting?campaign=pernod-90-club' },
   { key: 'glenmorangie-native', label: 'Glenmorangie WA · prebooked', href: '/reporting?campaign=glenmorangie-native' },
-  { key: 'davidoff-ca', label: 'Davidoff CA · AVO Expresivo', href: '/reporting?campaign=davidoff-ca' },
+  { key: 'davidoff-ca', label: 'Davidoff · 2026 Suite', href: '/reporting?campaign=davidoff' },
   { key: 'la-aurora-ca', label: 'La Aurora CA', href: '/reporting?campaign=la-aurora-ca' },
   { key: 'perelada-ws', label: 'Perelada WS · prebooked', href: '/reporting?campaign=perelada-ws' },
   { key: 'ca-podcast', label: 'CA Podcast', href: '/reporting?campaign=ca-podcast' },
