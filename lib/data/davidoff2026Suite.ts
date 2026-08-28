@@ -403,6 +403,7 @@ function buildCreativeLines(): CampaignCreativeLine[] {
       },
       tracking: {
         description: `Creative: ${p.headline} · Destination: ${p.destinationUrl}`,
+        clickthroughUrl: p.destinationUrl,
       },
       tradeDesk,
       overviewObjectiveSub: `Delivered ${p.deliveredImps.toLocaleString('en-US')} imps (${pctDel.toFixed(1)}% delivery) · ${p.clicks.toLocaleString('en-US')} clicks (${ctr.toFixed(2)}% CTR)`,
@@ -497,6 +498,7 @@ export const davidoff2026SuiteCampaign: CampaignReport = {
   tracking: {
     description:
       'Server-side Google Ad Manager impression and click measurement with complete UTM pass-through and Google Consent Mode v2 support.',
+    clickthroughUrl: 'https://us.davidoffgeneva.com',
   },
   audiences: davidoffAudiences,
   billingPeriods: BILLING_PERIOD_ROWS,
