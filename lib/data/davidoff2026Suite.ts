@@ -364,11 +364,7 @@ function buildCreativeLines(): CampaignCreativeLine[] {
     }
     const tradeDesk = {
       meta,
-      daily: buildTradeDeskDailyFromMonthlySegments({
-        segments: segs,
-        impressionsBooked: p.bookedImps,
-        flightPlannedDays: daysInclusive(p.launch, p.flightEnd),
-      }),
+      daily: [],
       geoDelivery: buildGeoDelivery(
         p.deliveredImps,
         [...DAV_PRIMARY],
@@ -433,11 +429,7 @@ const metaComprehensive: TradeDeskMeta = {
 
 const tradeDeskComprehensive = {
   meta: metaComprehensive,
-  daily: buildTradeDeskDailyFromMonthlySegments({
-    segments: COMPREHENSIVE_SEGMENTS,
-    impressionsBooked: TOTAL_BOOKED_IMPS,
-    flightPlannedDays: daysInclusive(LAUNCH, FLIGHT_END),
-  }),
+  daily: [],
   geoDelivery: buildGeoDelivery(
     TOTAL_DELIVERED_IMPS,
     [...DAV_PRIMARY],
