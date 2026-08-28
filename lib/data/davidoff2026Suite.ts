@@ -353,11 +353,14 @@ function buildCreativeLines(): CampaignCreativeLine[] {
       },
     ]
     const meta: TradeDeskMeta = {
-      campaignName: `Davidoff · ${p.label}`,
-      advertiser: 'Oettinger Davidoff AG',
-      flightWindow: `${p.launch} → ${p.flightEnd}`,
-      sourceFilename: 'Google Ad Manager (Verified Logs)',
-      environment: 'CigarAficionado.com & Mobile Web',
+      reportGeneratedAt: REPORT_AS_OF,
+      ioNumber: `DAVIDOFF-2026-${p.id.toUpperCase()}`,
+      lineItem: p.label,
+      dsp: 'Google Ad Manager (GAM)',
+      supplyPath: 'CigarAficionado.com & Mobile Web',
+      flightPlannedDays: daysInclusive(p.launch, p.flightEnd),
+      lastDataDate: p.flightEnd,
+      currency: 'USD',
     }
     const tradeDesk = {
       meta,
@@ -424,11 +427,14 @@ const COMPREHENSIVE_SEGMENTS: MonthlyDeliverySegment[] = [
 ]
 
 const metaComprehensive: TradeDeskMeta = {
-  campaignName: 'Davidoff 2026 Comprehensive Cigar Aficionado Suite',
-  advertiser: 'Oettinger Davidoff AG',
-  flightWindow: `${LAUNCH} → ${FLIGHT_END}`,
-  sourceFilename: 'Google Ad Manager Verified Server Logs',
-  environment: 'CigarAficionado.com Display, Pop-ups, Native & Sponsored Content',
+  reportGeneratedAt: REPORT_AS_OF,
+  ioNumber: 'DAVIDOFF-2026-CA-SUITE',
+  lineItem: 'Davidoff 2026 Comprehensive Cigar Aficionado Suite',
+  dsp: 'Google Ad Manager (GAM)',
+  supplyPath: 'CigarAficionado.com Display, Pop-ups, Native & Sponsored Content',
+  flightPlannedDays: daysInclusive(LAUNCH, FLIGHT_END),
+  lastDataDate: FLIGHT_END,
+  currency: 'USD',
 }
 
 const tradeDeskComprehensive = {
